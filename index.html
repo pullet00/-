@@ -654,19 +654,25 @@ try{st=JSON.parse(localStorage.getItem('hrm7')||'null')||defSt();}catch(e){st=de
 if(!st.me.code)st.me.code=gc();
 if(!st.nid)st.nid=1;if(!st.ncid)st.ncid=10;if(!st.minM)st.minM=3;
 const ct=id=>st.cats.find(c=>c.id===id)||null;
+let _cloudSaveTimer=null;
 const save=()=>{
   try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
   expMe();
   if(grpId)pushMyData();
-  // Supabaseにもバックアップ（ログイン中のみ）
-  if(currentUser) saveToCloud();
+  // Supabaseにデバウンス保存（2秒待ってまとめて保存）
+  if(currentUser){
+    clearTimeout(_cloudSaveTimer);
+    _cloudSaveTimer=setTimeout(saveToCloud, 2000);
+  }
 };
 async function saveToCloud(){
   if(!currentUser)return;
   try{
-    // user_dataテーブルにupsert
-    await sbFetch('/rest/v1/user_data?user_id=eq.'+currentUser.id,'DELETE');
-    await sbFetch('/rest/v1/user_data','POST',{user_id:currentUser.id, data:st});
+    const {error} = await sbClient
+      .from('user_data')
+      .upsert({user_id:currentUser.id, data:st, updated_at:new Date().toISOString()},
+              {onConflict:'user_id'});
+    if(error) console.warn('cloud save error',error.message);
   }catch(e){console.warn('cloud save error',e);}
 }
 const expMe=()=>{try{localStorage.setItem('hx_'+st.me.code,JSON.stringify({name:st.me.name,part:st.me.part,color:st.me.color,blocks:st.blocks,cats:st.cats}));}catch(e){}};
@@ -1278,11 +1284,13 @@ async function onLoginSuccess(user){
   document.getElementById('login-screen').innerHTML+=
     '<div id="load-msg" style="position:absolute;bottom:40px;width:100%;text-align:center;font-size:13px;color:#9898AA">データを読み込み中...</div>';
   try{
-    const rows = await sbFetch('/rest/v1/user_data?user_id=eq.'+currentUser.id+'&select=data');
-    if(rows && rows.length > 0 && rows[0].data){
-      const saved = rows[0].data;
-      // ローカルと統合（ブロックは上書き、設定は保持）
-      st = Object.assign(defSt(), saved);
+    const {data:rows, error} = await sbClient
+      .from('user_data')
+      .select('data')
+      .eq('user_id', currentUser.id)
+      .single();
+    if(!error && rows && rows.data){
+      st = Object.assign(defSt(), rows.data);
       try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
     }
   }catch(e){console.warn('data load error',e);}
