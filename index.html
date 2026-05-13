@@ -637,7 +637,13 @@ input:focus{border-color:var(--accent);}
 // ══ SUPABASE INIT（最初に定義）══
 const _SB_URL='https://jhtvuamqfopsjlagtjip.supabase.co';
 const _SB_KEY='sb_publishable_7dyCq4sFQqcKIq1XC6NnJw_NJNCF00e';
-const sbClient = supabase.createClient(_SB_URL, _SB_KEY);
+const sbClient = supabase.createClient(_SB_URL, _SB_KEY, {
+  auth: {
+    persistSession: true,
+    detectSessionInUrl: true,
+    storage: window.localStorage,
+  }
+});
 let currentUser = null;
 
 // ══ DATA ══
@@ -1290,8 +1296,26 @@ async function onLoginSuccess(user){
       .eq('user_id', currentUser.id)
       .single();
     if(!error && rows && rows.data){
-      st = Object.assign(defSt(), rows.data);
+      // 完全に上書き（ネストしたオブジェクトも正しく復元）
+      const saved = rows.data;
+      const fresh = defSt();
+      st = {
+        me:      saved.me      || fresh.me,
+        slots:   saved.slots   || fresh.slots,
+        days:    saved.days    || fresh.days,
+        cats:    saved.cats    || fresh.cats,
+        blocks:  saved.blocks  || {},
+        tpl:     saved.tpl     || {},
+        members: saved.members || [],
+        nid:     saved.nid     || 1,
+        ncid:    saved.ncid    || 10,
+        minM:    saved.minM    || 3,
+        boarded: saved.boarded || false,
+      };
       try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
+      console.log('データ復元成功:', Object.keys(st.blocks).length+'コマ');
+    } else {
+      console.log('クラウドにデータなし、ローカルを使用');
     }
   }catch(e){console.warn('data load error',e);}
 
