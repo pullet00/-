@@ -362,10 +362,10 @@ input:focus{border-color:var(--accent);}
       <div style="font-size:13px;color:#5C5C6E;text-align:center;margin-bottom:16px;line-height:1.7">
         <span id="otp-email-disp" style="font-weight:600;color:#0D0D10"></span><br>
         にメールを送りました。<br>
-        届いたメール内の<strong style="color:#0D0D10">6桁の数字</strong>を入力してください。<br>
+        届いたメール内の<strong style="color:#0D0D10">数字のコード</strong>を入力してください。<br>
         <span style="font-size:11px;color:#9898AA">迷惑メールフォルダも確認してください</span>
       </div>
-      <input type="text" id="login-otp" placeholder="123456" maxlength="6"
+      <input type="text" id="login-otp" placeholder="12345678" maxlength="8"
         inputmode="numeric" pattern="[0-9]*"
         style="width:100%;padding:16px;border:1.5px solid #E4E4E8;border-radius:14px;font-size:24px;font-weight:700;letter-spacing:.2em;text-align:center;font-family:'Inter',sans-serif;background:#FFF;color:#0D0D10;outline:none;margin-bottom:12px"
         onfocus="this.style.borderColor='#5B5BF6'" onblur="this.style.borderColor='#E4E4E8'"
@@ -1220,7 +1220,7 @@ async function sendOTP(){
 async function verifyOTP(){
   const email = document.getElementById('login-email').value.trim();
   const token = document.getElementById('login-otp').value.trim().replace(/\s/g,'');
-  if(token.length!==6){showLoginError('6桁のコードを入力してください');return;}
+  if(token.length<6){showLoginError('コードをすべて入力してください');return;}
   const btn = document.getElementById('login-verify-btn');
   btn.textContent='確認中...';btn.disabled=true;
   const {data,error} = await sbClient.auth.verifyOtp({email,token,type:'email'});
