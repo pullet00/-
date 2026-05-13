@@ -654,7 +654,21 @@ try{st=JSON.parse(localStorage.getItem('hrm7')||'null')||defSt();}catch(e){st=de
 if(!st.me.code)st.me.code=gc();
 if(!st.nid)st.nid=1;if(!st.ncid)st.ncid=10;if(!st.minM)st.minM=3;
 const ct=id=>st.cats.find(c=>c.id===id)||null;
-const save=()=>{try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}expMe();if(grpId)pushMyData();};
+const save=()=>{
+  try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
+  expMe();
+  if(grpId)pushMyData();
+  // Supabaseにもバックアップ（ログイン中のみ）
+  if(currentUser) saveToCloud();
+};
+async function saveToCloud(){
+  if(!currentUser)return;
+  try{
+    // user_dataテーブルにupsert
+    await sbFetch('/rest/v1/user_data?user_id=eq.'+currentUser.id,'DELETE');
+    await sbFetch('/rest/v1/user_data','POST',{user_id:currentUser.id, data:st});
+  }catch(e){console.warn('cloud save error',e);}
+}
 const expMe=()=>{try{localStorage.setItem('hx_'+st.me.code,JSON.stringify({name:st.me.name,part:st.me.part,color:st.me.color,blocks:st.blocks,cats:st.cats}));}catch(e){}};
 const DS=d=>d.toISOString().slice(0,10);
 const BK=(ds,sid)=>ds+'|'+sid;
@@ -1108,6 +1122,18 @@ function renderSettings(){
         <span style="color:var(--text2);font-size:13px">人以上でおすすめ表示</span>
       </div></div>
     </div>
+    <!-- アカウント設定 -->
+    <div class="scard">
+      <div class="scard-head">アカウント</div>
+      <div class="scard-body">
+        <div id="account-email-disp" style="font-size:13px;color:#5C5C6E;padding:4px 0;margin-bottom:4px"></div>
+        <button class="btn btn-block" onclick="doSignOut()" style="background:#F4F4F6;color:#0D0D10;border:1.5px solid #E4E4E8;margin-bottom:8px">
+          別のアカウントに切り替える
+        </button>
+        <div style="font-size:11px;color:#9898AA">ログアウトするとこのデバイスのデータはクラウドに保存されます。次回ログイン時に復元されます。</div>
+      </div>
+    </div>
+
     <button class="btn btn-d btn-block" onclick="confirmReset()">🗑 全データをリセット</button>
     <div style="height:24px"></div>`;
 }
@@ -1135,7 +1161,19 @@ const confirmReset=()=>{if(!confirm('全データをリセットしますか？'
 const openOv=id=>document.getElementById(id).classList.add('open');
 const closeOv=id=>document.getElementById(id).classList.remove('open');
 document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
-async function doSignOut(){if(!confirm('ログアウトしますか？'))return;await sbClient.auth.signOut();showToast('ログアウトしました');}
+async function doSignOut(){
+  if(!confirm('ログアウトしますか？\n次回ログイン時にデータは復元されます。'))return;
+  await sbClient.auth.signOut();
+  currentUser=null;
+  // ログイン画面を再表示
+  const ls=document.getElementById('login-screen');
+  ls.style.display='flex';
+  document.getElementById('login-step-email').style.display='block';
+  document.getElementById('login-step-otp').style.display='none';
+  document.getElementById('login-email').value='';
+  document.getElementById('login-otp').value='';
+  showToast('ログアウトしました');
+}
 const copyCode=()=>navigator.clipboard.writeText(st.me.code).then(()=>showToast('コードをコピーしました')).catch(()=>prompt('コード:',st.me.code));
 const regenCode=()=>{if(!confirm('更新しますか？'))return;st.me.code=gc();save();document.getElementById('share-code-disp').textContent=st.me.code;};
 function openUserModal(){document.getElementById('u-name').value=st.me.name;document.getElementById('u-part').value=st.me.part||'';_uC=st.me.color;renderCP('u-colors',_uC,'_uC');document.getElementById('share-code-disp').textContent=st.me.code;openOv('ov-user');}
@@ -1232,12 +1270,23 @@ async function verifyOTP(){
   onLoginSuccess(data.user);
 }
 
-function onLoginSuccess(user){
+async function onLoginSuccess(user){
   currentUser = user;
-  if(currentUser){
-    const uid = currentUser.id.slice(0,8).toUpperCase();
-    if(st.me.code !== uid){st.me.code=uid;save();}
-  }
+  if(!currentUser) return;
+
+  // Supabaseからデータ復元
+  document.getElementById('login-screen').innerHTML+=
+    '<div id="load-msg" style="position:absolute;bottom:40px;width:100%;text-align:center;font-size:13px;color:#9898AA">データを読み込み中...</div>';
+  try{
+    const rows = await sbFetch('/rest/v1/user_data?user_id=eq.'+currentUser.id+'&select=data');
+    if(rows && rows.length > 0 && rows[0].data){
+      const saved = rows[0].data;
+      // ローカルと統合（ブロックは上書き、設定は保持）
+      st = Object.assign(defSt(), saved);
+      try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
+    }
+  }catch(e){console.warn('data load error',e);}
+
   document.getElementById('login-screen').style.display='none';
   initApp();
 }
