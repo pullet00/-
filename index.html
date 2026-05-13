@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>こまけず</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   color-scheme: light only;
@@ -320,6 +321,66 @@ input:focus{border-color:var(--accent);}
 </head>
 <body>
 
+<!-- ════ LOGIN SCREEN ════ -->
+<div id="login-screen" style="
+  position:fixed;inset:0;z-index:3000;
+  background:#F4F4F6;color:#0D0D10;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 24px;
+">
+  <div style="width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center;gap:0">
+    <!-- ロゴ -->
+    <div style="margin-bottom:32px">
+      <svg width="140" height="36" viewBox="0 0 140 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="lg-login" x1="0" y1="0" x2="140" y2="36" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#5B5BF6"/><stop offset="100%" stop-color="#FF6B6B"/>
+        </linearGradient></defs>
+        <text x="0" y="28" font-family="'Syne','Inter',sans-serif" font-size="28" font-weight="800" fill="url(#lg-login)" letter-spacing="-1">こまけず</text>
+      </svg>
+    </div>
+
+    <div style="font-size:15px;color:#5C5C6E;text-align:center;margin-bottom:32px;line-height:1.6">
+      みんなの空きコマを合わせて<br>練習できる時間を見つけよう
+    </div>
+
+    <!-- メールOTP -->
+    <div id="login-step-email" style="width:100%">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9898AA;margin-bottom:8px">メールアドレス</div>
+      <input type="email" id="login-email" placeholder="your@email.com"
+        style="width:100%;padding:14px 16px;border:1.5px solid #E4E4E8;border-radius:14px;font-size:16px;font-family:'Inter','Noto Sans JP',sans-serif;background:#FFF;color:#0D0D10;outline:none;margin-bottom:12px"
+        onfocus="this.style.borderColor='#5B5BF6'" onblur="this.style.borderColor='#E4E4E8'"
+        onkeydown="if(event.key==='Enter')sendOTP()">
+      <button onclick="sendOTP()" id="login-send-btn"
+        style="width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#5B5BF6,#7B5BF6);color:#fff;font-size:15px;font-weight:700;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(91,91,246,.35)">
+        認証コードを送る
+      </button>
+      <div style="font-size:11px;color:#9898AA;text-align:center;margin-top:12px">パスワード不要・メールで届く6桁のコードでログイン</div>
+    </div>
+
+    <!-- OTPコード入力 -->
+    <div id="login-step-otp" style="width:100%;display:none">
+      <div style="font-size:13px;color:#5C5C6E;text-align:center;margin-bottom:16px">
+        <span id="otp-email-disp" style="font-weight:600;color:#0D0D10"></span><br>に送ったコードを入力
+      </div>
+      <input type="text" id="login-otp" placeholder="123456" maxlength="6"
+        inputmode="numeric" pattern="[0-9]*"
+        style="width:100%;padding:16px;border:1.5px solid #E4E4E8;border-radius:14px;font-size:24px;font-weight:700;letter-spacing:.2em;text-align:center;font-family:'Inter',sans-serif;background:#FFF;color:#0D0D10;outline:none;margin-bottom:12px"
+        onfocus="this.style.borderColor='#5B5BF6'" onblur="this.style.borderColor='#E4E4E8'"
+        onkeydown="if(event.key==='Enter')verifyOTP()">
+      <button onclick="verifyOTP()" id="login-verify-btn"
+        style="width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#5B5BF6,#7B5BF6);color:#fff;font-size:15px;font-weight:700;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(91,91,246,.35)">
+        ログイン
+      </button>
+      <button onclick="document.getElementById('login-step-otp').style.display='none';document.getElementById('login-step-email').style.display='block'"
+        style="width:100%;padding:11px;border-radius:14px;border:none;background:none;color:#9898AA;font-size:13px;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;margin-top:8px">
+        メールアドレスを変更
+      </button>
+    </div>
+
+    <div id="login-error" style="color:#F43F5E;font-size:12px;text-align:center;margin-top:10px;display:none"></div>
+  </div>
+</div>
+
 <!-- ════ ONBOARDING ════ -->
 <div class="ob" id="ob">
   <div class="ob-safe"></div>
@@ -463,7 +524,7 @@ input:focus{border-color:var(--accent);}
       <div><label class="form-label">パート</label><input type="text" id="u-part" style="width:100%"></div>
       <div><label class="form-label">カラー</label><div id="u-colors" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"></div></div>
     </div>
-    <div class="modal-foot"><button class="btn btn-p btn-block" onclick="saveUser()" style="margin-bottom:4px">保存</button></div>
+    <div class="modal-foot"><button class="btn btn-p btn-block" onclick="saveUser()" style="margin-bottom:4px">保存</button><button class="btn btn-g btn-block" onclick="doSignOut()" style="color:#F43F5E;margin-bottom:4px">ログアウト</button></div>
     <div style="height:12px"></div>
   </div>
 </div>
@@ -885,9 +946,14 @@ function renderFind(){
     h+=`<div class="sec-lbl">△ ${st.minM}人以上</div>`;
     nearS.slice(0,8).forEach(s=>{const p=Math.round(s.count/s.total*100);h+=`<div class="find-row"><div class="fr-slot">${s.slot.name}</div><div class="fr-info">${s.dn}曜 ${s.slot.start}–${s.slot.end}</div><div class="fr-bar-w"><div class="fr-bar" style="width:${p}%;background:#E8C86A"></div></div><div class="fr-cnt" style="color:#7A5010">${s.count}/${s.total}</div></div>`;});
   }
-  if(!fullS.length&&!nearS.length)h+=`<p style="color:var(--text2);font-size:13px;margin-top:8px">${st.minM}人以上が参加できるコマが見つかりませんでした。</p>`;
-  cards+=`<div style="height:20px"></div>`;
-  if(mcEl)mcEl.innerHTML=cards;
+  if(!fullS.length&&!nearS.length){
+    h+=`<div style="text-align:center;padding:32px 16px;color:var(--text3)">
+      <div style="font-size:32px;margin-bottom:10px">🎵</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text2);margin-bottom:6px">空きが重なるコマが見つかりませんでした</div>
+      <div style="font-size:12px">メンバーのスケジュールを入力するか、最低参加人数を設定で変更してください</div>
+    </div>`;
+  }
+  h+=`<div style="height:20px"></div>`;
   el.innerHTML=h;
 }
 
@@ -1060,6 +1126,7 @@ const confirmReset=()=>{if(!confirm('全データをリセットしますか？'
 const openOv=id=>document.getElementById(id).classList.add('open');
 const closeOv=id=>document.getElementById(id).classList.remove('open');
 document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+async function doSignOut(){if(!confirm('ログアウトしますか？'))return;await sbClient.auth.signOut();showToast('ログアウトしました');}
 const copyCode=()=>navigator.clipboard.writeText(st.me.code).then(()=>showToast('コードをコピーしました')).catch(()=>prompt('コード:',st.me.code));
 const regenCode=()=>{if(!confirm('更新しますか？'))return;st.me.code=gc();save();document.getElementById('share-code-disp').textContent=st.me.code;};
 function openUserModal(){document.getElementById('u-name').value=st.me.name;document.getElementById('u-part').value=st.me.part||'';_uC=st.me.color;renderCP('u-colors',_uC,'_uC');document.getElementById('share-code-disp').textContent=st.me.code;openOv('ov-user');}
@@ -1102,7 +1169,85 @@ function finishOb(){
 
 
 // ══ SUPABASE ══
+// ══ SUPABASE CLIENT ══
 const SB_URL='https://jhtvuamqfopsjlagtjip.supabase.co';
+const sbClient = supabase.createClient(SB_URL, SB_KEY);
+
+// ── AUTH ──
+let currentUser = null;
+
+async function sendOTP(){
+  const email = document.getElementById('login-email').value.trim();
+  if(!email){showLoginError('メールアドレスを入力してください');return;}
+  const btn = document.getElementById('login-send-btn');
+  btn.textContent='送信中...';btn.disabled=true;
+  const {error} = await sbClient.auth.signInWithOtp({email, options:{shouldCreateUser:true}});
+  btn.textContent='認証コードを送る';btn.disabled=false;
+  if(error){showLoginError(error.message);return;}
+  document.getElementById('otp-email-disp').textContent=email;
+  document.getElementById('login-step-email').style.display='none';
+  document.getElementById('login-step-otp').style.display='block';
+  document.getElementById('login-otp').focus();
+}
+
+async function verifyOTP(){
+  const email = document.getElementById('login-email').value.trim();
+  const token = document.getElementById('login-otp').value.trim();
+  if(token.length!==6){showLoginError('6桁のコードを入力してください');return;}
+  const btn = document.getElementById('login-verify-btn');
+  btn.textContent='確認中...';btn.disabled=true;
+  const {data,error} = await sbClient.auth.verifyOtp({email,token,type:'email'});
+  btn.textContent='ログイン';btn.disabled=false;
+  if(error){showLoginError('コードが正しくありません');return;}
+  // ログイン成功
+  currentUser = data.user;
+  // userのIDをst.me.codeとして使う（端末が変わっても同じIDになる）
+  if(currentUser){
+    const uid = currentUser.id.slice(0,8).toUpperCase();
+    if(!st.me.code || st.me.code !== uid) {
+      st.me.code = uid;
+      save();
+    }
+  }
+  document.getElementById('login-screen').style.display='none';
+  initApp();
+}
+
+function showLoginError(msg){
+  const el=document.getElementById('login-error');
+  el.textContent=msg;el.style.display='block';
+  setTimeout(()=>el.style.display='none',3000);
+}
+
+// セッション復元
+async function checkSession(){
+  const {data:{session}} = await sbClient.auth.getSession();
+  if(session){
+    currentUser = session.user;
+    if(currentUser){
+      const uid = currentUser.id.slice(0,8).toUpperCase();
+      if(st.me.code !== uid){st.me.code=uid;save();}
+    }
+    document.getElementById('login-screen').style.display='none';
+    initApp();
+  }
+  // セッションなし → ログイン画面を表示したまま
+}
+
+// セッション変化を監視（他タブでログアウトなど）
+sbClient.auth.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_OUT'){
+    currentUser=null;
+    document.getElementById('login-screen').style.display='flex';
+  }
+});
+
+function initApp(){
+  updTopbar();render();expMe();
+  if(!st.boarded){document.getElementById('ob').classList.remove('gone');obProg(0);}
+  else{document.getElementById('ob').classList.add('gone');}
+  if(grpId){startSync();}
+}
 const SB_KEY='sb_publishable_7dyCq4sFQqcKIq1XC6NnJw_NJNCF00e';
 
 async function sbFetch(path, method='GET', body=null){
@@ -1231,18 +1376,14 @@ function stopSync(){clearInterval(_syncTimer);_syncTimer=null;}
 
 function copyGrpCode(){
   if(!grpId)return;
-  const msg=`こまけずで練習スケジュール調整しよう！\nグループコード: ${grpId}\nアプリを開いて「グループで共有する」→「コードで参加」に入力してね`;
-  navigator.clipboard.writeText(msg)
-    .then(()=>showToast('コードをコピーしました！LINEに貼り付けてください'))
-    .catch(()=>prompt('コードをコピーしてLINEに送ってください:',grpId));
+  navigator.clipboard.writeText(grpId)
+    .then(()=>showToast('コードをコピーしました'))
+    .catch(()=>prompt('コードをコピー:',grpId));
 }
 
 // ══ INIT ══
-updTopbar();render();expMe();
-if(!st.boarded){document.getElementById('ob').classList.remove('gone');obProg(0);}
-else{document.getElementById('ob').classList.add('gone');}
-// グループ参加中なら同期開始
-if(grpId){startSync();}
+// セッション確認してからアプリ起動
+checkSession();
 </script>
 
 <!-- 予定入力バー（fixed: グリッドをずらさない） -->
