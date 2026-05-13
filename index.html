@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>こまけず</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
 <style>
 :root{
   color-scheme: light only;
@@ -352,15 +352,18 @@ input:focus{border-color:var(--accent);}
         onkeydown="if(event.key==='Enter')sendOTP()">
       <button onclick="sendOTP()" id="login-send-btn"
         style="width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#5B5BF6,#7B5BF6);color:#fff;font-size:15px;font-weight:700;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(91,91,246,.35)">
-        認証コードを送る
+        ログインコードをメールで受け取る
       </button>
-      <div style="font-size:11px;color:#9898AA;text-align:center;margin-top:12px">パスワード不要・メールで届く6桁のコードでログイン</div>
+      <div style="font-size:11px;color:#9898AA;text-align:center;margin-top:12px">パスワード不要・メールに届く6桁のコードでログインできます</div>
     </div>
 
     <!-- OTPコード入力 -->
     <div id="login-step-otp" style="width:100%;display:none">
-      <div style="font-size:13px;color:#5C5C6E;text-align:center;margin-bottom:16px">
-        <span id="otp-email-disp" style="font-weight:600;color:#0D0D10"></span><br>に送ったコードを入力
+      <div style="font-size:13px;color:#5C5C6E;text-align:center;margin-bottom:16px;line-height:1.7">
+        <span id="otp-email-disp" style="font-weight:600;color:#0D0D10"></span><br>
+        にメールを送りました。<br>
+        届いたメール内の<strong style="color:#0D0D10">6桁の数字</strong>を入力してください。<br>
+        <span style="font-size:11px;color:#9898AA">迷惑メールフォルダも確認してください</span>
       </div>
       <input type="text" id="login-otp" placeholder="123456" maxlength="6"
         inputmode="numeric" pattern="[0-9]*"
@@ -631,6 +634,12 @@ input:focus{border-color:var(--accent);}
 </nav>
 
 <script>
+// ══ SUPABASE INIT（最初に定義）══
+const _SB_URL='https://jhtvuamqfopsjlagtjip.supabase.co';
+const _SB_KEY='sb_publishable_7dyCq4sFQqcKIq1XC6NnJw_NJNCF00e';
+const sbClient = supabase.createClient(_SB_URL, _SB_KEY);
+let currentUser = null;
+
 // ══ DATA ══
 const AC=[{id:'green',bg:'#E4F0EB',fg:'#2B6351'},{id:'blue',bg:'#EEF1FA',fg:'#2C4BA0'},{id:'amber',bg:'#FEF3DC',fg:'#7A5010'},{id:'rose',bg:'#FCEAE8',fg:'#C0392B'},{id:'purple',bg:'#F2EEFB',fg:'#6B38B0'},{id:'teal',bg:'#E2F4F3',fg:'#1E7070'},{id:'slate',bg:'#EFECE6',fg:'#555048'}];
 const CP=[{bg:'#EEF1FA',fg:'#2C4BA0'},{bg:'#E4F0EB',fg:'#2B6351'},{bg:'#FEF3DC',fg:'#7A5010'},{bg:'#FCEAE8',fg:'#C0392B'},{bg:'#F2EEFB',fg:'#6B38B0'},{bg:'#E2F4F3',fg:'#1E7070'},{bg:'#FEF0E0',fg:'#8B4513'},{bg:'#FDE8F5',fg:'#9B2060'},{bg:'#E8F4FE',fg:'#0A5FA3'},{bg:'#F0F8E8',fg:'#3A6B0A'},{bg:'#FFF3E0',fg:'#E65100'},{bg:'#E8EAF6',fg:'#3949AB'},{bg:'#F3E5F5',fg:'#7B1FA2'},{bg:'#E0F2F1',fg:'#00695C'},{bg:'#EFEBE9',fg:'#4E342E'},{bg:'#F1F8E9',fg:'#558B2F'}];
@@ -1168,22 +1177,40 @@ function finishOb(){
 }
 
 
-// ══ SUPABASE ══
-// ══ SUPABASE CLIENT ══
-const SB_URL='https://jhtvuamqfopsjlagtjip.supabase.co';
-const sbClient = supabase.createClient(SB_URL, SB_KEY);
-
 // ── AUTH ──
-let currentUser = null;
 
 async function sendOTP(){
   const email = document.getElementById('login-email').value.trim();
   if(!email){showLoginError('メールアドレスを入力してください');return;}
+  if(!email.includes('@')){showLoginError('正しいメールアドレスを入力してください');return;}
   const btn = document.getElementById('login-send-btn');
   btn.textContent='送信中...';btn.disabled=true;
-  const {error} = await sbClient.auth.signInWithOtp({email, options:{shouldCreateUser:true}});
+
+  // タイムアウト10秒
+  const timeout = new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),10000));
+  try{
+    const result = await Promise.race([
+      sbClient.auth.signInWithOtp({
+        email,
+        options:{
+          shouldCreateUser:true,
+          emailRedirectTo:'https://pullet00.github.io/-/'
+        }
+      }),
+      timeout
+    ]);
+    if(result.error) throw result.error;
+  }catch(e){
+    btn.textContent='認証コードを送る';btn.disabled=false;
+    if(e.message==='timeout'){
+      showLoginError('通信がタイムアウトしました。再度お試しください');
+    } else {
+      showLoginError('送信失敗: '+e.message);
+    }
+    return;
+  }
+
   btn.textContent='認証コードを送る';btn.disabled=false;
-  if(error){showLoginError(error.message);return;}
   document.getElementById('otp-email-disp').textContent=email;
   document.getElementById('login-step-email').style.display='none';
   document.getElementById('login-step-otp').style.display='block';
@@ -1192,22 +1219,24 @@ async function sendOTP(){
 
 async function verifyOTP(){
   const email = document.getElementById('login-email').value.trim();
-  const token = document.getElementById('login-otp').value.trim();
+  const token = document.getElementById('login-otp').value.trim().replace(/\s/g,'');
   if(token.length!==6){showLoginError('6桁のコードを入力してください');return;}
   const btn = document.getElementById('login-verify-btn');
   btn.textContent='確認中...';btn.disabled=true;
   const {data,error} = await sbClient.auth.verifyOtp({email,token,type:'email'});
   btn.textContent='ログイン';btn.disabled=false;
-  if(error){showLoginError('コードが正しくありません');return;}
-  // ログイン成功
-  currentUser = data.user;
-  // userのIDをst.me.codeとして使う（端末が変わっても同じIDになる）
+  if(error){
+    showLoginError('コードが正しくないか期限切れです');
+    return;
+  }
+  onLoginSuccess(data.user);
+}
+
+function onLoginSuccess(user){
+  currentUser = user;
   if(currentUser){
     const uid = currentUser.id.slice(0,8).toUpperCase();
-    if(!st.me.code || st.me.code !== uid) {
-      st.me.code = uid;
-      save();
-    }
+    if(st.me.code !== uid){st.me.code=uid;save();}
   }
   document.getElementById('login-screen').style.display='none';
   initApp();
@@ -1221,15 +1250,14 @@ function showLoginError(msg){
 
 // セッション復元
 async function checkSession(){
+  // Magic Linkでリダイレクトされた場合、URLのhashからセッションを取得
+  if(window.location.hash.includes('access_token')){
+    const {data:{session},error} = await sbClient.auth.getSessionFromUrl();
+    if(session){onLoginSuccess(session.user);return;}
+  }
   const {data:{session}} = await sbClient.auth.getSession();
-  if(session){
-    currentUser = session.user;
-    if(currentUser){
-      const uid = currentUser.id.slice(0,8).toUpperCase();
-      if(st.me.code !== uid){st.me.code=uid;save();}
-    }
-    document.getElementById('login-screen').style.display='none';
-    initApp();
+  if(session && session.user){
+    onLoginSuccess(session.user);
   }
   // セッションなし → ログイン画面を表示したまま
 }
@@ -1248,20 +1276,19 @@ function initApp(){
   else{document.getElementById('ob').classList.add('gone');}
   if(grpId){startSync();}
 }
-const SB_KEY='sb_publishable_7dyCq4sFQqcKIq1XC6NnJw_NJNCF00e';
 
 async function sbFetch(path, method='GET', body=null){
   const opts={
     method,
     headers:{
-      'apikey':SB_KEY,
-      'Authorization':'Bearer '+SB_KEY,
+      'apikey':_SB_KEY,
+      'Authorization':'Bearer '+_SB_KEY,
       'Content-Type':'application/json',
       'Prefer': method==='POST'?'return=representation':'',
     }
   };
   if(body)opts.body=JSON.stringify(body);
-  const res=await fetch(SB_URL+path,opts);
+  const res=await fetch(_SB_URL+path,opts);
   if(!res.ok){const t=await res.text();throw new Error(t);}
   const txt=await res.text();
   return txt?JSON.parse(txt):null;
