@@ -1172,8 +1172,13 @@ function renderBand(){
   // ── 新規グループ作成 ──
   html+=`<div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
     <div style="font-size:14px;font-weight:600;margin-bottom:10px">＋ 新しいグループを作る</div>
-    <input type="text" id="grp-new-name" placeholder="グループ名（例：アカペラA班）" style="width:100%;margin-bottom:8px;padding:14px;font-size:16px;">
-    <button class="btn btn-p btn-block" onclick="createGroup()" style="font-size:15px;padding:15px;border-radius:14px;">作成してコードを発行</button>
+    <input type="text" id="grp-new-name" placeholder="グループ名（例：アカペラA班）"
+      style="width:100%;margin-bottom:10px;padding:14px;font-size:16px;border:1.5px solid var(--border);border-radius:12px;box-sizing:border-box;background:#fff;color:#0D0D10;outline:none;"
+      oninput="const btn=document.getElementById('grp-create-btn');if(this.value.trim()){btn.style.background='var(--accent)';btn.style.color='#fff';btn.style.opacity='1';}else{btn.style.background='#E4E4E8';btn.style.color='#9898AA';btn.style.opacity='1';}">
+    <button id="grp-create-btn" onclick="createGroup()"
+      style="width:100%;font-size:15px;padding:15px;border-radius:14px;border:none;background:#E4E4E8;color:#9898AA;font-family:'Inter','Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;transition:all .2s;">
+      作成してコードを発行
+    </button>
   </div>
 
   <div style="display:flex;align-items:center;gap:10px;margin:14px 0">
@@ -1184,8 +1189,14 @@ function renderBand(){
 
   <div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px">
     <div style="font-size:14px;font-weight:600;margin-bottom:10px">🔑 コードで参加</div>
-    <input type="text" id="grp-join-code" placeholder="例：ABC123" style="width:100%;font-size:18px;letter-spacing:.1em;text-align:center;text-transform:uppercase;margin-bottom:8px;padding:14px;">
-    <button class="btn btn-p btn-block" onclick="joinGroup()" style="font-size:15px;padding:15px;border-radius:14px;">参加する</button>
+    <input type="text" id="grp-join-code" placeholder="例：ABC123"
+      style="width:100%;font-size:20px;letter-spacing:.15em;text-align:center;text-transform:uppercase;margin-bottom:10px;padding:14px;border:1.5px solid var(--border);border-radius:12px;box-sizing:border-box;background:#fff;color:#0D0D10;outline:none;"
+      oninput="this.value=this.value.toUpperCase();const btn=document.getElementById('grp-join-btn');const ok=this.value.trim().length===6;btn.style.background=ok?'var(--accent)':'#E4E4E8';btn.style.color=ok?'#fff':'#9898AA';">
+    <button id="grp-join-btn" onclick="joinGroup()"
+      style="width:100%;font-size:15px;padding:15px;border-radius:14px;border:none;background:#E4E4E8;color:#9898AA;font-family:'Inter','Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;transition:all .2s;">
+      参加する
+    </button>
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px">コードは6文字です</div>
   </div>
   <div style="height:24px"></div>`;
 
