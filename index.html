@@ -175,8 +175,8 @@ z-index:3;box-shadow:0 2px 6px rgba(91,91,246,.4);
 
 .notice-box{display:flex;gap:8px;padding:11px 14px;background:var(–accent-l);border:1px solid #90C8AD;border-radius:10px;font-size:12px;color:var(–accent);margin-bottom:12px;line-height:1.4;}
 
-.day-pills{display:flex;gap:7px;flex-wrap:wrap;}
-.dpill{width:38px;height:38px;border-radius:50%;border:1.5px solid var(–border);background:var(–surf);font-size:12px;font-weight:500;color:var(–text2);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.day-pills{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.dpill{height:42px;border-radius:10px;border:1.5px solid var(–border);background:#F4F4F6;font-size:13px;font-weight:600;color:var(–text2);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-user-select:none;user-select:none;}
 .dpill.on{background:var(–accent);color:#fff;border-color:var(–accent);}
 
 .slot-edit-row{display:flex;align-items:center;gap:6px;padding:8px 10px;background:#F0EDE7;border:1px solid #E2DDD6;border-radius:10px;}
@@ -308,7 +308,7 @@ transition:filter .1s,transform .05s;
 .ob-main:active{background:#1e4f3e;}
 .ob-sub{width:100%;padding:11px;border-radius:14px;border:1.5px solid var(–border);background:none;color:var(–text2);font-size:13px;font-family:‘Inter’,‘Noto Sans JP’,sans-serif;cursor:pointer;}
 .ob-tpl-grid{display:grid;gap:4px;}
-.ob-tpl-cell{height:40px;border-radius:10px;border:1.5px solid var(–border);background:#FFFFFF;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(–text3);-webkit-user-select:none;user-select:none;transition:all .1s;}
+.ob-tpl-cell{height:40px;border-radius:8px;border:1.5px solid #D0D0D8;background:#EBEBEF;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#9898AA;-webkit-user-select:none;user-select:none;transition:all .1s;}
 .ob-tpl-cell.on{background:var(–accent-l);border-color:var(–accent);color:var(–accent);}
 .ob-dlbl{font-size:11px;font-weight:600;color:var(–text2);display:flex;align-items:center;justify-content:center;}
 .ob-slbl{font-size:9px;color:var(–text3);display:flex;align-items:center;justify-content:flex-end;padding-right:4px;}
@@ -512,11 +512,14 @@ transition:filter .1s,transform .05s;
   <div class="modal">
     <div class="modal-head"><h3>自分の情報</h3><button class="btn btn-g btn-sm" onclick="closeOv('ov-user')">✕</button></div>
     <div class="modal-body">
-      <div><label class="form-label">名前</label><input type="text" id="u-name" style="width:100%"></div>
-      <div><label class="form-label">パート</label><input type="text" id="u-part" style="width:100%"></div>
+      <div><label class="form-label">名前</label><input type="text" id="u-name" style="width:100%;padding:14px 14px;font-size:16px;" oninput="markUserChanged()"></div>
+      <div><label class="form-label">パート</label><input type="text" id="u-part" style="width:100%;padding:14px 14px;font-size:16px;" oninput="markUserChanged()"></div>
       <div><label class="form-label">カラー</label><div id="u-colors" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"></div></div>
     </div>
-    <div class="modal-foot"><button class="btn btn-p btn-block" onclick="saveUser()" style="margin-bottom:4px">保存</button><button class="btn btn-g btn-block" onclick="doSignOut()" style="color:#F43F5E;margin-bottom:4px">ログアウト</button></div>
+    <div class="modal-foot">
+      <button id="u-save-btn" class="btn btn-block" onclick="saveUser()" style="margin-bottom:4px;background:#E4E4E8;color:#9898AA;font-size:15px;padding:15px;border-radius:14px;border:none;transition:all .2s;">保存</button>
+      <button class="btn btn-g btn-block" onclick="doSignOut()" style="color:#F43F5E;margin-bottom:4px">ログアウト</button>
+    </div>
     <div style="height:12px"></div>
   </div>
 </div>
@@ -1169,8 +1172,8 @@ function renderBand(){
   // ── 新規グループ作成 ──
   html+=`<div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
     <div style="font-size:14px;font-weight:600;margin-bottom:10px">＋ 新しいグループを作る</div>
-    <input type="text" id="grp-new-name" placeholder="グループ名（例：アカペラA班）" style="width:100%;margin-bottom:8px">
-    <button class="btn btn-p btn-block" onclick="createGroup()">作成してコードを発行</button>
+    <input type="text" id="grp-new-name" placeholder="グループ名（例：アカペラA班）" style="width:100%;margin-bottom:8px;padding:14px;font-size:16px;">
+    <button class="btn btn-p btn-block" onclick="createGroup()" style="font-size:15px;padding:15px;border-radius:14px;">作成してコードを発行</button>
   </div>
 
   <div style="display:flex;align-items:center;gap:10px;margin:14px 0">
@@ -1181,8 +1184,8 @@ function renderBand(){
 
   <div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px">
     <div style="font-size:14px;font-weight:600;margin-bottom:10px">🔑 コードで参加</div>
-    <input type="text" id="grp-join-code" placeholder="例：ABC123" style="width:100%;font-size:18px;letter-spacing:.1em;text-align:center;text-transform:uppercase;margin-bottom:8px">
-    <button class="btn btn-p btn-block" onclick="joinGroup()">参加する</button>
+    <input type="text" id="grp-join-code" placeholder="例：ABC123" style="width:100%;font-size:18px;letter-spacing:.1em;text-align:center;text-transform:uppercase;margin-bottom:8px;padding:14px;">
+    <button class="btn btn-p btn-block" onclick="joinGroup()" style="font-size:15px;padding:15px;border-radius:14px;">参加する</button>
   </div>
   <div style="height:24px"></div>`;
 
@@ -1305,10 +1308,27 @@ async function doSignOut(){
 }
 const copyCode=()=>navigator.clipboard.writeText(st.me.code).then(()=>showToast('コードをコピーしました')).catch(()=>prompt('コード:',st.me.code));
 const regenCode=()=>{if(!confirm('更新しますか？'))return;st.me.code=gc();save();document.getElementById('share-code-disp').textContent=st.me.code;};
-function openUserModal(){document.getElementById('u-name').value=st.me.name;document.getElementById('u-part').value=st.me.part||'';_uC=st.me.color;renderCP('u-colors',_uC,'_uC');document.getElementById('share-code-disp').textContent=st.me.code;openOv('ov-user');}
+function openUserModal(){
+  document.getElementById('u-name').value=st.me.name;
+  document.getElementById('u-part').value=st.me.part||'';
+  _uC=st.me.color;
+  renderCP('u-colors',_uC,'_uC');
+  document.getElementById('share-code-disp').textContent=st.me.code;
+  // 保存ボタンをグレーアウト（未変更状態）
+  const btn=document.getElementById('u-save-btn');
+  if(btn){btn.style.background='#E4E4E8';btn.style.color='#9898AA';}
+  openOv('ov-user');
+}
+function markUserChanged(){
+  const btn=document.getElementById('u-save-btn');
+  if(btn){btn.style.background='var(--accent)';btn.style.color='#fff';}
+}
 const saveUser=()=>{st.me.name=document.getElementById('u-name').value.trim()||'自分';st.me.part=document.getElementById('u-part').value.trim();st.me.color=_uC;save();closeOv('ov-user');updTopbar();};
 const updTopbar=()=>{const c=AC.find(x=>x.id===st.me.color)||AC[0];const av=document.getElementById('tb-av');av.style.background=c.bg;av.style.color=c.fg;av.textContent=st.me.name.slice(0,2);};
-const renderCP=(cid,sel,vn)=>{const el=document.getElementById(cid);if(!el)return;el.innerHTML=AC.map(c=>`<div onclick="window['${vn}']='${c.id}';renderCP('${cid}','${c.id}','${vn}')" style="width:26px;height:26px;border-radius:50%;background:${c.fg};cursor:pointer;border:3px solid ${sel===c.id?'#1C1A17':'transparent'};box-sizing:border-box"></div>`).join('');};
+const renderCP=(cid,sel,vn)=>{
+  const el=document.getElementById(cid);if(!el)return;
+  el.innerHTML=AC.map(co=>`<div onclick="window['${vn}']='${co.id}';renderCP('${cid}','${co.id}','${vn}');markUserChanged();" style="width:32px;height:32px;border-radius:50%;background:${co.fg};cursor:pointer;border:3px solid ${sel===co.id?'#1C1A17':'transparent'};box-sizing:border-box"></div>`).join('');
+};
 
 // ══ TOAST ══
 let _tt=null;
