@@ -1446,22 +1446,16 @@ function showLoginError(msg){
 
 // セッション復元
 async function checkSession(){
+  // エラーが起きてもボタンを絶対に壊さない
   try{
-  // Magic Linkでリダイレクトされた場合、URLのhashからセッションを取得
-  if(window.location.hash&&window.location.hash.includes('access_token')){
-    try{
-      const {data:{session}} = await sbClient.auth.getSessionFromUrl();
-      if(session&&session.user){onLoginSuccess(session.user);return;}
-    }catch(e2){console.warn('hash session error',e2);}
-  }
-  const {data:{session}} = await sbClient.auth.getSession();
-  if(session && session.user){
-    onLoginSuccess(session.user);
-  }
-  // セッションなし → ログイン画面をそのまま表示
+    const {data, error} = await sbClient.auth.getSession();
+    if(!error && data && data.session && data.session.user){
+      onLoginSuccess(data.session.user);
+    }
+    // セッションなし → ログイン画面そのまま（何もしない）
   }catch(e){
-    console.warn('checkSession error',e);
-    // エラーが起きてもログイン画面は表示したまま（操作可能）
+    console.warn('session check failed, showing login:', e.message);
+    // エラーでもログイン画面は操作可能のまま
   }
 }
 
@@ -1755,12 +1749,11 @@ async function execCancelPractice(){
 }
 // ══ INIT ══
 window.addEventListener('load', function(){
-  if(typeof supabase==='undefined'){
-    document.getElementById('login-error').textContent='通信エラー。ページを再読み込みしてください。';
-    document.getElementById('login-error').style.display='block';
-    return;
+  // supabase未ロードでもボタンは動く状態を保つ
+  if(typeof supabase!=='undefined'){
+    // 非同期でセッション確認（エラーが起きても画面は動く）
+    checkSession().catch(e=>console.warn('init error:',e));
   }
-  checkSession();
 });
 </script>
 
