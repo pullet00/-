@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -33,23 +32,23 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:#F4F4F6;color:#0D0
 
 /* ── TOPBAR ── */
 .topbar{
-height:calc(var(–top-h) + var(–safe-t));
-padding-top:var(–safe-t);
-background:#FFFFFF;border-bottom:1px solid var(–border);
-display:flex;align-items:center;padding-inline:14px;gap:8px;
-flex-shrink:0;z-index:100;
+  height:calc(var(--top-h) + var(--safe-t));
+  padding-top:var(--safe-t);
+  background:#FFFFFF;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding-inline:14px;gap:8px;
+  flex-shrink:0;z-index:100;
 }
 .logo{flex-shrink:0;display:flex;align-items:center;line-height:1;}
 .topbar-nav{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;}
-.nav-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(–border);background:var(–surf);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(–text2);cursor:pointer;flex-shrink:0;transition:background .1s;}
-.nav-btn:active{background:var(–surf2);}
-.nav-lbl{font-size:13px;font-weight:500;min-width:108px;text-align:center;color:var(–text);}
-.today-btn{padding:4px 10px;border-radius:20px;border:1px solid var(–border);background:var(–surf);font-size:11px;color:var(–text2);font-family:‘Outfit’,sans-serif;cursor:pointer;}
-.today-btn:active{background:var(–surf2);}
+.nav-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:var(--surf);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text2);cursor:pointer;flex-shrink:0;transition:background .1s;}
+.nav-btn:active{background:var(--surf2);}
+.nav-lbl{font-size:13px;font-weight:500;min-width:108px;text-align:center;color:var(--text);}
+.today-btn{padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surf);font-size:11px;color:var(--text2);font-family:'Outfit',sans-serif;cursor:pointer;}
+.today-btn:active{background:var(--surf2);}
 .topbar-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
-.vm-seg{display:flex;background:var(–surf2);border-radius:10px;padding:3px;}
-.vm-btn{padding:5px 14px;border-radius:8px;border:none;background:none;font-size:11px;font-weight:600;color:var(–text2);font-family:‘Inter’,‘Noto Sans JP’,sans-serif;cursor:pointer;letter-spacing:.01em;}
-.vm-btn.on{background:var(–surf);color:var(–accent);box-shadow:var(–shadow-sm);font-weight:700;}
+.vm-seg{display:flex;background:var(--surf2);border-radius:10px;padding:3px;}
+.vm-btn{padding:5px 14px;border-radius:8px;border:none;background:none;font-size:11px;font-weight:600;color:var(--text2);font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;letter-spacing:.01em;}
+.vm-btn.on{background:var(--surf);color:var(--accent);box-shadow:var(--shadow-sm);font-weight:700;}
 .av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;cursor:pointer;flex-shrink:0;}
 
 /* ── APP BODY ── */
@@ -60,53 +59,53 @@ flex-shrink:0;z-index:100;
 
 /* ── 選択ステータスバー ── */
 .sel-bar{
-display:flex;align-items:center;gap:8px;
-padding:8px 14px;background:#FFFFFF;border-bottom:1px solid var(–border);
-flex-shrink:0;min-height:40px;
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;background:#FFFFFF;border-bottom:1px solid var(--border);
+  flex-shrink:0;min-height:40px;
 }
-.sel-hint{font-size:11px;color:var(–text3);flex:1;line-height:1.3;font-family:“Inter”,“Noto Sans JP”,sans-serif;}
-.sel-badge{background:var(–accent);color:#fff;font-size:10px;font-weight:600;border-radius:10px;padding:2px 7px;white-space:nowrap;}
-.sel-act{padding:6px 12px;border-radius:9px;border:none;font-size:12px;font-weight:500;font-family:‘Outfit’,sans-serif;cursor:pointer;white-space:nowrap;}
-.sel-act-copy{background:var(–accent);color:#fff;border-radius:20px;}
-.sel-act-clear{background:var(–surf2);color:var(–text2);border-radius:20px;}
-.sel-act-enter{background:var(–accent);color:#fff;font-weight:600;}
+.sel-hint{font-size:11px;color:var(--text3);flex:1;line-height:1.3;font-family:"Inter","Noto Sans JP",sans-serif;}
+.sel-badge{background:var(--accent);color:#fff;font-size:10px;font-weight:600;border-radius:10px;padding:2px 7px;white-space:nowrap;}
+.sel-act{padding:6px 12px;border-radius:9px;border:none;font-size:12px;font-weight:500;font-family:'Outfit',sans-serif;cursor:pointer;white-space:nowrap;}
+.sel-act-copy{background:var(--accent);color:#fff;border-radius:20px;}
+.sel-act-clear{background:var(--surf2);color:var(--text2);border-radius:20px;}
+.sel-act-enter{background:var(--accent);color:#fff;font-weight:600;}
 
 /* ── WEEK GRID ── */
-.cal-head{display:grid;background:#FFFFFF;border-bottom:1px solid var(–border);flex-shrink:0;}
-.day-head{padding:7px 2px;text-align:center;border-right:1px solid var(–border);}
+.cal-head{display:grid;background:#FFFFFF;border-bottom:1px solid var(--border);flex-shrink:0;}
+.day-head{padding:7px 2px;text-align:center;border-right:1px solid var(--border);}
 .day-head:last-child{border-right:none;}
-.dh-name{font-size:9px;font-weight:700;color:var(–text3);letter-spacing:.06em;text-transform:uppercase;}
-.dh-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(–text);margin:2px auto 0;}
-.dh-num.today{background:var(–accent);color:#fff;box-shadow:0 2px 8px rgba(91,91,246,.4);}
-.dh-name.sat{color:var(–sat);} .dh-name.sun{color:var(–sun);}
-.dh-num.sat-c{color:var(–sat);} .dh-num.sun-c{color:var(–sun);}
+.dh-name{font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;}
+.dh-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text);margin:2px auto 0;}
+.dh-num.today{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(91,91,246,.4);}
+.dh-name.sat{color:var(--sat);} .dh-name.sun{color:var(--sun);}
+.dh-num.sat-c{color:var(--sat);} .dh-num.sun-c{color:var(--sun);}
 
 .cal-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scroll-padding-bottom:60px;}
 .cal-grid{display:grid;padding-bottom:54px;}
 
 .time-col{
-border-right:1px solid #E2DDD6;border-bottom:1px solid #E2DDD6;
-background:#FFFFFF;display:flex;flex-direction:column;
-justify-content:center;align-items:flex-end;padding:0 5px;
-min-height:var(–cell-h);
+  border-right:1px solid #E2DDD6;border-bottom:1px solid #E2DDD6;
+  background:#FFFFFF;display:flex;flex-direction:column;
+  justify-content:center;align-items:flex-end;padding:0 5px;
+  min-height:var(--cell-h);
 }
-.tc-name{font-size:10px;font-weight:600;color:var(–text);}
-.tc-range{font-size:8px;color:var(–text3);white-space:nowrap;text-align:right;margin-top:1px;}
+.tc-name{font-size:10px;font-weight:600;color:var(--text);}
+.tc-range{font-size:8px;color:var(--text3);white-space:nowrap;text-align:right;margin-top:1px;}
 
 /* ── SLOT CELL ── */
 .slot-cell{
-border-right:1px solid #E2DDD6;border-bottom:1px solid #E2DDD6;
-min-height:var(–cell-h);background:#FFFFFF;
-position:relative;display:flex;align-items:stretch;
-cursor:pointer;
-/* スマホでのタップ応答を視覚的に */
-transition:background .08s;
--webkit-user-select:none;user-select:none;
+  border-right:1px solid #E2DDD6;border-bottom:1px solid #E2DDD6;
+  min-height:var(--cell-h);background:#FFFFFF;
+  position:relative;display:flex;align-items:stretch;
+  cursor:pointer;
+  /* スマホでのタップ応答を視覚的に */
+  transition:background .08s;
+  -webkit-user-select:none;user-select:none;
 }
 .slot-cell:last-child{border-right:none;}
 .slot-cell:active{filter:brightness(.93);}
 /* 選択中 */
-.slot-cell.sel{outline:2px solid var(–accent);outline-offset:-2px;z-index:2;background:var(–accent-l)!important;}
+.slot-cell.sel{outline:2px solid var(--accent);outline-offset:-2px;z-index:2;background:var(--accent-l)!important;}
 /* 土日の薄背景 */
 .slot-cell.sat-bg{background:#F0FAFA;}
 .slot-cell.sun-bg{background:#FFF0F2;}
@@ -114,70 +113,70 @@ transition:background .08s;
 .cell-bar{position:absolute;left:0;top:4px;bottom:4px;width:3px;border-radius:2px;}
 .cell-body{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:1px;padding:3px 2px;}
 .cell-cat{font-size:9px;font-weight:600;line-height:1.2;text-align:center;}
-.cell-empty{font-size:8px;color:var(–border2);}
-.cell-tpl{position:absolute;bottom:2px;right:2px;font-size:7px;color:var(–text3);}
+.cell-empty{font-size:8px;color:var(--border2);}
+.cell-tpl{position:absolute;bottom:2px;right:2px;font-size:7px;color:var(--text3);}
 /* 選択チェック */
 .cell-check{
-position:absolute;top:3px;right:3px;
-width:16px;height:16px;border-radius:50%;
-background:var(–accent);color:#fff;
-font-size:10px;font-weight:700;
-display:flex;align-items:center;justify-content:center;
-z-index:3;box-shadow:0 2px 6px rgba(91,91,246,.4);
+  position:absolute;top:3px;right:3px;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--accent);color:#fff;
+  font-size:10px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  z-index:3;box-shadow:0 2px 6px rgba(91,91,246,.4);
 }
 
 /* ── MONTH VIEW ── */
 .month-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.m-dow-row{display:grid;grid-template-columns:repeat(7,1fr);background:var(–surf);border-bottom:1px solid var(–border);flex-shrink:0;}
-.m-dow{padding:7px 0;text-align:center;font-size:10px;font-weight:600;color:var(–text3);}
+.m-dow-row{display:grid;grid-template-columns:repeat(7,1fr);background:var(--surf);border-bottom:1px solid var(--border);flex-shrink:0;}
+.m-dow{padding:7px 0;text-align:center;font-size:10px;font-weight:600;color:var(--text3);}
 .m-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .m-grid{display:grid;grid-template-columns:repeat(7,1fr);}
-.m-cell{border-right:1px solid var(–border);border-bottom:1px solid var(–border);min-height:80px;padding:4px 3px;background:var(–surf);cursor:pointer;}
-.m-cell:active{background:var(–surf2);}
-.m-cell.other{background:var(–bg);}
+.m-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-height:80px;padding:4px 3px;background:var(--surf);cursor:pointer;}
+.m-cell:active{background:var(--surf2);}
+.m-cell.other{background:var(--bg);}
 .m-cell.is-today{background:#F0FAF5;}
-.m-date{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(–text2);margin-bottom:3px;}
-.m-date.today-d{background:var(–accent);color:#fff;}
+.m-date{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:3px;}
+.m-date.today-d{background:var(--accent);color:#fff;}
 .m-pips{display:flex;flex-wrap:wrap;gap:2px;}
 .mpip{width:15px;height:15px;border-radius:3px;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 
 /* ── PANELS (find/band/settings) ── */
 .side-panel{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px;display:none;background:#F6F4EF;color:#1C1A17;}
 .side-panel.active{display:block;}
-.scr-title{font-family:‘Inter’,‘Noto Sans JP’,sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;color:var(–text);}
-.scr-sub{font-size:12px;color:var(–text2);margin-bottom:14px;}
+.scr-title{font-family:'Inter','Noto Sans JP',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;color:var(--text);}
+.scr-sub{font-size:12px;color:var(--text2);margin-bottom:14px;}
 
-.scard{background:#FFFFFF;color:#0D0D10;border:1px solid var(–border);border-radius:var(–r-lg);margin-bottom:12px;overflow:hidden;box-shadow:var(–shadow-sm);}
-.scard-head{padding:13px 16px;border-bottom:1px solid var(–border);font-weight:700;font-size:13px;letter-spacing:.01em;display:flex;align-items:center;justify-content:space-between;color:var(–text2);text-transform:uppercase;letter-spacing:.06em;font-family:‘Inter’,‘Noto Sans JP’,sans-serif;}
+.scard{background:#FFFFFF;color:#0D0D10;border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow-sm);}
+.scard-head{padding:13px 16px;border-bottom:1px solid var(--border);font-weight:700;font-size:13px;letter-spacing:.01em;display:flex;align-items:center;justify-content:space-between;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;font-family:'Inter','Noto Sans JP',sans-serif;}
 .scard-body{padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
 
 .stat-row{display:flex;gap:8px;margin-bottom:14px;}
-.stat-c{background:#FFFFFF;border:1px solid var(–border);border-radius:var(–r-lg);padding:12px 14px;flex:1;box-shadow:var(–shadow-sm);}
-.stat-n{font-family:‘Inter’,sans-serif;font-size:26px;font-weight:800;color:var(–accent);line-height:1;}
-.stat-l{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(–text3);margin-top:4px;font-weight:600;font-family:‘Inter’,‘Noto Sans JP’,sans-serif;}
+.stat-c{background:#FFFFFF;border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 14px;flex:1;box-shadow:var(--shadow-sm);}
+.stat-n{font-family:'Inter',sans-serif;font-size:26px;font-weight:800;color:var(--accent);line-height:1;}
+.stat-l{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-top:4px;font-weight:600;font-family:'Inter','Noto Sans JP',sans-serif;}
 
-.find-row{background:#FFFFFF;border:1px solid var(–border);border-radius:var(–r-lg);padding:13px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;box-shadow:var(–shadow-sm);}
+.find-row{background:#FFFFFF;border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;box-shadow:var(--shadow-sm);}
 .fr-slot{font-size:12px;font-weight:600;min-width:32px;}
-.fr-info{flex:1;font-size:12px;color:var(–text2);}
-.fr-bar-w{width:50px;height:5px;background:var(–surf2);border-radius:3px;overflow:hidden;}
-.fr-bar{height:100%;border-radius:3px;background:var(–accent);}
+.fr-info{flex:1;font-size:12px;color:var(--text2);}
+.fr-bar-w{width:50px;height:5px;background:var(--surf2);border-radius:3px;overflow:hidden;}
+.fr-bar{height:100%;border-radius:3px;background:var(--accent);}
 .fr-cnt{font-size:12px;font-weight:600;min-width:32px;text-align:right;}
-.fr-badge{font-size:9px;font-weight:600;padding:2px 7px;border-radius:9px;background:var(–accent-l);color:var(–accent);white-space:nowrap;}
-.sec-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(–text3);margin:14px 0 7px;}
+.fr-badge{font-size:9px;font-weight:600;padding:2px 7px;border-radius:9px;background:var(--accent-l);color:var(--accent);white-space:nowrap;}
+.sec-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin:14px 0 7px;}
 
-.member-card{background:#FFFFFF;color:#0D0D10;border:1px solid var(–border);border-radius:var(–r-lg);margin-bottom:10px;overflow:hidden;box-shadow:var(–shadow-sm);}
+.member-card{background:#FFFFFF;color:#0D0D10;border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow-sm);}
 .mc-head{padding:12px 13px;display:flex;align-items:center;gap:10px;}
 .mc-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;flex-shrink:0;}
 .mc-name{font-weight:600;font-size:14px;}
-.mc-part{font-size:11px;color:var(–text3);margin-top:1px;}
+.mc-part{font-size:11px;color:var(--text3);margin-top:1px;}
 .mc-pips{display:flex;flex-wrap:wrap;gap:2px;padding:0 13px 11px;}
 .mc-pip{width:17px;height:17px;border-radius:4px;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 
-.notice-box{display:flex;gap:8px;padding:11px 14px;background:var(–accent-l);border:1px solid #90C8AD;border-radius:10px;font-size:12px;color:var(–accent);margin-bottom:12px;line-height:1.4;}
+.notice-box{display:flex;gap:8px;padding:11px 14px;background:var(--accent-l);border:1px solid #90C8AD;border-radius:10px;font-size:12px;color:var(--accent);margin-bottom:12px;line-height:1.4;}
 
 .day-pills{display:flex;gap:7px;flex-wrap:wrap;}
-.dpill{width:38px;height:38px;border-radius:50%;border:1.5px solid var(–border);background:var(–surf);font-size:12px;font-weight:500;color:var(–text2);display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.dpill.on{background:var(–accent);color:#fff;border-color:var(–accent);}
+.dpill{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--border);background:var(--surf);font-size:12px;font-weight:500;color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.dpill.on{background:var(--accent);color:#fff;border-color:var(--accent);}
 
 .slot-edit-row{display:flex;align-items:center;gap:6px;padding:8px 10px;background:#F0EDE7;border:1px solid #E2DDD6;border-radius:10px;}
 .cat-row{display:flex;align-items:center;gap:8px;padding:9px 10px;background:#F0EDE7;border:1px solid #E2DDD6;border-radius:10px;margin-bottom:6px;}
@@ -189,129 +188,129 @@ z-index:3;box-shadow:0 2px 6px rgba(91,91,246,.4);
 
 .tpl-grid-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .tpl-grid{display:grid;gap:3px;}
-.tpl-cell{height:36px;border-radius:7px;border:1.5px solid #E2DDD6;background:#FFFFFF;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(–text3);transition:all .1s;}
+.tpl-cell{height:36px;border-radius:7px;border:1.5px solid #E2DDD6;background:#FFFFFF;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text3);transition:all .1s;}
 .tpl-cell.on{background:#EEF1FA;border-color:#2C4BA0;color:#2C4BA0;}
-.tpl-dlbl{font-size:11px;font-weight:600;color:var(–text2);display:flex;align-items:center;justify-content:center;}
-.tpl-slbl{font-size:9px;color:var(–text3);display:flex;align-items:center;justify-content:flex-end;padding-right:4px;}
+.tpl-dlbl{font-size:11px;font-weight:600;color:var(--text2);display:flex;align-items:center;justify-content:center;}
+.tpl-slbl{font-size:9px;color:var(--text3);display:flex;align-items:center;justify-content:flex-end;padding-right:4px;}
 
 /* inputs */
-input[type=“text”],input[type=“time”],input[type=“number”]{
-padding:9px 11px;border:1.5px solid #E2DDD6;border-radius:10px;
-font-family:‘Outfit’,sans-serif;font-size:14px;
-background:#FFFFFF;color:#1C1A17;outline:none;
+input[type="text"],input[type="time"],input[type="number"]{
+  padding:9px 11px;border:1.5px solid #E2DDD6;border-radius:10px;
+  font-family:'Outfit',sans-serif;font-size:14px;
+  background:#FFFFFF;color:#1C1A17;outline:none;
 }
-input:focus{border-color:var(–accent);}
-.form-label{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(–text2);margin-bottom:4px;display:block;}
+input:focus{border-color:var(--accent);}
+.form-label{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);margin-bottom:4px;display:block;}
 
 /* ── BOTTOM SHEET ── */
 .sh-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:500;}
 .sh-ov.open{display:block;}
 .sheet{
-position:fixed;bottom:0;left:0;right:0;
-background:#FFFFFF;color:#1C1A17;border-radius:20px 20px 0 0;
-z-index:501;padding-bottom:calc(var(–safe-b) + 4px);
-transform:translateY(100%);transition:transform .22s cubic-bezier(.32,0,.26,1);
-box-shadow:0 -4px 32px rgba(0,0,0,.12);
-max-height:88vh;display:flex;flex-direction:column;
+  position:fixed;bottom:0;left:0;right:0;
+  background:#FFFFFF;color:#1C1A17;border-radius:20px 20px 0 0;
+  z-index:501;padding-bottom:calc(var(--safe-b) + 4px);
+  transform:translateY(100%);transition:transform .22s cubic-bezier(.32,0,.26,1);
+  box-shadow:0 -4px 32px rgba(0,0,0,.12);
+  max-height:88vh;display:flex;flex-direction:column;
 }
 .sheet.open{transform:translateY(0);}
-.sh-handle{width:36px;height:4px;border-radius:2px;background:var(–border2);margin:10px auto 0;flex-shrink:0;}
+.sh-handle{width:36px;height:4px;border-radius:2px;background:var(--border2);margin:10px auto 0;flex-shrink:0;}
 .sh-head{padding:10px 16px 8px;flex-shrink:0;}
-.sh-title{font-size:13px;font-weight:600;color:var(–text2);margin-top:2px;font-family:‘Inter’,‘Noto Sans JP’,sans-serif;}
+.sh-title{font-size:13px;font-weight:600;color:var(--text2);margin-top:2px;font-family:'Inter','Noto Sans JP',sans-serif;}
 .sh-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;}
 
 /* カテゴリーグリッド */
 .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:4px 14px 14px;}
 .cat-btn{
-padding:16px 14px;border-radius:16px;border:none;cursor:pointer;
-font-family:‘Inter’,‘Noto Sans JP’,sans-serif;font-size:14px;font-weight:600;
-display:flex;align-items:center;gap:10px;
-transition:filter .1s,transform .05s;
+  padding:16px 14px;border-radius:16px;border:none;cursor:pointer;
+  font-family:'Inter','Noto Sans JP',sans-serif;font-size:14px;font-weight:600;
+  display:flex;align-items:center;gap:10px;
+  transition:filter .1s,transform .05s;
 }
 .cat-btn:active{filter:brightness(.9);transform:scale(.97);}
 .cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.cat-free{grid-column:1/-1;background:var(–surf2);color:var(–text2);border:1.5px solid var(–border);justify-content:center;border-radius:12px;}
+.cat-free{grid-column:1/-1;background:var(--surf2);color:var(--text2);border:1.5px solid var(--border);justify-content:center;border-radius:12px;}
 
 /* コピーシート */
-.copy-row{padding:15px 16px;border-bottom:1px solid var(–border);cursor:pointer;display:flex;align-items:center;gap:12px;}
+.copy-row{padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:12px;}
 .copy-row:last-child{border-bottom:none;}
-.copy-row:active{background:var(–surf2);}
+.copy-row:active{background:var(--surf2);}
 .cr-ico{font-size:20px;flex-shrink:0;width:28px;text-align:center;}
-.cr-title{font-size:14px;font-weight:600;font-family:‘Inter’,‘Noto Sans JP’,sans-serif;}
-.cr-sub{font-size:11px;color:var(–text3);margin-top:2px;}
+.cr-title{font-size:14px;font-weight:600;font-family:'Inter','Noto Sans JP',sans-serif;}
+.cr-sub{font-size:11px;color:var(--text3);margin-top:2px;}
 .cr-danger .cr-title{color:#C0392B;}
 
 /* DDP sheet */
-.ddp-row{display:flex;align-items:center;border-bottom:1px solid var(–border);min-height:62px;cursor:pointer;position:relative;overflow:hidden;}
+.ddp-row{display:flex;align-items:center;border-bottom:1px solid var(--border);min-height:62px;cursor:pointer;position:relative;overflow:hidden;}
 .ddp-row:active{filter:brightness(.95);}
 .ddp-bar{width:4px;align-self:stretch;flex-shrink:0;}
 .ddp-time{width:68px;padding:0 10px;flex-shrink:0;}
 .ddp-tn{font-size:12px;font-weight:600;}
-.ddp-tr{font-size:9px;color:var(–text3);margin-top:1px;}
+.ddp-tr{font-size:9px;color:var(--text3);margin-top:1px;}
 .ddp-cat{flex:1;padding:12px 8px 12px 0;}
 .ddp-cn{font-size:14px;font-weight:500;}
-.ddp-ch{font-size:10px;color:var(–text3);margin-top:2px;}
-.ddp-arr{width:36px;display:flex;align-items:center;justify-content:center;color:var(–text3);font-size:15px;}
+.ddp-ch{font-size:10px;color:var(--text3);margin-top:2px;}
+.ddp-arr{width:36px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:15px;}
 
 /* ── OVERLAY MODAL ── */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:800;align-items:flex-end;}
 .ov.open{display:flex;}
-.modal{background:#FFFFFF;color:#1C1A17;border-radius:20px 20px 0 0;width:100%;max-height:90vh;overflow-y:auto;padding-bottom:calc(var(–safe-b) + 8px);}
-.modal-head{padding:15px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(–border);}
-.modal-head h3{font-family:‘Syne’,sans-serif;font-size:17px;font-weight:800;color:var(–text);}
+.modal{background:#FFFFFF;color:#1C1A17;border-radius:20px 20px 0 0;width:100%;max-height:90vh;overflow-y:auto;padding-bottom:calc(var(--safe-b) + 8px);}
+.modal-head{padding:15px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.modal-head h3{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--text);}
 .modal-body{padding:14px 16px;display:flex;flex-direction:column;gap:11px;}
 .modal-foot{padding:0 16px 0;display:flex;flex-direction:column;gap:8px;}
-.share-code{font-size:26px;letter-spacing:.2em;font-weight:800;text-align:center;padding:16px;background:var(–accent-l);border:1px solid rgba(91,91,246,.2);border-radius:16px;color:var(–accent);font-family:‘Syne’,sans-serif;}
+.share-code{font-size:26px;letter-spacing:.2em;font-weight:800;text-align:center;padding:16px;background:var(--accent-l);border:1px solid rgba(91,91,246,.2);border-radius:16px;color:var(--accent);font-family:'Syne',sans-serif;}
 
 /* buttons */
-.btn{display:inline-flex;align-items:center;gap:5px;padding:10px 18px;border-radius:12px;font-family:‘Inter’,‘Noto Sans JP’,sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;white-space:nowrap;transition:all .1s;}
-.btn-p{background:var(–accent);color:#fff;box-shadow:0 2px 8px rgba(91,91,246,.3);}
-.btn-p:active{background:var(–accent-d);transform:scale(.98);}
-.btn-g{background:none;border:1.5px solid var(–border);color:var(–text2);}
-.btn-g:active{background:var(–surf2);transform:scale(.98);}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:10px 18px;border-radius:12px;font-family:'Inter','Noto Sans JP',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;white-space:nowrap;transition:all .1s;}
+.btn-p{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(91,91,246,.3);}
+.btn-p:active{background:var(--accent-d);transform:scale(.98);}
+.btn-g{background:none;border:1.5px solid var(--border);color:var(--text2);}
+.btn-g:active{background:var(--surf2);transform:scale(.98);}
 .btn-d{background:#FCEAE8;color:#C0392B;border:1.5px solid #E8A09A;}
 .btn-sm{padding:5px 10px;font-size:12px;}
 .btn-block{width:100%;justify-content:center;}
 
 /* ── TOAST ── */
-.toast{position:fixed;bottom:calc(var(–nav-h) + 14px + var(–safe-b));left:50%;transform:translateX(-50%) translateY(6px);background:#1C1A17;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:500;z-index:1000;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap;}
+.toast{position:fixed;bottom:calc(var(--nav-h) + 14px + var(--safe-b));left:50%;transform:translateX(-50%) translateY(6px);background:#1C1A17;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:500;z-index:1000;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 /* ── BOTTOM NAV ── */
-.bottom-nav{display:flex;background:#FFFFFF;border-top:1px solid var(–border);flex-shrink:0;padding-bottom:var(–safe-b);z-index:100;}
-.bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 4px;border:none;background:none;font-family:‘Inter’,‘Noto Sans JP’,sans-serif;font-size:10px;font-weight:500;color:var(–text3);cursor:pointer;transition:color .12s;}
-.bn.on{color:var(–accent);font-weight:700;}
-.bn.on .bn-ico{stroke:var(–accent);}
+.bottom-nav{display:flex;background:#FFFFFF;border-top:1px solid var(--border);flex-shrink:0;padding-bottom:var(--safe-b);z-index:100;}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 4px;border:none;background:none;font-family:'Inter','Noto Sans JP',sans-serif;font-size:10px;font-weight:500;color:var(--text3);cursor:pointer;transition:color .12s;}
+.bn.on{color:var(--accent);font-weight:700;}
+.bn.on .bn-ico{stroke:var(--accent);}
 .bn-ico{width:24px;height:24px;display:block;margin:0 auto;}
 
 /* ── ONBOARDING ── */
 .ob{position:fixed;inset:0;z-index:2000;background:#F6F4EF;color:#1C1A17;display:flex;flex-direction:column;}
 .ob.gone{display:none;}
-.ob-safe{height:var(–safe-t);flex-shrink:0;}
+.ob-safe{height:var(--safe-t);flex-shrink:0;}
 .ob-topbar{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .ob-logo{flex-shrink:0;display:flex;align-items:center;}
-.ob-skip{font-size:12px;color:var(–text3);border:none;background:none;font-family:‘Outfit’,sans-serif;padding:6px;}
+.ob-skip{font-size:12px;color:var(--text3);border:none;background:none;font-family:'Outfit',sans-serif;padding:6px;}
 .ob-prog{display:flex;gap:5px;padding:0 16px 12px;flex-shrink:0;}
-.ob-pd{height:4px;border-radius:2px;background:var(–border);flex:1;transition:background .25s;}
-.ob-pd.done{background:var(–accent);}
+.ob-pd{height:4px;border-radius:2px;background:var(--border);flex:1;transition:background .25s;}
+.ob-pd.done{background:var(--accent);}
 .ob-body{flex:1;overflow:hidden;display:flex;flex-direction:column;}
 .ob-page{display:none;flex:1;flex-direction:column;overflow:hidden;}
 .ob-page.on{display:flex;}
 .ob-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px;}
-.ob-h{font-family:‘Syne’,sans-serif;font-size:26px;font-weight:800;line-height:1.2;margin-bottom:10px;color:var(–text);}
-.ob-p{font-size:13px;color:var(–text2);line-height:1.6;margin-bottom:16px;}
-.ob-input{width:100%;padding:13px 14px;border:1.5px solid #E2DDD6;border-radius:12px;font-size:15px;font-family:‘Outfit’,sans-serif;background:#FFFFFF;color:#1C1A17;outline:none;margin-bottom:2px;}
-.ob-input:focus{border-color:var(–accent);}
-.ob-label{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(–text2);margin-bottom:5px;display:block;}
-.ob-foot{padding:12px 16px;padding-bottom:calc(var(–safe-b) + 12px);display:flex;flex-direction:column;gap:8px;flex-shrink:0;}
-.ob-main{width:100%;padding:15px;border-radius:14px;border:none;background:var(–accent);color:#fff;font-size:15px;font-weight:700;font-family:‘Inter’,‘Noto Sans JP’,sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(91,91,246,.35);letter-spacing:.01em;}
+.ob-h{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1.2;margin-bottom:10px;color:var(--text);}
+.ob-p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;}
+.ob-input{width:100%;padding:13px 14px;border:1.5px solid #E2DDD6;border-radius:12px;font-size:15px;font-family:'Outfit',sans-serif;background:#FFFFFF;color:#1C1A17;outline:none;margin-bottom:2px;}
+.ob-input:focus{border-color:var(--accent);}
+.ob-label{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);margin-bottom:5px;display:block;}
+.ob-foot{padding:12px 16px;padding-bottom:calc(var(--safe-b) + 12px);display:flex;flex-direction:column;gap:8px;flex-shrink:0;}
+.ob-main{width:100%;padding:15px;border-radius:14px;border:none;background:var(--accent);color:#fff;font-size:15px;font-weight:700;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(91,91,246,.35);letter-spacing:.01em;}
 .ob-main:active{background:#1e4f3e;}
-.ob-sub{width:100%;padding:11px;border-radius:14px;border:1.5px solid var(–border);background:none;color:var(–text2);font-size:13px;font-family:‘Inter’,‘Noto Sans JP’,sans-serif;cursor:pointer;}
+.ob-sub{width:100%;padding:11px;border-radius:14px;border:1.5px solid var(--border);background:none;color:var(--text2);font-size:13px;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;}
 .ob-tpl-grid{display:grid;gap:4px;}
-.ob-tpl-cell{height:40px;border-radius:10px;border:1.5px solid var(–border);background:#FFFFFF;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(–text3);-webkit-user-select:none;user-select:none;transition:all .1s;}
-.ob-tpl-cell.on{background:var(–accent-l);border-color:var(–accent);color:var(–accent);}
-.ob-dlbl{font-size:11px;font-weight:600;color:var(–text2);display:flex;align-items:center;justify-content:center;}
-.ob-slbl{font-size:9px;color:var(–text3);display:flex;align-items:center;justify-content:flex-end;padding-right:4px;}
+.ob-tpl-cell{height:40px;border-radius:10px;border:1.5px solid var(--border);background:#FFFFFF;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text3);-webkit-user-select:none;user-select:none;transition:all .1s;}
+.ob-tpl-cell.on{background:var(--accent-l);border-color:var(--accent);color:var(--accent);}
+.ob-dlbl{font-size:11px;font-weight:600;color:var(--text2);display:flex;align-items:center;justify-content:center;}
+.ob-slbl{font-size:9px;color:var(--text3);display:flex;align-items:center;justify-content:flex-end;padding-right:4px;}
 .ob-guide{padding:13px 14px;border-radius:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
 .ob-g-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
 .ob-g-title{font-size:14px;font-weight:600;}
@@ -319,12 +318,10 @@ transition:filter .1s,transform .05s;
 
 ::-webkit-scrollbar{display:none;}
 </style>
-
 </head>
 <body>
 
 <!-- ════ LOGIN SCREEN ════ -->
-
 <div id="login-screen" style="
   position:fixed;inset:0;z-index:3000;
   background:#F4F4F6;color:#0D0D10;
@@ -342,56 +339,52 @@ transition:filter .1s,transform .05s;
       </svg>
     </div>
 
-```
-<div style="font-size:15px;color:#5C5C6E;text-align:center;margin-bottom:32px;line-height:1.6">
-  みんなの空きコマを合わせて<br>練習できる時間を見つけよう
-</div>
+    <div style="font-size:15px;color:#5C5C6E;text-align:center;margin-bottom:32px;line-height:1.6">
+      みんなの空きコマを合わせて<br>練習できる時間を見つけよう
+    </div>
 
-<!-- メールOTP -->
-<div id="login-step-email" style="width:100%">
-  <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9898AA;margin-bottom:8px">メールアドレス</div>
-  <input type="email" id="login-email" placeholder="your@email.com"
-    style="width:100%;padding:14px 16px;border:1.5px solid #E4E4E8;border-radius:14px;font-size:16px;font-family:'Inter','Noto Sans JP',sans-serif;background:#FFF;color:#0D0D10;outline:none;margin-bottom:12px"
-    onfocus="this.style.borderColor='#5B5BF6'" onblur="this.style.borderColor='#E4E4E8'"
-    onkeydown="if(event.key==='Enter')sendOTP()">
-  <button onclick="sendOTP()" id="login-send-btn"
-    style="width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#5B5BF6,#7B5BF6);color:#fff;font-size:15px;font-weight:700;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(91,91,246,.35)">
-    ログインコードをメールで受け取る
-  </button>
-  <div style="font-size:11px;color:#9898AA;text-align:center;margin-top:12px">パスワード不要・メールに届く6桁のコードでログインできます</div>
-</div>
+    <!-- メールOTP -->
+    <div id="login-step-email" style="width:100%">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9898AA;margin-bottom:8px">メールアドレス</div>
+      <input type="email" id="login-email" placeholder="your@email.com"
+        style="width:100%;padding:14px 16px;border:1.5px solid #E4E4E8;border-radius:14px;font-size:16px;font-family:'Inter','Noto Sans JP',sans-serif;background:#FFF;color:#0D0D10;outline:none;margin-bottom:12px"
+        onfocus="this.style.borderColor='#5B5BF6'" onblur="this.style.borderColor='#E4E4E8'"
+        onkeydown="if(event.key==='Enter')sendOTP()">
+      <button onclick="sendOTP()" id="login-send-btn"
+        style="width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#5B5BF6,#7B5BF6);color:#fff;font-size:15px;font-weight:700;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(91,91,246,.35)">
+        ログインコードをメールで受け取る
+      </button>
+      <div style="font-size:11px;color:#9898AA;text-align:center;margin-top:12px">パスワード不要・メールに届く6桁のコードでログインできます</div>
+    </div>
 
-<!-- OTPコード入力 -->
-<div id="login-step-otp" style="width:100%;display:none">
-  <div style="font-size:13px;color:#5C5C6E;text-align:center;margin-bottom:16px;line-height:1.7">
-    <span id="otp-email-disp" style="font-weight:600;color:#0D0D10"></span><br>
-    にメールを送りました。<br>
-    届いたメール内の<strong style="color:#0D0D10">数字のコード</strong>を入力してください。<br>
-    <span style="font-size:11px;color:#9898AA">迷惑メールフォルダも確認してください</span>
-  </div>
-  <input type="text" id="login-otp" placeholder="12345678" maxlength="8"
-    inputmode="numeric" pattern="[0-9]*"
-    style="width:100%;padding:16px;border:1.5px solid #E4E4E8;border-radius:14px;font-size:24px;font-weight:700;letter-spacing:.2em;text-align:center;font-family:'Inter',sans-serif;background:#FFF;color:#0D0D10;outline:none;margin-bottom:12px"
-    onfocus="this.style.borderColor='#5B5BF6'" onblur="this.style.borderColor='#E4E4E8'"
-    onkeydown="if(event.key==='Enter')verifyOTP()">
-  <button onclick="verifyOTP()" id="login-verify-btn"
-    style="width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#5B5BF6,#7B5BF6);color:#fff;font-size:15px;font-weight:700;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(91,91,246,.35)">
-    ログイン
-  </button>
-  <button onclick="document.getElementById('login-step-otp').style.display='none';document.getElementById('login-step-email').style.display='block'"
-    style="width:100%;padding:11px;border-radius:14px;border:none;background:none;color:#9898AA;font-size:13px;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;margin-top:8px">
-    メールアドレスを変更
-  </button>
-</div>
+    <!-- OTPコード入力 -->
+    <div id="login-step-otp" style="width:100%;display:none">
+      <div style="font-size:13px;color:#5C5C6E;text-align:center;margin-bottom:16px;line-height:1.7">
+        <span id="otp-email-disp" style="font-weight:600;color:#0D0D10"></span><br>
+        にメールを送りました。<br>
+        届いたメール内の<strong style="color:#0D0D10">数字のコード</strong>を入力してください。<br>
+        <span style="font-size:11px;color:#9898AA">迷惑メールフォルダも確認してください</span>
+      </div>
+      <input type="text" id="login-otp" placeholder="12345678" maxlength="8"
+        inputmode="numeric" pattern="[0-9]*"
+        style="width:100%;padding:16px;border:1.5px solid #E4E4E8;border-radius:14px;font-size:24px;font-weight:700;letter-spacing:.2em;text-align:center;font-family:'Inter',sans-serif;background:#FFF;color:#0D0D10;outline:none;margin-bottom:12px"
+        onfocus="this.style.borderColor='#5B5BF6'" onblur="this.style.borderColor='#E4E4E8'"
+        onkeydown="if(event.key==='Enter')verifyOTP()">
+      <button onclick="verifyOTP()" id="login-verify-btn"
+        style="width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#5B5BF6,#7B5BF6);color:#fff;font-size:15px;font-weight:700;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(91,91,246,.35)">
+        ログイン
+      </button>
+      <button onclick="document.getElementById('login-step-otp').style.display='none';document.getElementById('login-step-email').style.display='block'"
+        style="width:100%;padding:11px;border-radius:14px;border:none;background:none;color:#9898AA;font-size:13px;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;margin-top:8px">
+        メールアドレスを変更
+      </button>
+    </div>
 
-<div id="login-error" style="color:#F43F5E;font-size:12px;text-align:center;margin-top:10px;display:none"></div>
-```
-
+    <div id="login-error" style="color:#F43F5E;font-size:12px;text-align:center;margin-top:10px;display:none"></div>
   </div>
 </div>
 
 <!-- ════ ONBOARDING ════ -->
-
 <div class="ob" id="ob">
   <div class="ob-safe"></div>
   <div class="ob-topbar">
@@ -413,74 +406,70 @@ transition:filter .1s,transform .05s;
   </div>
   <div class="ob-body">
 
-```
-<!-- PAGE 0: 名前 -->
-<div class="ob-page on" id="ob0">
-  <div class="ob-scroll">
-    <h2 class="ob-h">はじめまして！</h2>
-    <p class="ob-p">メンバーと共有するときに表示される名前とパートを入力してください。</p>
-    <div style="margin-bottom:12px">
-      <label class="ob-label">名前</label>
-      <input class="ob-input" id="ob-name" type="text" placeholder="例：田中" autocomplete="off">
+    <!-- PAGE 0: 名前 -->
+    <div class="ob-page on" id="ob0">
+      <div class="ob-scroll">
+        <h2 class="ob-h">はじめまして！</h2>
+        <p class="ob-p">メンバーと共有するときに表示される名前とパートを入力してください。</p>
+        <div style="margin-bottom:12px">
+          <label class="ob-label">名前</label>
+          <input class="ob-input" id="ob-name" type="text" placeholder="例：田中" autocomplete="off">
+        </div>
+        <div>
+          <label class="ob-label">パート（任意）</label>
+          <input class="ob-input" id="ob-part" type="text" placeholder="例：テナー" autocomplete="off">
+        </div>
+      </div>
+      <div class="ob-foot">
+        <button class="ob-main" onclick="obGo(1)">次へ →</button>
+      </div>
     </div>
-    <div>
-      <label class="ob-label">パート（任意）</label>
-      <input class="ob-input" id="ob-part" type="text" placeholder="例：テナー" autocomplete="off">
-    </div>
-  </div>
-  <div class="ob-foot">
-    <button class="ob-main" onclick="obGo(1)">次へ →</button>
-  </div>
-</div>
 
-<!-- PAGE 1: 毎週固定の予定 -->
-<div class="ob-page" id="ob1">
-  <div class="ob-scroll">
-    <h2 class="ob-h">毎週決まっている<br>予定を登録しよう</h2>
-    <p class="ob-p">授業やレギュラーシフトなど、<strong>毎週同じコマに入る予定</strong>をタップして選んでください。週によって変わる予定はあとでカレンダーから入力できます。</p>
-    <div class="tpl-grid-wrap" style="margin-bottom:8px">
-      <div id="ob-tpl"></div>
+    <!-- PAGE 1: 毎週固定の予定 -->
+    <div class="ob-page" id="ob1">
+      <div class="ob-scroll">
+        <h2 class="ob-h">毎週決まっている<br>予定を登録しよう</h2>
+        <p class="ob-p">授業やレギュラーシフトなど、<strong>毎週同じコマに入る予定</strong>をタップして選んでください。週によって変わる予定はあとでカレンダーから入力できます。</p>
+        <div class="tpl-grid-wrap" style="margin-bottom:8px">
+          <div id="ob-tpl"></div>
+        </div>
+        <p style="font-size:11px;color:#ADA8A0;margin-top:8px">タップで選択・もう一度タップで解除。あとから設定で変更できます。</p>
+      </div>
+      <div class="ob-foot">
+        <button class="ob-main" onclick="obGo(2)">次へ →</button>
+        <button class="ob-sub" onclick="obGo(2)">毎週の予定はない・後で設定する</button>
+      </div>
     </div>
-    <p style="font-size:11px;color:#ADA8A0;margin-top:8px">タップで選択・もう一度タップで解除。あとから設定で変更できます。</p>
-  </div>
-  <div class="ob-foot">
-    <button class="ob-main" onclick="obGo(2)">次へ →</button>
-    <button class="ob-sub" onclick="obGo(2)">毎週の予定はない・後で設定する</button>
-  </div>
-</div>
 
-<!-- PAGE 2: カレンダーの使い方 -->
-<div class="ob-page" id="ob2">
-  <div class="ob-scroll">
-    <h2 class="ob-h">準備完了！</h2>
-    <p class="ob-p">カレンダーで<strong>週ごとに変わる予定</strong>を入力していきましょう。予定の種類（名前や色）は気にしなくてOK。<strong>埋まっているコマを選ぶだけ</strong>です。</p>
+    <!-- PAGE 2: カレンダーの使い方 -->
+    <div class="ob-page" id="ob2">
+      <div class="ob-scroll">
+        <h2 class="ob-h">準備完了！</h2>
+        <p class="ob-p">カレンダーで<strong>週ごとに変わる予定</strong>を入力していきましょう。予定の種類（名前や色）は気にしなくてOK。<strong>埋まっているコマを選ぶだけ</strong>です。</p>
 
-    <div style="background:#FFFFFF;border:1px solid #E2DDD6;border-radius:14px;padding:16px;margin-bottom:12px">
-      <div style="font-size:14px;font-weight:600;color:#1C1A17;margin-bottom:4px">① コマをタップして選択</div>
-      <div style="font-size:13px;color:#6B6560">予定が埋まっているコマを複数まとめて選べます</div>
+        <div style="background:#FFFFFF;border:1px solid #E2DDD6;border-radius:14px;padding:16px;margin-bottom:12px">
+          <div style="font-size:14px;font-weight:600;color:#1C1A17;margin-bottom:4px">① コマをタップして選択</div>
+          <div style="font-size:13px;color:#6B6560">予定が埋まっているコマを複数まとめて選べます</div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #E2DDD6;border-radius:14px;padding:16px;margin-bottom:12px">
+          <div style="font-size:14px;font-weight:600;color:#1C1A17;margin-bottom:4px">② 「予定を選択」で種類を選ぶ</div>
+          <div style="font-size:13px;color:#6B6560">授業・バイト・その他など、埋まっている理由を選びます</div>
+        </div>
+        <div style="background:#E4F0EB;border:1px solid #90C8AD;border-radius:14px;padding:16px">
+          <div style="font-size:14px;font-weight:600;color:#2B6351;margin-bottom:4px">③ 「練習候補」で空き時間を確認</div>
+          <div style="font-size:13px;color:#2B6351">全員の空きが自動で計算されます</div>
+        </div>
+      </div>
+      <div class="ob-foot">
+        <button class="ob-main" onclick="finishOb()">カレンダーをはじめる 🎵</button>
+      </div>
     </div>
-    <div style="background:#FFFFFF;border:1px solid #E2DDD6;border-radius:14px;padding:16px;margin-bottom:12px">
-      <div style="font-size:14px;font-weight:600;color:#1C1A17;margin-bottom:4px">② 「予定を選択」で種類を選ぶ</div>
-      <div style="font-size:13px;color:#6B6560">授業・バイト・その他など、埋まっている理由を選びます</div>
-    </div>
-    <div style="background:#E4F0EB;border:1px solid #90C8AD;border-radius:14px;padding:16px">
-      <div style="font-size:14px;font-weight:600;color:#2B6351;margin-bottom:4px">③ 「練習候補」で空き時間を確認</div>
-      <div style="font-size:13px;color:#2B6351">全員の空きが自動で計算されます</div>
-    </div>
-  </div>
-  <div class="ob-foot">
-    <button class="ob-main" onclick="finishOb()">カレンダーをはじめる 🎵</button>
-  </div>
-</div>
-```
 
   </div>
 </div>
 
 <!-- ════ SHEETS ════ -->
-
 <!-- カテゴリー選択 -->
-
 <div class="sh-ov" id="cat-ov" onclick="closeSh('cat')"></div>
 <div class="sheet" id="cat-sh">
   <div class="sh-handle"></div>
@@ -493,7 +482,6 @@ transition:filter .1s,transform .05s;
 </div>
 
 <!-- コピーメニュー -->
-
 <div class="sh-ov" id="copy-ov" onclick="closeSh('copy')"></div>
 <div class="sheet" id="copy-sh">
   <div class="sh-handle"></div>
@@ -508,11 +496,9 @@ transition:filter .1s,transform .05s;
 </div>
 
 <!-- 日付詳細(月表示) -->
-
 <div class="sh-ov" id="ddp-ov" onclick="closeSh('ddp')"></div>
 
 <!-- 練習コマ決定シート -->
-
 <div class="sh-ov" id="practice-ov" onclick="closeSh('practice')"></div>
 <div class="sheet" id="practice-sh">
   <div class="sh-handle"></div>
@@ -570,7 +556,6 @@ transition:filter .1s,transform .05s;
 <div class="toast" id="toast"></div>
 
 <!-- ════ APP SHELL ════ -->
-
 <div class="topbar">
   <span class="logo"><svg width="88" height="24" viewBox="0 0 88 24" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -600,7 +585,6 @@ transition:filter .1s,transform .05s;
 <div class="app-body">
 
   <!-- ── CALENDAR WEEK ── -->
-
   <div id="view-cal" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
     <!-- 選択バー -->
     <div class="sel-bar" id="sel-bar">
@@ -617,22 +601,18 @@ transition:filter .1s,transform .05s;
   </div>
 
   <!-- ── CALENDAR MONTH ── -->
-
   <div id="view-month" style="flex:1;display:none;flex-direction:column;overflow:hidden;">
     <div class="m-dow-row" id="m-dow"></div>
     <div class="m-scroll"><div class="m-grid" id="m-grid"></div></div>
   </div>
 
   <!-- ── FIND ── -->
-
   <div class="side-panel" id="view-find"></div>
 
   <!-- ── BAND ── -->
-
   <div class="side-panel" id="view-band"></div>
 
   <!-- ── SETTINGS ── -->
-
   <div class="side-panel" id="view-settings"></div>
 
 </div>
@@ -1758,7 +1738,6 @@ window.addEventListener('load', function(){
 </script>
 
 <!-- 予定入力バー（fixed: グリッドをずらさない） -->
-
 <div id="entry-bar" style="
   display:none;
   position:fixed;
