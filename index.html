@@ -692,27 +692,37 @@ function toggleVM(){
   vm = vm==='week'?'month':'week';
   const btn=document.getElementById('vm-toggle-btn');
   if(btn) btn.textContent = vm==='week'?'月で見る':'週で見る';
-  render();
+  // カレンダーパネルに戻す
+  showPanel('cal');
 }
 
 // ══ PANEL SWITCH ══
 let curPanel='cal';
 function showPanel(name){
   curPanel=name;
+  // 全パネル非表示
   ['cal','month','find','band','settings'].forEach(n=>{
-    const el=document.getElementById('view-'+n);if(el){el.style.display='none';if(el.classList)el.classList.remove('active');}
+    const el=document.getElementById('view-'+n);
+    if(el){el.style.display='none';el.classList.remove('active');}
   });
-  const calNav=document.getElementById('cal-nav'),shareBtn=document.getElementById('share-btn');
+  const calNav=document.getElementById('cal-nav');
+  const shareBtn=document.getElementById('share-btn');
+  const vmBtn=document.getElementById('vm-toggle-btn');
+  // タブのactiveを更新
   ['cal','band','find','settings'].forEach(n=>document.getElementById('bn-'+n)?.classList.remove('on'));
   document.getElementById('bn-'+name)?.classList.add('on');
 
   if(name==='cal'){
-    calNav.style.display='flex';vmSeg.style.display='flex';shareBtn.style.display='';
-    if(vm==='week'){document.getElementById('view-cal').style.display='flex';}
-    else{document.getElementById('view-month').style.display='flex';}
+    // カレンダー表示
+    if(calNav) calNav.style.display='flex';
+    if(shareBtn) shareBtn.style.display='';
+    if(vmBtn) vmBtn.style.display='';
     render();
   } else {
-    calNav.style.display='none';vmSeg.style.display='none';shareBtn.style.display='none';
+    // その他パネル
+    if(calNav) calNav.style.display='none';
+    if(shareBtn) shareBtn.style.display='none';
+    if(vmBtn) vmBtn.style.display='none';
     const el=document.getElementById('view-'+name);
     if(el){el.style.display='block';el.classList.add('active');}
     if(name==='find')renderFind();
