@@ -325,70 +325,52 @@ transition:filter .1s,transform .05s;
 
 <!-- ════ LOGIN SCREEN ════ -->
 
-<div id="login-screen" style="
-  position:fixed;inset:0;z-index:3000;
-  background:#F4F4F6;color:#0D0D10;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:32px 24px;cursor:pointer;
-">
-  <div style="width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center;gap:0">
-    <!-- ロゴ -->
-    <div style="margin-bottom:32px">
-      <svg width="140" height="36" viewBox="0 0 140 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="lg-login" x1="0" y1="0" x2="140" y2="36" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#5B5BF6"/><stop offset="100%" stop-color="#FF6B6B"/>
-        </linearGradient></defs>
-        <text x="0" y="28" font-family="'Syne','Inter',sans-serif" font-size="28" font-weight="800" fill="url(#lg-login)" letter-spacing="-1">こまけず</text>
-      </svg>
-    </div>
+<div id="login-screen" style="position:fixed;inset:0;z-index:3000;background:#F4F4F6;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;-webkit-overflow-scrolling:touch;">
+
+  <div style="width:100%;max-width:340px;">
 
 ```
-<div style="font-size:15px;color:#5C5C6E;text-align:center;margin-bottom:32px;line-height:1.6">
+<!-- ロゴ -->
+<div style="text-align:center;margin-bottom:24px;font-family:'Inter',sans-serif;font-size:28px;font-weight:800;color:#5B5BF6;">
+  こまけず
+</div>
+<div style="font-size:14px;color:#5C5C6E;text-align:center;margin-bottom:28px;line-height:1.6;">
   みんなの空きコマを合わせて<br>練習できる時間を見つけよう
 </div>
 
-<!-- メールOTP -->
-<div id="login-step-email" style="width:100%">
-  <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9898AA;margin-bottom:8px">メールアドレス</div>
-  <input type="email" id="login-email" placeholder="your@email.com"
-    style="width:100%;padding:14px 16px;border:1.5px solid #E4E4E8;border-radius:14px;font-size:16px;font-family:'Inter','Noto Sans JP',sans-serif;background:#FFF;color:#0D0D10;outline:none;margin-bottom:12px"
-    onfocus="this.style.borderColor='#5B5BF6'" onblur="this.style.borderColor='#E4E4E8'"
-    onkeydown="if(event.key==='Enter')sendOTP()">
-  <button id="login-send-btn"
-    ontouchend="event.preventDefault();sendOTP();"
-    onclick="sendOTP()"
-    style="width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#5B5BF6,#7B5BF6);color:#fff;font-size:15px;font-weight:700;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(91,91,246,.35);-webkit-appearance:none;touch-action:manipulation">
-    ログインコードをメールで受け取る
-  </button>
-  <div style="font-size:11px;color:#9898AA;text-align:center;margin-top:12px">パスワード不要・メールに届く6桁のコードでログインできます</div>
-</div>
-
-<!-- OTPコード入力 -->
-<div id="login-step-otp" style="width:100%;display:none">
-  <div style="font-size:13px;color:#5C5C6E;text-align:center;margin-bottom:16px;line-height:1.7">
-    <span id="otp-email-disp" style="font-weight:600;color:#0D0D10"></span><br>
-    にメールを送りました。<br>
-    届いたメール内の<strong style="color:#0D0D10">数字のコード</strong>を入力してください。<br>
-    <span style="font-size:11px;color:#9898AA">迷惑メールフォルダも確認してください</span>
+<!-- メール入力フォーム -->
+<div id="login-step-email">
+  <div style="font-size:11px;font-weight:700;color:#9898AA;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;">メールアドレス</div>
+  <input type="email" id="login-email" placeholder="your@email.com" autocomplete="email"
+    style="display:block;width:100%;padding:14px;border:1.5px solid #E4E4E8;border-radius:12px;font-size:16px;background:#FFF;color:#0D0D10;outline:none;box-sizing:border-box;margin-bottom:10px;-webkit-appearance:none;">
+  <div id="login-send-wrap" style="width:100%;margin-bottom:10px;">
+    <div id="login-send-btn" role="button" tabindex="0"
+      style="width:100%;padding:16px;border-radius:12px;background:#5B5BF6;color:#fff;font-size:15px;font-weight:700;text-align:center;cursor:pointer;-webkit-user-select:none;user-select:none;box-sizing:border-box;">
+      ログインコードをメールで受け取る
+    </div>
   </div>
-  <input type="text" id="login-otp" placeholder="12345678" maxlength="8"
-    inputmode="numeric" pattern="[0-9]*"
-    style="width:100%;padding:16px;border:1.5px solid #E4E4E8;border-radius:14px;font-size:24px;font-weight:700;letter-spacing:.2em;text-align:center;font-family:'Inter',sans-serif;background:#FFF;color:#0D0D10;outline:none;margin-bottom:12px"
-    onfocus="this.style.borderColor='#5B5BF6'" onblur="this.style.borderColor='#E4E4E8'"
-    onkeydown="if(event.key==='Enter')verifyOTP()">
-  <button id="login-verify-btn"
-    ontouchend="event.preventDefault();verifyOTP();"
-    onclick="verifyOTP()"
-    style="width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#5B5BF6,#7B5BF6);color:#fff;font-size:15px;font-weight:700;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(91,91,246,.35);-webkit-appearance:none;touch-action:manipulation">
-    ログイン
-  </button>
-  <button onclick="document.getElementById('login-step-otp').style.display='none';document.getElementById('login-step-email').style.display='block'"
-    style="width:100%;padding:11px;border-radius:14px;border:none;background:none;color:#9898AA;font-size:13px;font-family:'Inter','Noto Sans JP',sans-serif;cursor:pointer;margin-top:8px">
-    メールアドレスを変更
-  </button>
+  <div style="font-size:11px;color:#9898AA;text-align:center;">パスワード不要・メールに届くコードでログイン</div>
 </div>
 
-<div id="login-error" style="color:#F43F5E;font-size:12px;text-align:center;margin-top:10px;display:none"></div>
+<!-- コード入力フォーム -->
+<div id="login-step-otp" style="display:none;">
+  <div style="font-size:13px;color:#5C5C6E;text-align:center;margin-bottom:14px;line-height:1.7;">
+    <span id="otp-email-disp" style="font-weight:700;color:#0D0D10;"></span><br>
+    にコードを送りました
+  </div>
+  <input type="text" id="login-otp" placeholder="コードを入力" maxlength="8" inputmode="numeric"
+    style="display:block;width:100%;padding:16px;border:1.5px solid #E4E4E8;border-radius:12px;font-size:22px;font-weight:700;letter-spacing:.15em;text-align:center;background:#FFF;color:#0D0D10;outline:none;box-sizing:border-box;margin-bottom:10px;-webkit-appearance:none;">
+  <div id="login-verify-btn" role="button" tabindex="0"
+    style="width:100%;padding:16px;border-radius:12px;background:#5B5BF6;color:#fff;font-size:15px;font-weight:700;text-align:center;cursor:pointer;-webkit-user-select:none;user-select:none;box-sizing:border-box;margin-bottom:8px;">
+    ログイン
+  </div>
+  <div id="login-back-btn" role="button" tabindex="0"
+    style="width:100%;padding:12px;border-radius:12px;background:none;color:#9898AA;font-size:13px;text-align:center;cursor:pointer;">
+    メールアドレスを変更
+  </div>
+</div>
+
+<div id="login-error" style="color:#F43F5E;font-size:12px;text-align:center;margin-top:10px;min-height:20px;"></div>
 ```
 
   </div>
@@ -1763,6 +1745,23 @@ async function execCancelPractice(){
 }
 // ══ INIT ══
 window.addEventListener('load', function(){
+  // ログインボタンのタッチイベントをここで設定（Safari対応）
+  function addTapHandler(id, fn){
+    const el = document.getElementById(id);
+    if(!el) return;
+    let _ts = 0;
+    el.addEventListener('touchstart', function(e){ _ts=Date.now(); }, {passive:true});
+    el.addEventListener('touchend', function(e){
+      if(Date.now()-_ts < 500){ e.preventDefault(); fn(); }
+    }, {passive:false});
+    el.addEventListener('click', fn);
+  }
+  addTapHandler('login-send-btn', sendOTP);
+  addTapHandler('login-verify-btn', verifyOTP);
+  addTapHandler('login-back-btn', function(){
+    document.getElementById('login-step-otp').style.display='none';
+    document.getElementById('login-step-email').style.display='block';
+  });
   // supabase未ロードでもボタンは動く状態を保つ
   if(typeof supabase!=='undefined'){
     // 非同期でセッション確認（エラーが起きても画面は動く）
