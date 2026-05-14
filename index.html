@@ -1458,8 +1458,11 @@ async function checkSession(){
   if(session && session.user){
     onLoginSuccess(session.user);
   }
-  // セッションなし → ログイン画面を表示したまま
-  }catch(e){console.warn('checkSession error',e);}
+  // セッションなし → ログイン画面をそのまま表示
+  }catch(e){
+    console.warn('checkSession error',e);
+    // エラーが起きてもログイン画面は表示したまま（操作可能）
+  }
 }
 
 // onAuthStateChange は干渉するため無効化
@@ -1751,14 +1754,14 @@ async function execCancelPractice(){
   }catch(e){showToast('エラー: '+e.message);}
 }
 // ══ INIT ══
-// DOMとsupabase SDKが完全にロードされてからセッション確認
-if(typeof supabase==='undefined'){
-  // SDKロード失敗時のフォールバック
-  document.getElementById('login-error').textContent='通信エラー。ページを再読み込みしてください。';
-  document.getElementById('login-error').style.display='block';
-} else {
+window.addEventListener('load', function(){
+  if(typeof supabase==='undefined'){
+    document.getElementById('login-error').textContent='通信エラー。ページを再読み込みしてください。';
+    document.getElementById('login-error').style.display='block';
+    return;
+  }
   checkSession();
-}
+});
 </script>
 
 <!-- 予定入力バー（fixed: グリッドをずらさない） -->
