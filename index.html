@@ -175,9 +175,9 @@ z-index:3;box-shadow:0 2px 6px rgba(91,91,246,.4);
 
 .notice-box{display:flex;gap:8px;padding:11px 14px;background:var(–accent-l);border:1px solid #90C8AD;border-radius:10px;font-size:12px;color:var(–accent);margin-bottom:12px;line-height:1.4;}
 
-.day-pills{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
-.dpill{height:42px;border-radius:10px;border:1.5px solid var(–border);background:#F4F4F6;font-size:13px;font-weight:600;color:var(–text2);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-user-select:none;user-select:none;}
-.dpill.on{background:var(–accent);color:#fff;border-color:var(–accent);}
+.day-pills{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+.dpill{height:44px;border-radius:10px;border:1.5px solid #D0D0D8;background:#F4F4F6;font-size:13px;font-weight:600;color:#B0B0BE;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-user-select:none;user-select:none;transition:all .15s;}
+.dpill.on{background:var(–accent);color:#fff;border-color:var(–accent);box-shadow:0 2px 8px rgba(91,91,246,.25);}
 
 .slot-edit-row{display:flex;align-items:center;gap:6px;padding:8px 10px;background:#F0EDE7;border:1px solid #E2DDD6;border-radius:10px;}
 .cat-row{display:flex;align-items:center;gap:8px;padding:9px 10px;background:#F0EDE7;border:1px solid #E2DDD6;border-radius:10px;margin-bottom:6px;}
@@ -650,13 +650,13 @@ const CP=[{bg:'#EEF1FA',fg:'#2C4BA0'},{bg:'#E4F0EB',fg:'#2B6351'},{bg:'#FEF3DC',
 const DAYS=['月','火','水','木','金','土','日'];
 const gc=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from({length:6},()=>c[~~(Math.random()*c.length)]).join('');};
 const defCats=()=>[{id:'class',name:'授業',bg:'#EEF1FA',fg:'#2C4BA0'},{id:'part',name:'他バンド',bg:'#E4F0EB',fg:'#2B6351'},{id:'work',name:'バイト',bg:'#FEF3DC',fg:'#7A5010'},{id:'ng',name:'参加不可',bg:'#FCEAE8',fg:'#C0392B'}];
-const defSt=()=>({me:{name:'自分',part:'',color:'green',code:gc()},slots:[{id:1,name:'1限',start:'09:00',end:'10:40'},{id:2,name:'2限',start:'10:50',end:'12:30'},{id:3,name:'昼',start:'12:30',end:'13:20'},{id:4,name:'3限',start:'13:20',end:'15:00'},{id:5,name:'4限',start:'15:10',end:'16:50'},{id:6,name:'5限',start:'17:00',end:'18:40'},{id:7,name:'6限',start:'18:50',end:'20:30'},{id:8,name:'7限',start:'20:30',end:'21:30'}],days:['月','火','水','木','金'],cats:defCats(),blocks:{},tpl:{},members:[],nid:1,ncid:10,minM:3,boarded:false});
+const defSt=()=>({me:{name:'自分',part:'',color:'green',code:gc()},slots:[{id:1,name:'1限',start:'09:00',end:'10:40'},{id:2,name:'2限',start:'10:50',end:'12:30'},{id:3,name:'昼',start:'12:30',end:'13:20'},{id:4,name:'3限',start:'13:20',end:'15:00'},{id:5,name:'4限',start:'15:10',end:'16:50'},{id:6,name:'5限',start:'17:00',end:'18:40'},{id:7,name:'6限',start:'18:50',end:'20:30'},{id:8,name:'7限',start:'20:30',end:'21:30'}],days:['月','火','水','木','金'],cats:defCats(),blocks:{},tpl:{},members:[],nid:1,ncid:10,minM:5,boarded:false});
 
 let st;
 try{st=JSON.parse(localStorage.getItem('hrm7')||'null')||defSt();}catch(e){st=defSt();}
 ['me','slots','days','cats','blocks','tpl','members'].forEach(k=>{if(!st[k])st[k]=defSt()[k];});
 if(!st.me.code)st.me.code=gc();
-if(!st.nid)st.nid=1;if(!st.ncid)st.ncid=10;if(!st.minM)st.minM=3;
+if(!st.nid)st.nid=1;if(!st.ncid)st.ncid=10;if(!st.minM)st.minM=5;
 const ct=id=>st.cats.find(c=>c.id===id)||null;
 let _cloudSaveTimer=null;
 const save=()=>{
@@ -1046,33 +1046,49 @@ function renderFind(){
     <div class="stat-c"><div class="stat-n" style="color:#7A5010">${nearS.length}</div><div class="stat-l">${st.minM}人以上</div></div>
   </div>`;
 
+  // 選択中バー（選択があるとき固定表示）
+  const selCount = _findSel.size;
+  if(selCount>0){
+    h+=`<div style="position:sticky;top:0;z-index:20;background:var(--accent);border-radius:12px;padding:11px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+      <span style="color:#fff;font-size:13px;font-weight:600;flex:1">${selCount}コマ選択中</span>
+      <button onclick="clearFindSel()" style="padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.4);background:none;color:#fff;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif">解除</button>
+      <button onclick="openBulkDecideSheet()" style="padding:8px 16px;border-radius:10px;border:none;background:#fff;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">決定する →</button>
+    </div>`;
+  }
+
   // ── 全員空きのコマ ──
   if(fullS.length){
-    h+=`<div class="sec-lbl">✓ 全員参加可能 — タップで練習コマに決定</div>`;
+    h+=`<div class="sec-lbl">✓ 全員参加可能</div>`;
     fullS.forEach(s=>{
-      // このコマはすでに決定済みか？
+      const key=s.dStr+'|'+s.slot.id;
+      const isSel=_findSel.has(key);
       const alreadyDecided=ps.find(p=>p.date===s.dStr&&p.slot_id==s.slot.id);
-      const rowOnclick = alreadyDecided ? '' : 'openDecidePracticeSheet("'+activeGrpId+'","'+s.dStr+'",'+s.slot.id+')';
-      const rowOpacity = alreadyDecided ? 'opacity:.5;' : '';
-      const decidedBadge = alreadyDecided
-        ? '<span style="font-size:10px;background:#EDE9FE;color:#5B21B6;padding:2px 7px;border-radius:8px;font-weight:600">決定済み</span>'
-        : '<span style="font-size:10px;background:#EEEEFD;color:#5B5BF6;padding:2px 7px;border-radius:8px;font-weight:600">タップで決定</span>';
-      const memberPips = s.avail.map(m=>{
+      const memberPips=s.avail.map(m=>{
         const col=AC.find(x=>x.id===m.color)||AC[0];
         return '<div style="width:18px;height:18px;border-radius:50%;background:'+col.bg+';color:'+col.fg+';font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center">'+m.name.slice(0,1)+'</div>';
       }).join('');
-      h+='<div class="find-row" style="cursor:pointer;'+rowOpacity+'" onclick="'+rowOnclick+'">'
+      const selStyle = isSel
+        ? 'background:#EDE9FE;border:2px solid #6D28D9;'
+        : alreadyDecided ? 'opacity:.55;' : '';
+      const badge = alreadyDecided
+        ? '<span style="font-size:10px;background:#EDE9FE;color:#5B21B6;padding:2px 7px;border-radius:8px;font-weight:600">決定済み</span>'
+        : isSel
+        ? '<span style="font-size:10px;background:#6D28D9;color:#fff;padding:2px 7px;border-radius:8px;font-weight:600">✓ 選択中</span>'
+        : '<span style="font-size:10px;background:#EEEEFD;color:#5B5BF6;padding:2px 7px;border-radius:8px;font-weight:600">タップで選択</span>';
+      const onclick = alreadyDecided
+        ? 'openChangePracticeSheet("'+activeGrpId+'","'+(ps.find(p=>p.date===s.dStr&&p.slot_id==s.slot.id)||{}).id+'","'+s.dStr+'",'+s.slot.id+')'
+        : 'toggleFindSel("'+activeGrpId+'","'+s.dStr+'",'+s.slot.id+')';
+      h+='<div class="find-row" style="cursor:pointer;'+selStyle+'" onclick="'+onclick+'">'
         +'<div style="display:flex;flex-direction:column;flex:1;gap:2px">'
         +'<div style="display:flex;align-items:center;gap:8px">'
-        +'<span style="font-size:13px;font-weight:700;color:var(--accent)">'+s.dn+'曜 '+s.slot.name+'</span>'
+        +'<span style="font-size:13px;font-weight:700;color:'+(isSel?'#5B21B6':'var(--accent)')+'">'+s.dn+'曜 '+s.slot.name+'</span>'
         +'<span style="font-size:12px;color:var(--text2)">'+s.slot.start+'–'+s.slot.end+'</span>'
-        +decidedBadge
-        +'</div>'
+        +badge+'</div>'
         +'<div style="display:flex;align-items:center;gap:4px;margin-top:2px">'
         +memberPips
         +'<span style="font-size:11px;color:var(--text2);margin-left:4px">'+s.avail.map(m=>m.name).join('・')+'</span>'
         +'</div></div>'
-        +'<div style="font-size:16px;font-weight:700;color:var(--accent)">'+s.count+'/'+s.total+'</div>'
+        +'<div style="font-size:16px;font-weight:700;color:'+(isSel?'#5B21B6':'var(--accent)')+'">'+s.count+'/'+s.total+'</div>'
         +'</div>';
     });
   }
@@ -1081,19 +1097,23 @@ function renderFind(){
   if(nearS.length){
     h+=`<div class="sec-lbl">△ ${st.minM}人以上参加可能</div>`;
     nearS.slice(0,8).forEach(s=>{
+      const key=s.dStr+'|'+s.slot.id;
+      const isSel=_findSel.has(key);
       const pct=Math.round(s.count/s.total*100);
-      h+=`<div class="find-row" style="cursor:pointer" onclick="openDecidePracticeSheet('${activeGrpId}','${s.dStr}',${s.slot.id})">
+      const selStyle=isSel?'background:#EDE9FE;border:2px solid #6D28D9;':'';
+      h+=`<div class="find-row" style="cursor:pointer;${selStyle}" onclick="toggleFindSel('${activeGrpId}','${s.dStr}',${s.slot.id})">
         <div style="display:flex;flex-direction:column;flex:1;gap:2px">
           <div style="display:flex;align-items:center;gap:8px">
-            <span style="font-size:13px;font-weight:700">${s.dn}曜 ${s.slot.name}</span>
+            <span style="font-size:13px;font-weight:700;color:${isSel?'#5B21B6':'var(--text)'}">${s.dn}曜 ${s.slot.name}</span>
             <span style="font-size:12px;color:var(--text2)">${s.slot.start}–${s.slot.end}</span>
+            ${isSel?'<span style="font-size:10px;background:#6D28D9;color:#fff;padding:2px 7px;border-radius:8px;font-weight:600">✓ 選択中</span>':''}
           </div>
           <div style="height:4px;background:var(--surf2);border-radius:2px;overflow:hidden;margin-top:4px">
             <div style="height:100%;width:${pct}%;background:#E8C86A;border-radius:2px"></div>
           </div>
           <div style="font-size:11px;color:var(--text2)">${s.avail.map(m=>m.name).join('・')}</div>
         </div>
-        <div style="font-size:16px;font-weight:700;color:#7A5010">${s.count}/${s.total}</div>
+        <div style="font-size:16px;font-weight:700;color:${isSel?'#5B21B6':'#7A5010'}">${s.count}/${s.total}</div>
       </div>`;
     });
   }
@@ -1240,8 +1260,11 @@ function renderSettings(){
   document.getElementById('view-settings').innerHTML=`
     <h2 class="scr-title">設定</h2>
     <div class="scard">
-      <div class="scard-head">曜日設定</div>
-      <div class="scard-body"><div class="day-pills">${DAYS.map(d=>`<div class="dpill${st.days.includes(d)?' on':''}" onclick="toggleDay('${d}',this)">${d}</div>`).join('')}</div></div>
+      <div class="scard-head">練習候補を探す曜日</div>
+      <div class="scard-body">
+        <p style="font-size:12px;color:var(--text2);margin-bottom:10px">オンの曜日だけ練習候補に表示されます。タップで切り替え。</p>
+        <div class="day-pills">${DAYS.map(d=>`<div class="dpill${st.days.includes(d)?' on':''}" onclick="toggleDay('${d}',this)">${d}</div>`).join('')}</div>
+      </div>
     </div>
     <div class="scard">
       <div class="scard-head">時限設定 <button class="btn btn-g btn-sm" onclick="addSlot()">＋</button></div>
@@ -1456,7 +1479,7 @@ async function onLoginSuccess(user){
         members: saved.members || [],
         nid:     saved.nid     || 1,
         ncid:    saved.ncid    || 10,
-        minM:    saved.minM    || 3,
+        minM:    saved.minM    || 5,
         boarded: saved.boarded || false,
       };
       try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
@@ -1716,7 +1739,79 @@ function copyGrpCode(grpId){
 
 
 // ══ 練習コマ決定シート ══
+
+function openBulkDecideSheet(){
+  if(_findSel.size===0)return;
+  const g=myGroups.find(x=>x.id===_findGrpId);
+  const items=[..._findSel].map(key=>{
+    const [date,slotId]=key.split('|');
+    const slot=st.slots.find(s=>s.id==slotId);
+    const d=new Date(date);
+    const dn=DAYS[d.getDay()===0?6:d.getDay()-1];
+    return {date,slotId:Number(slotId),slot,dn,d};
+  }).sort((a,b)=>a.date.localeCompare(b.date));
+
+  const listHTML=items.map(it=>`
+    <div style="background:#EDE9FE;border-radius:10px;padding:10px 13px;margin-bottom:6px;">
+      <div style="font-size:14px;font-weight:700;color:#5B21B6">${it.d.getMonth()+1}/${it.d.getDate()}（${it.dn}）${it.slot?.name||''}</div>
+      <div style="font-size:12px;color:#8B5CF6;margin-top:2px">${it.slot?.start||''}–${it.slot?.end||''}</div>
+    </div>`).join('');
+
+  document.getElementById('psh-title').textContent='練習コマを決定する';
+  document.getElementById('psh-body').innerHTML=`
+    <div style="padding:16px">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:12px">
+        グループ「${g?.name||''}」の練習コマとして以下を決定します。<br>
+        <span style="font-size:11px;color:var(--text3)">決定者と日時が履歴に残ります。あとで変更できます。</span>
+      </div>
+      ${listHTML}
+      <div style="font-size:12px;color:var(--text3);margin-bottom:14px;margin-top:4px">計${items.length}コマ</div>
+      <button class="btn btn-p btn-block" style="margin-bottom:8px;font-size:15px;padding:15px;border-radius:14px;" onclick="execBulkDecide()">この内容で決定する</button>
+      <button class="btn btn-g btn-block" style="padding:13px;border-radius:14px;" onclick="closeSh('practice')">キャンセル</button>
+    </div>`;
+  openSh('practice');
+}
+
+async function execBulkDecide(){
+  if(_findSel.size===0)return;
+  closeSh('practice');
+  const grpId=_findGrpId;
+  let n=0;
+  for(const key of _findSel){
+    const [date,slotId]=key.split('|');
+    try{
+      await sbFetch('/rest/v1/practice_slots','POST',{
+        group_id:grpId,slot_id:Number(slotId),date,
+        decided_by:st.me.name,decided_at:new Date().toISOString()
+      });
+      if(!st.cats.find(c=>c.id==='practice'))
+        st.cats.push({id:'practice',name:'練習',bg:'#EDE9FE',fg:'#6D28D9'});
+      st.blocks[BK(date,Number(slotId))]='practice';
+      n++;
+    }catch(e){console.warn('decide error',e);}
+  }
+  save();
+  clearFindSel();
+  showToast(n+'コマの練習を決定しました！');
+  await pullGroupDataFor(grpId);
+  renderFind();renderWeek();
+}
 let _practiceCtx = null; // {grpId, date, slotId, existingId}
+let _findSel = new Set(); // 選択中の練習候補 "date|slotId" の集合
+let _findGrpId = null; // 選択中のグループID
+
+function toggleFindSel(grpId, date, slotId){
+  const key = date+'|'+slotId;
+  _findGrpId = grpId;
+  if(_findSel.has(key)) _findSel.delete(key);
+  else _findSel.add(key);
+  renderFind();
+}
+function clearFindSel(){
+  _findSel.clear();
+  _findGrpId = null;
+  renderFind();
+}
 
 function openDecidePracticeSheet(grpId, date, slotId){
   const slot=st.slots.find(s=>s.id==slotId);
