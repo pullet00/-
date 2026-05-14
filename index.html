@@ -392,7 +392,7 @@ transition:filter .1s,transform .05s;
 
 <!-- ════ ONBOARDING ════ -->
 
-<div class="ob" id="ob">
+<div class="ob gone" id="ob">
   <div class="ob-safe"></div>
   <div class="ob-topbar">
     <span class="ob-logo"><svg width="108" height="30" viewBox="0 0 108 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1436,6 +1436,13 @@ async function onLoginSuccess(user){
   const lm=document.getElementById('load-msg');if(lm)lm.remove();
   document.getElementById('login-screen').style.display='none';
   initApp();
+  // ログイン後にオンボーディングを判定
+  if(!st.boarded){
+    document.getElementById('ob').classList.remove('gone');
+    obProg(0);
+  } else {
+    document.getElementById('ob').classList.add('gone');
+  }
 }
 
 function showLoginError(msg){
@@ -1463,8 +1470,11 @@ async function checkSession(){
 
 function initApp(){
   updTopbar();render();expMe();
-  if(!st.boarded){document.getElementById('ob').classList.remove('gone');obProg(0);}
-  else{document.getElementById('ob').classList.add('gone');}
+  // ログイン成功後にオンボーディング表示を判定
+  if(st.boarded){
+    document.getElementById('ob').classList.add('gone');
+  }
+  // ※ ob表示はonLoginSuccess内で制御
   startAllSync();
 }
 
