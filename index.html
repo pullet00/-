@@ -664,7 +664,7 @@ let _cloudSaveTimer=null;
 const save=()=>{
   try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
   expMe();
-  if(grpId)pushMyData();
+  pushMyData();// 全グループにpush
   // Supabaseにデバウンス保存（2秒待ってまとめて保存）
   if(currentUser){
     clearTimeout(_cloudSaveTimer);
@@ -951,7 +951,10 @@ function ddpTap(dStr,dn,slotId,slotName){
 
 // ══ FIND ══
 function renderFind(){
-  const all=[{name:st.me.name,color:st.me.color,blocks:st.blocks,isMe:true},...st.members];
+  // activeGrpIdのグループのメンバーで計算
+  const activeGrp = myGroups.find(g=>g.id===activeGrpId);
+  const grpMembers = activeGrp ? activeGrp.members : [];
+  const all=[{name:st.me.name,color:st.me.color,blocks:st.blocks,isMe:true},...grpMembers];
   const total=all.length;
   const dates=weekDates();
   const vis=dates.filter((_,i)=>st.days.includes(DAYS[i]));
@@ -967,7 +970,16 @@ function renderFind(){
   const fullS=scores.filter(s=>s.count===total&&total>0);
   const nearS=scores.filter(s=>s.count>=st.minM&&s.count<total);
   const el=document.getElementById('view-find');
-  let h=`<h2 class="scr-title">練習候補</h2><p class="scr-sub">今週、空きが重なるコマ</p>
+  // グループ選択タブ
+  let grpTabHTML='';
+  if(myGroups.length>1){
+    grpTabHTML=`<div style="display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px">
+      ${myGroups.map(g=>`<button onclick="activeGrpId='${g.id}';saveGroups();renderFind();" style="padding:6px 14px;border-radius:20px;border:none;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;background:${activeGrpId===g.id?'var(--accent)':'var(--surf2)'};color:${activeGrpId===g.id?'#fff':'var(--text2)'}">${g.name}</button>`).join('')}
+    </div>`;
+  } else if(myGroups.length===1 && !activeGrpId){
+    activeGrpId=myGroups[0].id; saveGroups();
+  }
+  let h=`<h2 class="scr-title">練習候補</h2>${grpTabHTML}<p class="scr-sub">${activeGrp?'「'+activeGrp.name+'」':'グループ未選択'} · 今週の空きコマ</p>
   <div class="stat-row">
     <div class="stat-c"><div class="stat-n">${total}</div><div class="stat-l">メンバー</div></div>
     <div class="stat-c"><div class="stat-n" style="color:var(--accent)">${fullS.length}</div><div class="stat-l">全員空き</div></div>
@@ -996,80 +1008,83 @@ function renderFind(){
 function renderBand(){
   const el=document.getElementById('view-band');
   if(!el)return;
+  const dates=weekDates();
+  const vis=dates.filter((_,i)=>st.days.includes(DAYS[i]));
 
-  if(!grpId){
-    // ── グループ未参加 ──
-    el.innerHTML=`
-      <h2 class="scr-title">メンバー</h2>
-      <p class="scr-sub">グループを作ってLINEで共有しましょう</p>
+  let html=`<h2 class="scr-title">グループ</h2>`;
 
-      <div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px">
-        <div style="padding:20px 18px 16px">
-          <div style="font-size:16px;font-weight:600;margin-bottom:6px">📱 グループを作る</div>
-          <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px">自分がグループを作って、コードをLINEで送ります。受け取った人はコードを入力するだけで参加できます。</div>
-          <button class="btn btn-p btn-block" style="font-size:15px;padding:14px" onclick="createGroup()">グループを作る →</button>
+  // ── 参加中グループ一覧 ──
+  if(myGroups.length>0){
+    myGroups.forEach(g=>{
+      const all=[{id:0,name:st.me.name,part:st.me.part,color:st.me.color,blocks:st.blocks,isMe:true},...(g.members||[])];
+      const isActive=activeGrpId===g.id;
+
+      // メンバーアバター
+      const avatars=all.map(m=>{const col=AC.find(x=>x.id===m.color)||AC[0];return`<div style="width:28px;height:28px;border-radius:50%;background:${col.bg};color:${col.fg};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-right:-6px;border:2px solid #fff">${m.name.slice(0,1)}</div>`;}).join('');
+
+      // 決定済み練習コマ
+      const ps=g.practiceSlots||[];
+      const psHTML=ps.length?ps.slice(0,3).map(p=>{
+        const slot=st.slots.find(s=>s.id==p.slot_id);
+        const dt=new Date(p.decided_at);
+        const dtStr=`${dt.getMonth()+1}/${dt.getDate()} ${dt.getHours()}:${String(dt.getMinutes()).padStart(2,'0')}`;
+        return`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#EDE9FE;border-radius:9px;margin-bottom:4px">
+          <div style="color:#6D28D9;font-size:13px;font-weight:600">🎵 ${p.date} ${slot?.name||''}</div>
+          <div style="margin-left:auto;font-size:10px;color:#8B5CF6">${p.decided_by}が${dtStr}に決定</div>
+          <button onclick="cancelPracticeSlot('${g.id}','${p.id}','${p.date}',${p.slot_id})" style="font-size:10px;color:#C0392B;border:none;background:none;cursor:pointer;padding:2px 4px">✕</button>
+        </div>`;
+      }).join(''):'<div style="font-size:12px;color:var(--text3);padding:4px 0">まだ練習コマが決まっていません</div>';
+
+      html+=`<div style="background:var(--surf);border:1px solid ${isActive?'var(--accent)':'var(--border)'};border-radius:16px;margin-bottom:12px;overflow:hidden;${isActive?'box-shadow:0 0 0 3px var(--accent-l)':''}">
+        <!-- グループヘッダー -->
+        <div style="padding:13px 14px;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="font-size:15px;font-weight:700;flex:1">${g.name}</div>
+            <button onclick="activeGrpId='${g.id}';saveGroups();renderBand();renderFind();" style="font-size:11px;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:${isActive?'var(--accent)':'none'};color:${isActive?'#fff':'var(--text2)'};cursor:pointer;font-family:'Inter',sans-serif">${isActive?'表示中':'表示する'}</button>
+            <button onclick="leaveGroup('${g.id}')" style="font-size:11px;padding:4px 8px;border-radius:8px;border:1px solid #E8A09A;background:none;color:#C0392B;cursor:pointer">退出</button>
+          </div>
+          <!-- コード -->
+          <div style="display:flex;align-items:center;gap:8px;background:var(--surf2);border-radius:10px;padding:8px 12px">
+            <span style="font-size:11px;color:var(--text3)">コード</span>
+            <span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;letter-spacing:.15em;color:var(--accent);flex:1">${g.id}</span>
+            <button onclick="copyGrpCode('${g.id}')" style="font-size:11px;padding:5px 10px;border-radius:7px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:'Inter',sans-serif">コピー</button>
+          </div>
         </div>
-      </div>
-
-      <div style="display:flex;align-items:center;gap:10px;margin:18px 0 14px">
-        <div style="flex:1;height:1px;background:var(--border)"></div>
-        <span style="font-size:12px;color:var(--text3);white-space:nowrap">友達が作ったグループに参加する</span>
-        <div style="flex:1;height:1px;background:var(--border)"></div>
-      </div>
-
-      <div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px 16px 18px">
-        <div style="font-size:14px;font-weight:600;margin-bottom:10px">🔑 コードで参加</div>
-        <div style="font-size:13px;color:var(--text2);margin-bottom:12px">LINEで受け取ったコードを入力してください</div>
-        <input type="text" id="grp-join-code" placeholder="例：ABC123" style="width:100%;font-size:18px;letter-spacing:.1em;text-align:center;text-transform:uppercase;margin-bottom:10px">
-        <button class="btn btn-p btn-block" onclick="joinGroup()">このコードで参加する</button>
-      </div>
-      <div style="height:20px"></div>
-    `;
-    return;
+        <!-- メンバー -->
+        <div style="padding:10px 14px;border-bottom:1px solid var(--border)">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:6px">${all.length}人参加中</div>
+          <div style="display:flex;align-items:center">${avatars}<span style="margin-left:12px;font-size:12px;color:var(--text2)">${all.map(m=>m.name).join('・')}</span></div>
+        </div>
+        <!-- 練習コマ -->
+        <div style="padding:10px 14px">
+          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">決定済み練習コマ</div>
+          ${psHTML}
+        </div>
+      </div>`;
+    });
   }
 
-  // ── グループ参加中 ──
-  const all=[{id:0,name:st.me.name,part:st.me.part,color:st.me.color,blocks:st.blocks,isMe:true},...st.members];
-  const dates=weekDates();const vis=dates.filter((_,i)=>st.days.includes(DAYS[i]));
-  // グループ情報バー＋メンバーカード
-  let cards='';
-  all.forEach(m=>{
-    const col=AC.find(x=>x.id===m.color)||AC[0];
-    const pips=vis.flatMap(d=>st.slots.map(slot=>{
-      const cid=(m.blocks||{})[BK(DS(d),slot.id)];const cc=cid?ct(cid):null;if(!cc)return'';
-      return`<div class="mc-pip" style="background:${cc.bg};color:${cc.fg}">${slot.name.replace(/限$/,'')}</div>`;
-    })).join('');
-    cards+=`<div class="member-card">
-      <div class="mc-head">
-        <div class="mc-av" style="background:${col.bg};color:${col.fg}">${m.name.slice(0,2)}</div>
-        <div><div class="mc-name">${m.name}${m.isMe?' <span style="font-size:10px;color:var(--text3)">(自分)</span>':''}</div><div class="mc-part">${m.part||'パート未設定'}</div></div>
-      </div>
-      ${pips?`<div class="mc-pips">${pips}</div>`:''}
-    </div>`;
-  });
+  // ── 新規グループ作成 ──
+  html+=`<div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
+    <div style="font-size:14px;font-weight:600;margin-bottom:10px">＋ 新しいグループを作る</div>
+    <input type="text" id="grp-new-name" placeholder="グループ名（例：アカペラA班）" style="width:100%;margin-bottom:8px">
+    <button class="btn btn-p btn-block" onclick="createGroup()">作成してコードを発行</button>
+  </div>
 
-  el.innerHTML=`
-    <h2 class="scr-title">メンバー</h2>
+  <div style="display:flex;align-items:center;gap:10px;margin:14px 0">
+    <div style="flex:1;height:1px;background:var(--border)"></div>
+    <span style="font-size:11px;color:var(--text3)">または</span>
+    <div style="flex:1;height:1px;background:var(--border)"></div>
+  </div>
 
-    <!-- グループ情報バー -->
-    <div style="background:var(--accent-l);border:1px solid #90C8AD;border-radius:14px;padding:14px 16px;margin-bottom:16px">
-      <div style="display:flex;align-items:center;margin-bottom:10px">
-        <span style="font-size:13px;font-weight:600;color:var(--accent)">✓ グループ同期中</span>
-        <button onclick="leaveGroup()" style="margin-left:auto;font-size:11px;color:#C0392B;border:1px solid #E8A09A;background:none;padding:4px 10px;border-radius:8px;font-family:'Outfit',sans-serif;cursor:pointer">退出</button>
-      </div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:8px">👇 このコードをLINEのグループに送ろう</div>
-      <div style="background:#fff;border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <span style="font-family:'Fraunces',serif;font-size:26px;letter-spacing:.2em;color:var(--accent);font-weight:700;flex:1">${grpId}</span>
-        <button onclick="copyGrpCode()" style="padding:8px 14px;border-radius:9px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer">コピー</button>
-      </div>
-      <div style="font-size:11px;color:var(--accent)">受け取った人は「メンバー」タブでコードを入力するだけ</div>
-    </div>
+  <div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px">
+    <div style="font-size:14px;font-weight:600;margin-bottom:10px">🔑 コードで参加</div>
+    <input type="text" id="grp-join-code" placeholder="例：ABC123" style="width:100%;font-size:18px;letter-spacing:.1em;text-align:center;text-transform:uppercase;margin-bottom:8px">
+    <button class="btn btn-p btn-block" onclick="joinGroup()">参加する</button>
+  </div>
+  <div style="height:24px"></div>`;
 
-    <!-- メンバー一覧 -->
-    <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">${all.length}人参加中</div>
-    ${cards}
-    <div style="height:24px"></div>
-  `;
+  el.innerHTML=html;
 }
 const rmMember=id=>{if(!confirm('削除しますか？'))return;st.members=st.members.filter(m=>m.id!==id);save();renderBand();};
 let _uC='green',_nmC='blue';
@@ -1355,7 +1370,7 @@ function initApp(){
   updTopbar();render();expMe();
   if(!st.boarded){document.getElementById('ob').classList.remove('gone');obProg(0);}
   else{document.getElementById('ob').classList.add('gone');}
-  if(grpId){startSync();}
+  startAllSync();
 }
 
 async function sbFetch(path, method='GET', body=null){
@@ -1376,57 +1391,83 @@ async function sbFetch(path, method='GET', body=null){
 }
 
 // グループ状態
-let grpId=localStorage.getItem('hrm_grp_id')||null;
-let grpName=localStorage.getItem('hrm_grp_name')||null;
-let _syncTimer=null;
+// ══ MULTI-GROUP SYSTEM ══
+// myGroups: [{id, name, members:[], practiceSlots:[]}]
+let myGroups = JSON.parse(localStorage.getItem('hrm_groups')||'[]');
+let activeGrpId = localStorage.getItem('hrm_active_grp')||null;
+let _syncTimers = {}; // grpId -> timer
 
 function genGrpCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from({length:6},()=>c[~~(Math.random()*c.length)]).join('');}
 
+function saveGroups(){
+  localStorage.setItem('hrm_groups', JSON.stringify(myGroups));
+  localStorage.setItem('hrm_active_grp', activeGrpId||'');
+}
+
+function getGroup(id){return myGroups.find(g=>g.id===id)||null;}
+
+// ── グループを作る ──
 async function createGroup(){
-  const name=st.me.name?st.me.name+'のグループ':'練習グループ';
-  const id=genGrpCode();
+  const nameInput = document.getElementById('grp-new-name');
+  const name = nameInput ? nameInput.value.trim() : '';
+  const grpName = name || (st.me.name+'のグループ');
+  const id = genGrpCode();
   try{
-    await sbFetch('/rest/v1/groups','POST',{id,name});
-    grpId=id;grpName=name;
-    localStorage.setItem('hrm_grp_id',id);
-    localStorage.setItem('hrm_grp_name',name);
-    await pushMyData();
-    showToast('グループを作成しました');
+    await sbFetch('/rest/v1/groups','POST',{id, name:grpName});
+    const newGrp = {id, name:grpName, members:[], practiceSlots:[]};
+    myGroups.push(newGrp);
+    activeGrpId = id;
+    saveGroups();
+    await pushMyDataTo(id);
+    showToast('グループ「'+grpName+'」を作成しました');
+    startSyncFor(id);
     renderBand();
-    startSync();
   }catch(e){showToast('エラー: '+e.message);}
 }
 
+// ── グループに参加 ──
 async function joinGroup(){
-  const code=document.getElementById('grp-join-code').value.trim().toUpperCase();
-  if(!code)return;
+  const inp = document.getElementById('grp-join-code');
+  const code = inp ? inp.value.trim().toUpperCase() : '';
+  if(!code){showToast('コードを入力してください');return;}
+  if(myGroups.find(g=>g.id===code)){showToast('すでに参加中です');return;}
   try{
-    const rows=await sbFetch('/rest/v1/groups?id=eq.'+code+'&select=id,name');
+    const rows = await sbFetch('/rest/v1/groups?id=eq.'+code+'&select=id,name');
     if(!rows||rows.length===0){showToast('コードが見つかりませんでした');return;}
-    grpId=rows[0].id;grpName=rows[0].name;
-    localStorage.setItem('hrm_grp_id',grpId);
-    localStorage.setItem('hrm_grp_name',grpName);
-    await pushMyData();
-    await pullGroupData();
-    showToast('グループに参加しました！');
+    const newGrp = {id:rows[0].id, name:rows[0].name, members:[], practiceSlots:[]};
+    myGroups.push(newGrp);
+    activeGrpId = newGrp.id;
+    saveGroups();
+    await pushMyDataTo(newGrp.id);
+    await pullGroupDataFor(newGrp.id);
+    showToast('「'+newGrp.name+'」に参加しました！');
+    startSyncFor(newGrp.id);
     renderBand();
-    startSync();
   }catch(e){showToast('エラー: '+e.message);}
 }
 
-async function leaveGroup(){
-  if(!confirm('グループから退出しますか？'))return;
-  // 自分のデータだけ削除
-  try{await sbFetch('/rest/v1/members?code=eq.'+st.me.code,'DELETE');}catch(e){}
-  grpId=null;grpName=null;
-  localStorage.removeItem('hrm_grp_id');localStorage.removeItem('hrm_grp_name');
-  st.members=[];save();
-  stopSync();renderBand();renderBand();
-  showToast('グループから退出しました');
+// ── グループから退出 ──
+async function leaveGroup(grpId){
+  const g = getGroup(grpId);
+  if(!g)return;
+  if(!confirm('「'+g.name+'」から退出しますか？'))return;
+  try{await sbFetch('/rest/v1/members?code=eq.'+st.me.code+'&group_id=eq.'+grpId,'DELETE');}catch(e){}
+  // 決定済み練習コマから自分のブロックを削除
+  (g.practiceSlots||[]).forEach(ps=>{
+    const key = ps.date+'|'+ps.slot_id;
+    if(st.blocks[key]==='practice_'+grpId) delete st.blocks[key];
+  });
+  myGroups = myGroups.filter(g=>g.id!==grpId);
+  if(activeGrpId===grpId) activeGrpId = myGroups[0]?.id||null;
+  saveGroups();
+  stopSyncFor(grpId);
+  save();
+  showToast('退出しました');
+  renderBand();
 }
 
-async function pushMyData(){
-  if(!grpId)return;
+// ── 自分のデータを特定グループにpush ──
+async function pushMyDataTo(grpId){
   const payload={
     group_id:grpId,
     name:st.me.name,
@@ -1440,50 +1481,96 @@ async function pushMyData(){
     updated_at:new Date().toISOString()
   };
   try{
-    // upsert (insert or update)
-    await sbFetch('/rest/v1/members?code=eq.'+st.me.code,'DELETE');
+    await sbFetch('/rest/v1/members?code=eq.'+st.me.code+'&group_id=eq.'+grpId,'DELETE');
     await sbFetch('/rest/v1/members','POST',payload);
   }catch(e){console.warn('push error',e);}
 }
 
-async function pullGroupData(){
-  if(!grpId)return;
+// 全グループにpush
+async function pushMyData(){
+  for(const g of myGroups) await pushMyDataTo(g.id);
+}
+
+// ── グループデータをpull ──
+async function pullGroupDataFor(grpId){
   try{
-    const rows=await sbFetch('/rest/v1/members?group_id=eq.'+grpId+'&select=*');
-    if(!rows)return;
-    // 自分以外をst.membersに反映
-    const others=rows.filter(r=>r.code!==st.me.code);
-    st.members=others.map(r=>({
-      id:r.id,
-      name:r.name,
-      part:r.part,
-      color:r.color,
-      code:r.code,
-      blocks:r.blocks||{},
-      tpl:r.tpl||{},
-      cats:r.cats||[],
-      slots:r.slots||[],
+    // メンバー
+    const rows = await sbFetch('/rest/v1/members?group_id=eq.'+grpId+'&select=*');
+    const g = getGroup(grpId);
+    if(!g||!rows)return;
+    g.members = rows.filter(r=>r.code!==st.me.code).map(r=>({
+      id:r.id, name:r.name, part:r.part, color:r.color, code:r.code,
+      blocks:r.blocks||{}, tpl:r.tpl||{}, cats:r.cats||[], slots:r.slots||[],
     }));
-    save();
-    if(curPanel==='band')renderBand();
-    if(curPanel==='find')renderFind();
+    // 練習コマ決定履歴
+    const ps = await sbFetch('/rest/v1/practice_slots?group_id=eq.'+grpId+'&select=*&order=decided_at.desc');
+    g.practiceSlots = ps||[];
+    saveGroups();
+    if(curPanel==='band') renderBand();
+    if(curPanel==='find') renderFind();
   }catch(e){console.warn('pull error',e);}
 }
 
-function startSync(){
-  stopSync();
-  pullGroupData();
-  // 30秒ごとに自動同期
-  _syncTimer=setInterval(()=>{pullGroupData();},30000);
+// ── 練習コマを決定 ──
+async function decidePracticeSlot(grpId, date, slotId){
+  const g = getGroup(grpId);
+  if(!g)return;
+  const slot = st.slots.find(s=>s.id===slotId);
+  if(!confirm(`${date} ${slot?.name||''}を「${g.name}」の練習コマに決定しますか？`))return;
+
+  try{
+    // Supabaseに記録
+    await sbFetch('/rest/v1/practice_slots','POST',{
+      group_id:grpId,
+      slot_id:slotId,
+      date:date,
+      decided_by:st.me.name,
+      decided_at:new Date().toISOString()
+    });
+
+    // 自分のスケジュールに「練習」として反映
+    const key = date+'|'+slotId;
+    // 練習カテゴリがなければ追加
+    const practiceCatId = 'practice';
+    if(!st.cats.find(c=>c.id===practiceCatId)){
+      st.cats.push({id:practiceCatId, name:'練習', bg:'#EDE9FE', fg:'#6D28D9'});
+    }
+    st.blocks[key] = practiceCatId;
+    save();
+
+    showToast('練習コマを決定しました！');
+    await pullGroupDataFor(grpId);
+    renderBand();
+    renderWeek();
+  }catch(e){showToast('エラー: '+e.message);}
 }
-function stopSync(){clearInterval(_syncTimer);_syncTimer=null;}
 
-// openGroupModal廃止: メンバータブ自体がグループ画面
+// ── 練習コマ決定を取り消す ──
+async function cancelPracticeSlot(grpId, psId, date, slotId){
+  if(!confirm('この練習コマの決定を取り消しますか？'))return;
+  try{
+    await sbFetch('/rest/v1/practice_slots?id=eq.'+psId,'DELETE');
+    const key = date+'|'+slotId;
+    if(st.blocks[key]==='practice') delete st.blocks[key];
+    save();
+    showToast('取り消しました');
+    await pullGroupDataFor(grpId);
+    renderBand();
+    renderWeek();
+  }catch(e){showToast('エラー: '+e.message);}
+}
 
-// renderGroupModal 廃止
+// ── 同期 ──
+function startSyncFor(grpId){
+  stopSyncFor(grpId);
+  pullGroupDataFor(grpId);
+  _syncTimers[grpId] = setInterval(()=>pullGroupDataFor(grpId), 30000);
+}
+function stopSyncFor(grpId){clearInterval(_syncTimers[grpId]);delete _syncTimers[grpId];}
+function startAllSync(){myGroups.forEach(g=>startSyncFor(g.id));}
+function stopAllSync(){Object.keys(_syncTimers).forEach(stopSyncFor);}
 
-function copyGrpCode(){
-  if(!grpId)return;
+function copyGrpCode(grpId){
   navigator.clipboard.writeText(grpId)
     .then(()=>showToast('コードをコピーしました'))
     .catch(()=>prompt('コードをコピー:',grpId));
