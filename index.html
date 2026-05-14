@@ -143,7 +143,7 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:#F4F4F6;color:#0D0
 /* ── PANELS (find/band/settings) ── */
 .side-panel{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px;display:none;background:#F6F4EF;color:#1C1A17;}
 .side-panel.active{display:block;}
-.scr-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;color:var(--text);}
+.scr-title{font-family:'Inter','Noto Sans JP',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;color:var(--text);}
 .scr-sub{font-size:12px;color:var(--text2);margin-bottom:14px;}
 
 .scard{background:#FFFFFF;color:#0D0D10;border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow-sm);}
@@ -152,7 +152,7 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:#F4F4F6;color:#0D0
 
 .stat-row{display:flex;gap:8px;margin-bottom:14px;}
 .stat-c{background:#FFFFFF;border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 14px;flex:1;box-shadow:var(--shadow-sm);}
-.stat-n{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--accent);line-height:1;}
+.stat-n{font-family:'Inter',sans-serif;font-size:26px;font-weight:800;color:var(--accent);line-height:1;}
 .stat-l{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-top:4px;font-weight:600;font-family:'Inter','Noto Sans JP',sans-serif;}
 
 .find-row{background:#FFFFFF;border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;box-shadow:var(--shadow-sm);}
@@ -497,6 +497,14 @@ input:focus{border-color:var(--accent);}
 
 <!-- 日付詳細(月表示) -->
 <div class="sh-ov" id="ddp-ov" onclick="closeSh('ddp')"></div>
+
+<!-- 練習コマ決定シート -->
+<div class="sh-ov" id="practice-ov" onclick="closeSh('practice')"></div>
+<div class="sheet" id="practice-sh">
+  <div class="sh-handle"></div>
+  <div class="sh-head"><div class="sh-title" id="psh-title">練習コマを決定</div></div>
+  <div class="sh-scroll" id="psh-body"></div>
+</div>
 <div class="sheet" id="ddp-sh">
   <div class="sh-handle"></div>
   <div class="sh-head"><div class="sh-title" id="ddp-title"></div></div>
@@ -951,9 +959,10 @@ function ddpTap(dStr,dn,slotId,slotName){
 
 // ══ FIND ══
 function renderFind(){
-  // activeGrpIdのグループのメンバーで計算
-  const activeGrp = myGroups.find(g=>g.id===activeGrpId);
-  const grpMembers = activeGrp ? activeGrp.members : [];
+  // activeGrpId が未設定なら最初のグループを使う
+  if(!activeGrpId && myGroups.length>0){activeGrpId=myGroups[0].id;saveGroups();}
+  const activeGrp=myGroups.find(g=>g.id===activeGrpId);
+  const grpMembers=activeGrp?activeGrp.members:[];
   const all=[{name:st.me.name,color:st.me.color,blocks:st.blocks,isMe:true},...grpMembers];
   const total=all.length;
   const dates=weekDates();
@@ -970,34 +979,100 @@ function renderFind(){
   const fullS=scores.filter(s=>s.count===total&&total>0);
   const nearS=scores.filter(s=>s.count>=st.minM&&s.count<total);
   const el=document.getElementById('view-find');
-  // グループ選択タブ
-  let grpTabHTML='';
-  if(myGroups.length>1){
-    grpTabHTML=`<div style="display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px">
-      ${myGroups.map(g=>`<button onclick="activeGrpId='${g.id}';saveGroups();renderFind();" style="padding:6px 14px;border-radius:20px;border:none;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;background:${activeGrpId===g.id?'var(--accent)':'var(--surf2)'};color:${activeGrpId===g.id?'#fff':'var(--text2)'}">${g.name}</button>`).join('')}
+  if(!el)return;
+
+  // ── グループタブ ──
+  let tabHTML='';
+  if(myGroups.length===0){
+    el.innerHTML=`<div style="padding:40px 20px;text-align:center;color:var(--text3)">
+      <div style="font-size:40px;margin-bottom:12px">👥</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px">グループがありません</div>
+      <div style="font-size:13px">「グループ」タブでグループを作るか参加してください</div>
     </div>`;
-  } else if(myGroups.length===1 && !activeGrpId){
-    activeGrpId=myGroups[0].id; saveGroups();
+    return;
   }
-  let h=`<h2 class="scr-title">練習候補</h2>${grpTabHTML}<p class="scr-sub">${activeGrp?'「'+activeGrp.name+'」':'グループ未選択'} · 今週の空きコマ</p>
+  tabHTML=`<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch">
+    ${myGroups.map(g=>{const active=activeGrpId===g.id;return`<button onclick="activeGrpId='${g.id}';saveGroups();renderFind();" style="padding:7px 16px;border-radius:20px;border:none;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter','Noto Sans JP',sans-serif;flex-shrink:0;background:${active?'var(--accent)':'#FFFFFF'};color:${active?'#fff':'var(--text2)'};box-shadow:${active?'0 2px 8px rgba(91,91,246,.3)':'0 1px 3px rgba(0,0,0,.08)'}">${g.name}</button>`;}).join('')}
+  </div>`;
+
+  // ── 決定済み練習コマ ──
+  const ps=activeGrp?activeGrp.practiceSlots||[]:[];
+  let psHTML='';
+  if(ps.length>0){
+    psHTML=`<div style="margin-bottom:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">決定済み練習コマ</div>`;
+    ps.forEach(p=>{
+      const slot=st.slots.find(s=>s.id==p.slot_id);
+      const dt=new Date(p.decided_at);
+      const dtStr=`${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+      psHTML+=`<div style="background:#EDE9FE;border-radius:12px;padding:11px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px">
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;color:#5B21B6">${p.date}（${slot?.name||''}）${slot?.start||''}–${slot?.end||''}</div>
+          <div style="font-size:11px;color:#8B5CF6;margin-top:2px">${p.decided_by}が${dtStr}に決定</div>
+        </div>
+        <button onclick="openChangePracticeSheet('${activeGrpId}','${p.id}','${p.date}',${p.slot_id})" style="padding:6px 12px;border-radius:8px;border:none;background:rgba(91,33,182,.1);color:#5B21B6;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">変更</button>
+      </div>`;
+    });
+    psHTML+=`</div>`;
+  }
+
+  // ── 統計 ──
+  let h=`<h2 class="scr-title">練習候補</h2>${tabHTML}${psHTML}
   <div class="stat-row">
     <div class="stat-c"><div class="stat-n">${total}</div><div class="stat-l">メンバー</div></div>
     <div class="stat-c"><div class="stat-n" style="color:var(--accent)">${fullS.length}</div><div class="stat-l">全員空き</div></div>
     <div class="stat-c"><div class="stat-n" style="color:#7A5010">${nearS.length}</div><div class="stat-l">${st.minM}人以上</div></div>
   </div>`;
+
+  // ── 全員空きのコマ ──
   if(fullS.length){
-    h+=`<div class="sec-lbl">✓ 全員参加可能</div>`;
-    fullS.forEach(s=>{h+=`<div class="find-row"><div class="fr-slot" style="color:var(--accent)">${s.slot.name}</div><div class="fr-info">${s.dn}曜 ${s.slot.start}–${s.slot.end}</div><div class="fr-bar-w"><div class="fr-bar" style="width:100%"></div></div><div class="fr-cnt" style="color:var(--accent)">${s.count}/${s.total}</div><span class="fr-badge">全員</span></div>`;});
+    h+=`<div class="sec-lbl">✓ 全員参加可能 — タップで練習コマに決定</div>`;
+    fullS.forEach(s=>{
+      // このコマはすでに決定済みか？
+      const alreadyDecided=ps.find(p=>p.date===s.dStr&&p.slot_id==s.slot.id);
+      h+=`<div class="find-row" style="cursor:pointer;${alreadyDecided?'opacity:.5':''}" onclick="${alreadyDecided?'':'openDecidePracticeSheet(''+activeGrpId+'',''+s.dStr+'','+s.slot.id+')'}">
+        <div style="display:flex;flex-direction:column;flex:1;gap:2px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:13px;font-weight:700;color:var(--accent)">${s.dn}曜 ${s.slot.name}</span>
+            <span style="font-size:12px;color:var(--text2)">${s.slot.start}–${s.slot.end}</span>
+            ${alreadyDecided?'<span style="font-size:10px;background:#EDE9FE;color:#5B21B6;padding:2px 7px;border-radius:8px;font-weight:600">決定済み</span>':'<span style="font-size:10px;background:var(--accent-l);color:var(--accent);padding:2px 7px;border-radius:8px;font-weight:600">タップで決定</span>'}
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
+            ${s.avail.map(m=>{const col=AC.find(x=>x.id===m.color)||AC[0];return`<div style="width:18px;height:18px;border-radius:50%;background:${col.bg};color:${col.fg};font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center">${m.name.slice(0,1)}</div>`;}).join('')}
+            <span style="font-size:11px;color:var(--text2);margin-left:4px">${s.avail.map(m=>m.name).join('・')}</span>
+          </div>
+        </div>
+        <div style="font-size:16px;font-weight:700;color:var(--accent)">${s.count}/${s.total}</div>
+      </div>`;
+    });
   }
+
+  // ── 一部空きのコマ ──
   if(nearS.length){
-    h+=`<div class="sec-lbl">△ ${st.minM}人以上</div>`;
-    nearS.slice(0,8).forEach(s=>{const p=Math.round(s.count/s.total*100);h+=`<div class="find-row"><div class="fr-slot">${s.slot.name}</div><div class="fr-info">${s.dn}曜 ${s.slot.start}–${s.slot.end}</div><div class="fr-bar-w"><div class="fr-bar" style="width:${p}%;background:#E8C86A"></div></div><div class="fr-cnt" style="color:#7A5010">${s.count}/${s.total}</div></div>`;});
+    h+=`<div class="sec-lbl">△ ${st.minM}人以上参加可能</div>`;
+    nearS.slice(0,8).forEach(s=>{
+      const pct=Math.round(s.count/s.total*100);
+      h+=`<div class="find-row" style="cursor:pointer" onclick="openDecidePracticeSheet('${activeGrpId}','${s.dStr}',${s.slot.id})">
+        <div style="display:flex;flex-direction:column;flex:1;gap:2px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:13px;font-weight:700">${s.dn}曜 ${s.slot.name}</span>
+            <span style="font-size:12px;color:var(--text2)">${s.slot.start}–${s.slot.end}</span>
+          </div>
+          <div style="height:4px;background:var(--surf2);border-radius:2px;overflow:hidden;margin-top:4px">
+            <div style="height:100%;width:${pct}%;background:#E8C86A;border-radius:2px"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text2)">${s.avail.map(m=>m.name).join('・')}</div>
+        </div>
+        <div style="font-size:16px;font-weight:700;color:#7A5010">${s.count}/${s.total}</div>
+      </div>`;
+    });
   }
+
   if(!fullS.length&&!nearS.length){
     h+=`<div style="text-align:center;padding:32px 16px;color:var(--text3)">
-      <div style="font-size:32px;margin-bottom:10px">🎵</div>
+      <div style="font-size:40px;margin-bottom:12px">🎵</div>
       <div style="font-size:14px;font-weight:600;color:var(--text2);margin-bottom:6px">空きが重なるコマが見つかりませんでした</div>
-      <div style="font-size:12px">メンバーのスケジュールを入力するか、最低参加人数を設定で変更してください</div>
+      <div style="font-size:12px">メンバーのスケジュールを入力するか、設定で最低参加人数を変更してください</div>
     </div>`;
   }
   h+=`<div style="height:20px"></div>`;
@@ -1020,7 +1095,7 @@ function renderBand(){
       const isActive=activeGrpId===g.id;
 
       // メンバーアバター
-      const avatars=all.map(m=>{const col=AC.find(x=>x.id===m.color)||AC[0];return`<div style="width:28px;height:28px;border-radius:50%;background:${col.bg};color:${col.fg};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-right:-6px;border:2px solid #fff">${m.name.slice(0,1)}</div>`;}).join('');
+      const avatars=all.map(m=>{const col=AC.find(x=>x.id===m.color)||AC[0];return`<div style="width:28px;height:28px;border-radius:50%;background:${col.bg};color:${col.fg};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-right:2px;border:2px solid #fff">${m.name.slice(0,1)}</div>`;}).join('');
 
       // 決定済み練習コマ
       const ps=g.practiceSlots||[];
@@ -1046,7 +1121,7 @@ function renderBand(){
           <!-- コード -->
           <div style="display:flex;align-items:center;gap:8px;background:var(--surf2);border-radius:10px;padding:8px 12px">
             <span style="font-size:11px;color:var(--text3)">コード</span>
-            <span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;letter-spacing:.15em;color:var(--accent);flex:1">${g.id}</span>
+            <span style="font-family:'Inter',monospace;font-size:16px;font-weight:700;letter-spacing:.15em;color:var(--accent);flex:1">${g.id}</span>
             <button onclick="copyGrpCode('${g.id}')" style="font-size:11px;padding:5px 10px;border-radius:7px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:'Inter',sans-serif">コピー</button>
           </div>
         </div>
@@ -1576,6 +1651,82 @@ function copyGrpCode(grpId){
     .catch(()=>prompt('コードをコピー:',grpId));
 }
 
+
+// ══ 練習コマ決定シート ══
+let _practiceCtx = null; // {grpId, date, slotId, existingId}
+
+function openDecidePracticeSheet(grpId, date, slotId){
+  const slot=st.slots.find(s=>s.id==slotId);
+  const g=myGroups.find(x=>x.id===grpId);
+  _practiceCtx={grpId,date,slotId:Number(slotId),existingId:null};
+  const d=new Date(date);
+  const dn=DAYS[d.getDay()===0?6:d.getDay()-1];
+  document.getElementById('psh-title').textContent=`${d.getMonth()+1}/${d.getDate()}（${dn}）${slot?.name||''} を練習コマに？`;
+  document.getElementById('psh-body').innerHTML=`
+    <div style="padding:16px">
+      <div style="font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.6">
+        グループ「${g?.name||''}」の練習コマとして決定します。<br>
+        <span style="font-size:12px;color:var(--text3)">決定者と日時が履歴として残ります。あとで変更もできます。</span>
+      </div>
+      <button class="btn btn-p btn-block" style="margin-bottom:8px" onclick="execDecidePractice()">決定する</button>
+      <button class="btn btn-g btn-block" onclick="closeSh('practice')">キャンセル</button>
+    </div>`;
+  openSh('practice');
+}
+
+function openChangePracticeSheet(grpId, existingId, date, slotId){
+  const slot=st.slots.find(s=>s.id==slotId);
+  const g=myGroups.find(x=>x.id===grpId);
+  _practiceCtx={grpId,date,slotId:Number(slotId),existingId};
+  const d=new Date(date);
+  const dn=DAYS[d.getDay()===0?6:d.getDay()-1];
+  document.getElementById('psh-title').textContent=`練習コマを変更・取消`;
+  document.getElementById('psh-body').innerHTML=`
+    <div style="padding:16px">
+      <div style="background:#EDE9FE;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:13px;color:#5B21B6;font-weight:600">
+        現在: ${d.getMonth()+1}/${d.getDate()}（${dn}）${slot?.name||''} ${slot?.start||''}–${slot?.end||''}
+      </div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:14px">取り消すと履歴に残ったまま解除されます。</div>
+      <button class="btn btn-d btn-block" style="margin-bottom:8px" onclick="execCancelPractice()">この練習コマを取り消す</button>
+      <button class="btn btn-g btn-block" onclick="closeSh('practice')">閉じる</button>
+    </div>`;
+  openSh('practice');
+}
+
+async function execDecidePractice(){
+  if(!_practiceCtx)return;
+  const {grpId,date,slotId}=_practiceCtx;
+  closeSh('practice');
+  try{
+    await sbFetch('/rest/v1/practice_slots','POST',{
+      group_id:grpId, slot_id:slotId, date, decided_by:st.me.name,
+      decided_at:new Date().toISOString()
+    });
+    // 自分のスケジュールにも「練習」として反映
+    if(!st.cats.find(c=>c.id==='practice'))
+      st.cats.push({id:'practice',name:'練習',bg:'#EDE9FE',fg:'#6D28D9'});
+    st.blocks[BK(date,slotId)]='practice';
+    save();
+    showToast('練習コマを決定しました！');
+    await pullGroupDataFor(grpId);
+    renderFind(); renderWeek();
+  }catch(e){showToast('エラー: '+e.message);}
+}
+
+async function execCancelPractice(){
+  if(!_practiceCtx)return;
+  const {grpId,date,slotId,existingId}=_practiceCtx;
+  closeSh('practice');
+  try{
+    await sbFetch('/rest/v1/practice_slots?id=eq.'+existingId,'DELETE');
+    const key=BK(date,slotId);
+    if(st.blocks[key]==='practice') delete st.blocks[key];
+    save();
+    showToast('練習コマを取り消しました');
+    await pullGroupDataFor(grpId);
+    renderFind(); renderWeek();
+  }catch(e){showToast('エラー: '+e.message);}
+}
 // ══ INIT ══
 // セッション確認してからアプリ起動
 checkSession();
