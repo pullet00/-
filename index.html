@@ -76,8 +76,8 @@ flex-shrink:0;min-height:40px;
 .day-head{padding:7px 2px;text-align:center;border-right:1px solid var(–border);}
 .day-head:last-child{border-right:none;}
 .dh-name{font-size:9px;font-weight:700;color:var(–text3);letter-spacing:.06em;text-transform:uppercase;}
-.dh-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(–text);margin:2px auto 0;}
-.dh-num.today{background:var(–accent);color:#fff;box-shadow:0 2px 8px rgba(91,91,246,.4);}
+.dh-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(–text);margin:2px auto 0;}
+.dh-num.today{background:var(–accent);color:#fff;}
 .dh-name.sat{color:var(–sat);} .dh-name.sun{color:var(–sun);}
 .dh-num.sat-c{color:var(–sat);} .dh-num.sun-c{color:var(–sun);}
 
@@ -555,10 +555,10 @@ transition:filter .1s,transform .05s;
     <button class="today-btn" onclick="goToday()">今日</button>
   </div>
   <div class="topbar-right">
-    <div class="vm-seg" id="vm-seg">
-      <button class="vm-btn on" id="vb-week" onclick="setVM('week')">週</button>
-      <button class="vm-btn" id="vb-month" onclick="setVM('month')">月</button>
-    </div>
+    <button class="vm-btn on" id="vm-toggle-btn" onclick="toggleVM()"
+      style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surf);font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'Inter','Noto Sans JP',sans-serif;">
+      月で見る
+    </button>
     <button class="btn btn-g btn-sm" id="share-btn" onclick="openOv('ov-share')" style="padding:5px 10px;font-size:11px;display:flex;align-items:center;gap:4px"><svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</button>
     <div class="av" id="tb-av" onclick="openUserModal()"></div>
   </div>
@@ -687,7 +687,13 @@ const weekDates=()=>{const m=getMon(offset);return DAYS.map((_,i)=>{const d=new 
 const navPrev=()=>{offset--;render();};
 const navNext=()=>{offset++;render();};
 const goToday=()=>{offset=0;render();};
-const setVM=v=>{vm=v;document.getElementById('vb-week').classList.toggle('on',v==='week');document.getElementById('vb-month').classList.toggle('on',v==='month');render();};
+function setVM(v){vm=v;render();}
+function toggleVM(){
+  vm = vm==='week'?'month':'week';
+  const btn=document.getElementById('vm-toggle-btn');
+  if(btn) btn.textContent = vm==='week'?'月で見る':'週で見る';
+  render();
+}
 
 // ══ PANEL SWITCH ══
 let curPanel='cal';
@@ -696,7 +702,7 @@ function showPanel(name){
   ['cal','month','find','band','settings'].forEach(n=>{
     const el=document.getElementById('view-'+n);if(el){el.style.display='none';if(el.classList)el.classList.remove('active');}
   });
-  const calNav=document.getElementById('cal-nav'),vmSeg=document.getElementById('vm-seg'),shareBtn=document.getElementById('share-btn');
+  const calNav=document.getElementById('cal-nav'),shareBtn=document.getElementById('share-btn');
   ['cal','band','find','settings'].forEach(n=>document.getElementById('bn-'+n)?.classList.remove('on'));
   document.getElementById('bn-'+name)?.classList.add('on');
 
@@ -766,18 +772,29 @@ function renderWeek(){
       const weekBg=isSat?'sat-bg':isSun?'sun-bg':'';
       const bg=c?c.fg:'transparent';
 
+      // 練習コマ決定済みか確認（全グループ）
+      const practiceInfo = myGroups.map(g=>{
+        const ps=(g.practiceSlots||[]).find(p=>p.date===ds&&p.slot_id==slot.id);
+        return ps?g.name:null;
+      }).filter(Boolean);
+      const isPractice = practiceInfo.length>0;
+      const cellBg = isPractice?'#EDE9FE':(c?c.bg:'');
+      const cellBgFb = isPractice?'#EDE9FE':(isSat?'#F0FAFA':isSun?'#FFF0F2':'#fff');
+
       gh+=`<div class="slot-cell${isSel?' sel':''} ${weekBg}"
-        style="background:${c?c.bg:''};${hasTpl?'opacity:.7':''}"
+        style="background:${cellBg||cellBgFb};${hasTpl&&!isPractice?'opacity:.7':''}"
         ontouchstart="ts('${key}','${slot.name}',event)"
         ontouchend="te(event)"
         ontouchmove="tm(event)"
         onclick="sc('${key}','${slot.name}')">
-        <div class="cell-bar" style="background:${bg}"></div>
+        <div class="cell-bar" style="background:${isPractice?'#6D28D9':bg}"></div>
         <div class="cell-body">
-          ${c?`<div class="cell-cat" style="color:${c.fg}">${c.name}</div>`:
-               `<div class="cell-empty">${slot.start}</div>`}
+          ${isPractice
+            ?`<div class="cell-cat" style="color:#5B21B6;font-size:9px">🎵${practiceInfo[0]}</div>`
+            :c?`<div class="cell-cat" style="color:${c.fg}">${c.name}</div>`
+            :`<div class="cell-empty">${slot.start}</div>`}
         </div>
-        ${hasTpl?`<div class="cell-tpl">※</div>`:''}
+        ${hasTpl&&!isPractice?`<div class="cell-tpl">※</div>`:''}
         ${isSel?`<div class="cell-check">✓</div>`:''}
       </div>`;
     });
@@ -904,10 +921,15 @@ function renderMonth(){
       const cur=new Date(start);cur.setDate(start.getDate()+w*7+d);
       const dStr=DS(cur);const isM=cur.getMonth()===mo;const isT=dStr===todayStr;
       const dn=DAYS[d];
-      const pips=st.slots.filter(s=>st.blocks[BK(dStr,s.id)]||(st.tpl||{})[dn+'-'+s.id])
-        .map(s=>{const did=st.blocks[BK(dStr,s.id)];const tpl=(st.tpl||{})[dn+'-'+s.id];
-          const cid=did||(tpl?'class':null);const c=cid?ct(cid):null;if(!c)return'';
-          return`<div class="mpip" style="background:${c.bg};color:${c.fg};${!did?'opacity:.6':''}">${s.name.replace(/限$/,'')}</div>`;}).join('');
+      const pips=st.slots.map(s=>{
+        const did=st.blocks[BK(dStr,s.id)];
+        const tpl=(st.tpl||{})[dn+'-'+s.id];
+        // 練習コマ確認
+        const pracGrp=myGroups.find(g=>(g.practiceSlots||[]).find(p=>p.date===dStr&&p.slot_id==s.id));
+        if(pracGrp) return`<div class="mpip" style="background:#EDE9FE;color:#5B21B6">🎵</div>`;
+        const cid=did||(tpl?'class':null);const cv=cid?ct(cid):null;if(!cv)return'';
+        return`<div class="mpip" style="background:${cv.bg};color:${cv.fg};${!did?'opacity:.6':''}">${s.name.replace(/限$/,'')}</div>`;
+      }).filter(Boolean).join('');
       html+=`<div class="m-cell${!isM?' other':''}${isT?' is-today':''}" onclick="monthTap('${dStr}','${dn}')">
         <div class="m-date${isT?' today-d':''}">${cur.getDate()}</div>
         ${pips?`<div class="m-pips">${pips}</div>`:''}
