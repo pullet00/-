@@ -1344,7 +1344,7 @@ async function sendOTP(){
   if(!email){showLoginError('メールアドレスを入力してください');return;}
   if(!email.includes('@')){showLoginError('正しいメールアドレスを入力してください');return;}
   const btn = document.getElementById('login-send-btn');
-  btn.textContent='送信中...';btn.disabled=true;
+  btn.textContent='送信中...';btn.disabled=true;btn.style.opacity='0.7';
 
   // タイムアウト10秒
   const timeout = new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),10000));
@@ -1361,7 +1361,7 @@ async function sendOTP(){
     ]);
     if(result.error) throw result.error;
   }catch(e){
-    btn.textContent='ログインコードをメールで受け取る';btn.disabled=false;
+    btn.textContent='ログインコードをメールで受け取る';btn.disabled=false;btn.style.opacity='1';
     if(e.message==='timeout'){
       showLoginError('通信がタイムアウトしました。再度お試しください');
     } else {
@@ -1397,8 +1397,12 @@ async function onLoginSuccess(user){
   if(!currentUser) return;
 
   // Supabaseからデータ復元
-  document.getElementById('login-screen').innerHTML+=
-    '<div id="load-msg" style="position:absolute;bottom:40px;width:100%;text-align:center;font-size:13px;color:#9898AA">データを読み込み中...</div>';
+  // 別要素でローディング表示（innerHTML+= はボタンを壊すので使わない）
+  const loadMsg=document.createElement('div');
+  loadMsg.id='load-msg';
+  loadMsg.style.cssText='position:absolute;bottom:40px;left:0;right:0;text-align:center;font-size:13px;color:#9898AA';
+  loadMsg.textContent='データを読み込み中...';
+  document.getElementById('login-screen').appendChild(loadMsg);
   try{
     const {data:rows, error} = await sbClient
       .from('user_data')
@@ -1429,6 +1433,7 @@ async function onLoginSuccess(user){
     }
   }catch(e){console.warn('data load error',e);}
 
+  const lm=document.getElementById('load-msg');if(lm)lm.remove();
   document.getElementById('login-screen').style.display='none';
   initApp();
 }
@@ -1457,13 +1462,7 @@ async function checkSession(){
   }catch(e){console.warn('checkSession error',e);}
 }
 
-// セッション変化を監視（他タブでログアウトなど）
-sbClient.auth.onAuthStateChange((event,session)=>{
-  if(event==='SIGNED_OUT'){
-    currentUser=null;
-    document.getElementById('login-screen').style.display='flex';
-  }
-});
+// onAuthStateChange は干渉するため無効化
 
 function initApp(){
   updTopbar();render();expMe();
