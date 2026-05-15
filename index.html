@@ -825,7 +825,7 @@ function renderWeek(){
         <div class="cell-bar" style="background:${isPractice?'#6D28D9':bg}"></div>
         <div class="cell-body">
           ${isPractice
-            ?`<div class="cell-cat" style="color:#5B21B6;font-size:9px;font-weight:700">${practiceInfo[0]}</div>`
+            ?`<div class="cell-cat" style="color:#5B21B6;font-size:9px;font-weight:700">練習</div>`
             :c?`<div class="cell-cat" style="color:${c.fg}">${c.name}</div>`
             :`<div class="cell-empty">${slot.start}</div>`}
         </div>
