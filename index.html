@@ -155,7 +155,7 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:#F4F4F6;color:#0D0
 .stat-n{font-family:'Inter',sans-serif;font-size:26px;font-weight:800;color:var(--accent);line-height:1;}
 .stat-l{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-top:4px;font-weight:600;font-family:'Inter','Noto Sans JP',sans-serif;}
 
-.find-row{background:#FFFFFF;border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;box-shadow:var(--shadow-sm);}
+.find-row{background:#FFFFFF;border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;box-shadow:var(--shadow-sm);cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
 .fr-slot{font-size:12px;font-weight:600;min-width:32px;}
 .fr-info{flex:1;font-size:12px;color:var(--text2);}
 .fr-bar-w{width:50px;height:5px;background:var(--surf2);border-radius:3px;overflow:hidden;}
@@ -1893,7 +1893,13 @@ function clearFindSel(){
 // Safari用タッチイベント登録（renderFind後に呼ぶ）
 function bindFindRowTouches(){
   document.querySelectorAll('[data-find-action]').forEach(el=>{
-    el.addEventListener('touchend', function(e){
+    // 既存イベントを削除して再登録
+    const newEl = el.cloneNode(true);
+    el.parentNode.replaceChild(newEl, el);
+    let _t = 0;
+    newEl.addEventListener('touchstart', function(e){ _t=Date.now(); },{passive:true});
+    newEl.addEventListener('touchend', function(e){
+      if(Date.now()-_t > 500) return;
       e.preventDefault();
       const action = this.getAttribute('data-find-action');
       const grpId = this.getAttribute('data-grp-id');
@@ -1903,6 +1909,15 @@ function bindFindRowTouches(){
       if(action==='toggle') toggleFindSel(grpId,date,slotId);
       else if(action==='change') openChangePracticeSheet(grpId,psId,date,Number(slotId));
     },{passive:false});
+    newEl.addEventListener('click', function(){
+      const action = this.getAttribute('data-find-action');
+      const grpId = this.getAttribute('data-grp-id');
+      const date = this.getAttribute('data-date');
+      const slotId = this.getAttribute('data-slot-id');
+      const psId = this.getAttribute('data-ps-id');
+      if(action==='toggle') toggleFindSel(grpId,date,slotId);
+      else if(action==='change') openChangePracticeSheet(grpId,psId,date,Number(slotId));
+    });
   });
 }
 
