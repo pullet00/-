@@ -1100,7 +1100,7 @@ function renderFind(){
       const dataAttrs = alreadyDecided
         ? 'data-find-action="change" data-grp-id="'+activeGrpId+'" data-date="'+s.dStr+'" data-slot-id="'+s.slot.id+'" data-ps-id="'+((decidedPs||{}).id||'')+'"'
         : 'data-find-action="toggle" data-grp-id="'+activeGrpId+'" data-date="'+s.dStr+'" data-slot-id="'+s.slot.id+'"';
-      h+='<div class="find-row" style="cursor:pointer;'+selStyle+'" onclick="'+onclick+'">'
+      h+='<a href="javascript:void(0)" class="find-row" style="'+selStyle+'" onclick="'+onclick+'">'
         +'<div style="display:flex;flex-direction:column;flex:1;gap:2px">'
         +'<div style="display:flex;align-items:center;gap:8px">'
         +'<span style="font-size:13px;font-weight:700;color:'+(isSel?'#5B21B6':'var(--accent)')+'">'+s.dn+'曜 '+s.slot.name+'</span>'
