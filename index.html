@@ -665,9 +665,14 @@ const save=()=>{
 async function saveToCloud(){
   if(!currentUser)return;
   try{
+    const cloudData = {
+      st: st,
+      myGroups: myGroups,
+      activeGrpId: activeGrpId,
+    };
     const {error} = await sbClient
       .from('user_data')
-      .upsert({user_id:currentUser.id, data:st, updated_at:new Date().toISOString()},
+      .upsert({user_id:currentUser.id, data:cloudData, updated_at:new Date().toISOString()},
               {onConflict:'user_id'});
     if(error) console.warn('cloud save error',error.message);
   }catch(e){console.warn('cloud save error',e);}
@@ -1483,24 +1488,32 @@ async function onLoginSuccess(user){
       .eq('user_id', currentUser.id)
       .single();
     if(!error && rows && rows.data){
-      // 完全に上書き（ネストしたオブジェクトも正しく復元）
       const saved = rows.data;
+      // 新形式（st + myGroups）と旧形式（stのみ）の両方に対応
+      const savedSt = saved.st || saved; // 旧形式互換
       const fresh = defSt();
       st = {
-        me:      saved.me      || fresh.me,
-        slots:   saved.slots   || fresh.slots,
-        days:    saved.days    || fresh.days,
-        cats:    saved.cats    || fresh.cats,
-        blocks:  saved.blocks  || {},
-        tpl:     saved.tpl     || {},
-        members: saved.members || [],
-        nid:     saved.nid     || 1,
-        ncid:    saved.ncid    || 10,
-        minM:    saved.minM    || 5,
-        boarded: saved.boarded || false,
+        me:      savedSt.me      || fresh.me,
+        slots:   savedSt.slots   || fresh.slots,
+        days:    savedSt.days    || fresh.days,
+        cats:    savedSt.cats    || fresh.cats,
+        blocks:  savedSt.blocks  || {},
+        tpl:     savedSt.tpl     || {},
+        members: savedSt.members || [],
+        nid:     savedSt.nid     || 1,
+        ncid:    savedSt.ncid    || 10,
+        minM:    savedSt.minM    || 5,
+        boarded: savedSt.boarded || false,
       };
+      // myGroupsも復元
+      if(saved.myGroups && saved.myGroups.length > 0){
+        myGroups = saved.myGroups;
+        activeGrpId = saved.activeGrpId || myGroups[0]?.id || null;
+        localStorage.setItem('hrm_groups', JSON.stringify(myGroups));
+        localStorage.setItem('hrm_active_grp', activeGrpId||'');
+      }
       try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
-      console.log('データ復元成功:', Object.keys(st.blocks).length+'コマ');
+      console.log('データ復元成功: '+Object.keys(st.blocks).length+'コマ / グループ'+myGroups.length+'個');
     } else {
       console.log('クラウドにデータなし、ローカルを使用');
     }
@@ -1580,6 +1593,11 @@ function genGrpCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.fr
 function saveGroups(){
   localStorage.setItem('hrm_groups', JSON.stringify(myGroups));
   localStorage.setItem('hrm_active_grp', activeGrpId||'');
+  // クラウドにも保存
+  if(currentUser){
+    clearTimeout(_cloudSaveTimer);
+    _cloudSaveTimer = setTimeout(saveToCloud, 2000);
+  }
 }
 
 function getGroup(id){return myGroups.find(g=>g.id===id)||null;}
