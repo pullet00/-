@@ -1047,11 +1047,11 @@ function renderFind(){
     ${myGroups.map(g=>{
       const active=activeGrpId===g.id;
       const hasPractice=(g.practiceSlots||[]).length>0;
-      const decided=hasPractice?'🎵 ':'';
+      const decided='';
       const bg=active?'var(--accent)':hasPractice?'#EDE9FE':'#FFFFFF';
       const color=active?'#fff':hasPractice?'#5B21B6':'var(--text2)';
       const shadow=active?'0 2px 8px rgba(91,91,246,.3)':hasPractice?'0 1px 3px rgba(109,40,217,.2)':'0 1px 3px rgba(0,0,0,.08)';
-      return`<button onclick="activeGrpId='${g.id}';saveGroups();renderFind();" style="padding:7px 16px;border-radius:20px;border:none;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter','Noto Sans JP',sans-serif;flex-shrink:0;background:${bg};color:${color};box-shadow:${shadow}">${decided}${g.name}</button>`;
+      return`<button onclick="activeGrpId='${g.id}';saveGroups();renderFind();" style="padding:7px 16px;border-radius:20px;border:none;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter','Noto Sans JP',sans-serif;flex-shrink:0;background:${bg};color:${color};box-shadow:${shadow}">${g.name}</button>`;
     }).join('')}
   </div>`;
 
