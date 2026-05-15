@@ -1609,7 +1609,7 @@ async function createGroup(){
   const grpName = name || (st.me.name+'のグループ');
   const id = genGrpCode();
   try{
-    await sbFetch('/rest/v1/groups','POST',{id, name:grpName});
+    await sbClient.from('groups').insert({id, name:grpName});
     const newGrp = {id, name:grpName, members:[], practiceSlots:[]};
     myGroups.push(newGrp);
     activeGrpId = id;
@@ -1628,7 +1628,7 @@ async function joinGroup(){
   if(!code){showToast('コードを入力してください');return;}
   if(myGroups.find(g=>g.id===code)){showToast('すでに参加中です');return;}
   try{
-    const rows = await sbFetch('/rest/v1/groups?id=eq.'+code+'&select=id,name');
+    const {data:rows} = await sbClient.from('groups').select('id,name').eq('id',code);
     if(!rows||rows.length===0){showToast('コードが見つかりませんでした');return;}
     const newGrp = {id:rows[0].id, name:rows[0].name, members:[], practiceSlots:[]};
     myGroups.push(newGrp);
@@ -1647,7 +1647,7 @@ async function leaveGroup(grpId){
   const g = getGroup(grpId);
   if(!g)return;
   if(!confirm('「'+g.name+'」から退出しますか？'))return;
-  try{await sbFetch('/rest/v1/members?code=eq.'+st.me.code+'&group_id=eq.'+grpId,'DELETE');}catch(e){}
+  try{await sbClient.from('members').delete().eq('code',st.me.code).eq('group_id',grpId);}catch(e){}
   // 決定済み練習コマから自分のブロックを削除
   (g.practiceSlots||[]).forEach(ps=>{
     const key = ps.date+'|'+ps.slot_id;
@@ -1677,8 +1677,12 @@ async function pushMyDataTo(grpId){
     updated_at:new Date().toISOString()
   };
   try{
-    await sbFetch('/rest/v1/members?code=eq.'+st.me.code+'&group_id=eq.'+grpId,'DELETE');
-    await sbFetch('/rest/v1/members','POST',payload);
+    // 既存レコードを削除してから新規insert（upsert）
+    await sbClient.from('members')
+      .delete()
+      .eq('code', st.me.code)
+      .eq('group_id', grpId);
+    await sbClient.from('members').insert(payload);
   }catch(e){console.warn('push error',e);}
 }
 
@@ -1690,17 +1694,30 @@ async function pushMyData(){
 // ── グループデータをpull ──
 async function pullGroupDataFor(grpId){
   try{
-    // メンバー
-    const rows = await sbFetch('/rest/v1/members?group_id=eq.'+grpId+'&select=*');
     const g = getGroup(grpId);
-    if(!g||!rows)return;
-    g.members = rows.filter(r=>r.code!==st.me.code).map(r=>({
-      id:r.id, name:r.name, part:r.part, color:r.color, code:r.code,
-      blocks:r.blocks||{}, tpl:r.tpl||{}, cats:r.cats||[], slots:r.slots||[],
-    }));
-    // 練習コマ決定履歴
-    const ps = await sbFetch('/rest/v1/practice_slots?group_id=eq.'+grpId+'&select=*&order=decided_at.desc');
-    g.practiceSlots = ps||[];
+    if(!g)return;
+
+    // sbClient経由でメンバー取得（RLS対応・認証トークン付き）
+    const {data:rows, error:err1} = await sbClient
+      .from('members')
+      .select('*')
+      .eq('group_id', grpId);
+    if(err1){console.warn('members fetch error', err1.message);}
+    else if(rows){
+      g.members = rows.filter(r=>r.code!==st.me.code).map(r=>({
+        id:r.id, name:r.name, part:r.part, color:r.color, code:r.code,
+        blocks:r.blocks||{}, tpl:r.tpl||{}, cats:r.cats||[], slots:r.slots||[],
+      }));
+    }
+
+    // 練習コマ履歴
+    const {data:ps, error:err2} = await sbClient
+      .from('practice_slots')
+      .select('*')
+      .eq('group_id', grpId)
+      .order('decided_at', {ascending:false});
+    if(!err2) g.practiceSlots = ps||[];
+
     saveGroups();
     if(curPanel==='band') renderBand();
     if(curPanel==='find') renderFind();
@@ -1716,7 +1733,7 @@ async function decidePracticeSlot(grpId, date, slotId){
 
   try{
     // Supabaseに記録
-    await sbFetch('/rest/v1/practice_slots','POST',{
+    await sbClient.from('practice_slots').insert({
       group_id:grpId,
       slot_id:slotId,
       date:date,
@@ -1745,7 +1762,7 @@ async function decidePracticeSlot(grpId, date, slotId){
 async function cancelPracticeSlot(grpId, psId, date, slotId){
   if(!confirm('この練習コマの決定を取り消しますか？'))return;
   try{
-    await sbFetch('/rest/v1/practice_slots?id=eq.'+psId,'DELETE');
+    await sbClient.from('practice_slots').delete().eq('id',psId);
     const key = date+'|'+slotId;
     if(st.blocks[key]==='practice') delete st.blocks[key];
     save();
@@ -1815,7 +1832,7 @@ async function execBulkDecide(){
   for(const key of _findSel){
     const [date,slotId]=key.split('|');
     try{
-      await sbFetch('/rest/v1/practice_slots','POST',{
+      await sbClient.from('practice_slots').insert({
         group_id:grpId,slot_id:Number(slotId),date,
         decided_by:st.me.name,decided_at:new Date().toISOString()
       });
@@ -1891,7 +1908,7 @@ async function execDecidePractice(){
   const {grpId,date,slotId}=_practiceCtx;
   closeSh('practice');
   try{
-    await sbFetch('/rest/v1/practice_slots','POST',{
+    await sbClient.from('practice_slots').insert({
       group_id:grpId, slot_id:slotId, date, decided_by:st.me.name,
       decided_at:new Date().toISOString()
     });
@@ -1911,7 +1928,7 @@ async function execCancelPractice(){
   const {grpId,date,slotId,existingId}=_practiceCtx;
   closeSh('practice');
   try{
-    await sbFetch('/rest/v1/practice_slots?id=eq.'+existingId,'DELETE');
+    await sbClient.from('practice_slots').delete().eq('id',existingId);
     const key=BK(date,slotId);
     if(st.blocks[key]==='practice') delete st.blocks[key];
     save();
