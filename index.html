@@ -678,7 +678,11 @@ async function saveToCloud(){
   }catch(e){console.warn('cloud save error',e);}
 }
 const expMe=()=>{try{localStorage.setItem('hx_'+st.me.code,JSON.stringify({name:st.me.name,part:st.me.part,color:st.me.color,blocks:st.blocks,cats:st.cats}));}catch(e){}};
-const DS=d=>d.toISOString().slice(0,10);
+const DS=d=>{
+  // JSTで日付文字列を生成（toISOStringはUTCなのでずれる）
+  const jst=new Date(d.getTime()+9*60*60*1000);
+  return jst.toISOString().slice(0,10);
+};
 const BK=(ds,sid)=>ds+'|'+sid;
 
 // ══ NAV ══
