@@ -995,7 +995,15 @@ function renderFind(){
   vis.forEach(d=>{
     const dStr=DS(d);const dn=DAYS[d.getDay()===0?6:d.getDay()-1];
     st.slots.forEach(slot=>{
-      const avail=all.filter(m=>!(m.blocks||{})[BK(dStr,slot.id)]&&!(m.isMe&&(st.tpl||{})[dn+'-'+slot.id]));
+      const avail=all.filter(m=>{
+        // blocksに予定が入っていたらNG
+        if((m.blocks||{})[BK(dStr,slot.id)]) return false;
+        // 自分のtplをチェック
+        if(m.isMe && (st.tpl||{})[dn+'-'+slot.id]) return false;
+        // メンバーのtplをチェック
+        if(!m.isMe && (m.tpl||{})[dn+'-'+slot.id]) return false;
+        return true;
+      });
       scores.push({slot,d,dStr,dn,count:avail.length,total,avail});
     });
   });
