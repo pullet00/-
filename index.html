@@ -1024,7 +1024,15 @@ function renderFind(){
     return;
   }
   tabHTML=`<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch">
-    ${myGroups.map(g=>{const active=activeGrpId===g.id;return`<button onclick="activeGrpId='${g.id}';saveGroups();renderFind();" style="padding:7px 16px;border-radius:20px;border:none;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter','Noto Sans JP',sans-serif;flex-shrink:0;background:${active?'var(--accent)':'#FFFFFF'};color:${active?'#fff':'var(--text2)'};box-shadow:${active?'0 2px 8px rgba(91,91,246,.3)':'0 1px 3px rgba(0,0,0,.08)'}">${g.name}</button>`;}).join('')}
+    ${myGroups.map(g=>{
+      const active=activeGrpId===g.id;
+      const hasPractice=(g.practiceSlots||[]).length>0;
+      const decided=hasPractice?'🎵 ':'';
+      const bg=active?'var(--accent)':hasPractice?'#EDE9FE':'#FFFFFF';
+      const color=active?'#fff':hasPractice?'#5B21B6':'var(--text2)';
+      const shadow=active?'0 2px 8px rgba(91,91,246,.3)':hasPractice?'0 1px 3px rgba(109,40,217,.2)':'0 1px 3px rgba(0,0,0,.08)';
+      return`<button onclick="activeGrpId='${g.id}';saveGroups();renderFind();" style="padding:7px 16px;border-radius:20px;border:none;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter','Noto Sans JP',sans-serif;flex-shrink:0;background:${bg};color:${color};box-shadow:${shadow}">${decided}${g.name}</button>`;
+    }).join('')}
   </div>`;
 
   // ── 決定済み練習コマ ──
@@ -1085,9 +1093,13 @@ function renderFind(){
         : isSel
         ? '<span style="font-size:10px;background:#6D28D9;color:#fff;padding:2px 7px;border-radius:8px;font-weight:600">✓ 選択中</span>'
         : '<span style="font-size:10px;background:#EEEEFD;color:#5B5BF6;padding:2px 7px;border-radius:8px;font-weight:600">タップで選択</span>';
+      const decidedPs = ps.find(p=>p.date===s.dStr&&p.slot_id==s.slot.id);
       const onclick = alreadyDecided
-        ? 'openChangePracticeSheet("'+activeGrpId+'","'+(ps.find(p=>p.date===s.dStr&&p.slot_id==s.slot.id)||{}).id+'","'+s.dStr+'",'+s.slot.id+')'
+        ? 'openChangePracticeSheet("'+activeGrpId+'","'+(decidedPs||{}).id+'","'+s.dStr+'",'+s.slot.id+')'
         : 'toggleFindSel("'+activeGrpId+'","'+s.dStr+'",'+s.slot.id+')';
+      const dataAttrs = alreadyDecided
+        ? 'data-find-action="change" data-grp-id="'+activeGrpId+'" data-date="'+s.dStr+'" data-slot-id="'+s.slot.id+'" data-ps-id="'+((decidedPs||{}).id||'')+'"'
+        : 'data-find-action="toggle" data-grp-id="'+activeGrpId+'" data-date="'+s.dStr+'" data-slot-id="'+s.slot.id+'"';
       h+='<div class="find-row" style="cursor:pointer;'+selStyle+'" onclick="'+onclick+'">'
         +'<div style="display:flex;flex-direction:column;flex:1;gap:2px">'
         +'<div style="display:flex;align-items:center;gap:8px">'
@@ -1111,7 +1123,7 @@ function renderFind(){
       const isSel=_findSel.has(key);
       const pct=Math.round(s.count/s.total*100);
       const selStyle=isSel?'background:#EDE9FE;border:2px solid #6D28D9;':'';
-      h+=`<div class="find-row" style="cursor:pointer;${selStyle}" onclick="toggleFindSel('${activeGrpId}','${s.dStr}',${s.slot.id})">
+      h+=`<div class="find-row" style="cursor:pointer;${selStyle}" onclick="toggleFindSel('${activeGrpId}','${s.dStr}',${s.slot.id})" data-find-action="toggle" data-grp-id="${activeGrpId}" data-date="${s.dStr}" data-slot-id="${s.slot.id}">
         <div style="display:flex;flex-direction:column;flex:1;gap:2px">
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:13px;font-weight:700;color:${isSel?'#5B21B6':'var(--text)'}">${s.dn}曜 ${s.slot.name}</span>
@@ -1137,6 +1149,8 @@ function renderFind(){
   }
   h+=`<div style="height:20px"></div>`;
   el.innerHTML=h;
+  // Safari用タッチイベントをバインド
+  setTimeout(bindFindRowTouches, 50);
 }
 
 // ══ BAND ══
@@ -1875,6 +1889,21 @@ function clearFindSel(){
   _findSel.clear();
   _findGrpId = null;
   renderFind();
+}
+// Safari用タッチイベント登録（renderFind後に呼ぶ）
+function bindFindRowTouches(){
+  document.querySelectorAll('[data-find-action]').forEach(el=>{
+    el.addEventListener('touchend', function(e){
+      e.preventDefault();
+      const action = this.getAttribute('data-find-action');
+      const grpId = this.getAttribute('data-grp-id');
+      const date = this.getAttribute('data-date');
+      const slotId = this.getAttribute('data-slot-id');
+      const psId = this.getAttribute('data-ps-id');
+      if(action==='toggle') toggleFindSel(grpId,date,slotId);
+      else if(action==='change') openChangePracticeSheet(grpId,psId,date,Number(slotId));
+    },{passive:false});
+  });
 }
 
 function openDecidePracticeSheet(grpId, date, slotId){
