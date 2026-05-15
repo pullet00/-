@@ -155,7 +155,7 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:#F4F4F6;color:#0D0
 .stat-n{font-family:'Inter',sans-serif;font-size:26px;font-weight:800;color:var(--accent);line-height:1;}
 .stat-l{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-top:4px;font-weight:600;font-family:'Inter','Noto Sans JP',sans-serif;}
 
-.find-row{background:#FFFFFF;border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;box-shadow:var(--shadow-sm);cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
+.find-row{display:flex;align-items:center;gap:10px;background:#FFFFFF;border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 14px;margin-bottom:8px;box-shadow:var(--shadow-sm);cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;text-decoration:none;color:inherit;}
 .fr-slot{font-size:12px;font-weight:600;min-width:32px;}
 .fr-info{flex:1;font-size:12px;color:var(--text2);}
 .fr-bar-w{width:50px;height:5px;background:var(--surf2);border-radius:3px;overflow:hidden;}
@@ -1111,7 +1111,7 @@ function renderFind(){
         +'<span style="font-size:11px;color:var(--text2);margin-left:4px">'+s.avail.map(m=>m.name).join('・')+'</span>'
         +'</div></div>'
         +'<div style="font-size:16px;font-weight:700;color:'+(isSel?'#5B21B6':'var(--accent)')+'">'+s.count+'/'+s.total+'</div>'
-        +'</div>';
+        +'</a>';
     });
   }
 
@@ -1123,7 +1123,7 @@ function renderFind(){
       const isSel=_findSel.has(key);
       const pct=Math.round(s.count/s.total*100);
       const selStyle=isSel?'background:#EDE9FE;border:2px solid #6D28D9;':'';
-      h+=`<div class="find-row" style="cursor:pointer;${selStyle}" onclick="toggleFindSel('${activeGrpId}','${s.dStr}',${s.slot.id})" data-find-action="toggle" data-grp-id="${activeGrpId}" data-date="${s.dStr}" data-slot-id="${s.slot.id}">
+      h+=`<a href="javascript:void(0)" class="find-row" style="${selStyle}" onclick="toggleFindSel('${activeGrpId}','${s.dStr}',${s.slot.id})" data-find-action="toggle" data-grp-id="${activeGrpId}" data-date="${s.dStr}" data-slot-id="${s.slot.id}">
         <div style="display:flex;flex-direction:column;flex:1;gap:2px">
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:13px;font-weight:700;color:${isSel?'#5B21B6':'var(--text)'}">${s.dn}曜 ${s.slot.name}</span>
@@ -1136,7 +1136,7 @@ function renderFind(){
           <div style="font-size:11px;color:var(--text2)">${s.avail.map(m=>m.name).join('・')}</div>
         </div>
         <div style="font-size:16px;font-weight:700;color:${isSel?'#5B21B6':'#7A5010'}">${s.count}/${s.total}</div>
-      </div>`;
+      </a>`;
     });
   }
 
