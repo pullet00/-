@@ -21,7 +21,7 @@
   --safe-b:env(safe-area-inset-bottom,0px);
   --safe-t:env(safe-area-inset-top,0px);
   --nav-h:60px; --top-h:52px;
-  --cell-h:64px;
+  --cell-h:72px;
   --r:12px; --r-lg:18px; --r-xl:24px;
   --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 8px rgba(0,0,0,.04);
   --shadow:0 2px 8px rgba(0,0,0,.08),0 4px 20px rgba(0,0,0,.06);
@@ -699,9 +699,10 @@ async function saveToCloud(){
 }
 const expMe=()=>{try{localStorage.setItem('hx_'+st.me.code,JSON.stringify({name:st.me.name,part:st.me.part,color:st.me.color,blocks:st.blocks,cats:st.cats}));}catch(e){}};
 const DS=d=>{
-  // JSTで日付文字列を生成（toISOStringはUTCなのでずれる）
-  const jst=new Date(d.getTime()+9*60*60*1000);
-  return jst.toISOString().slice(0,10);
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,'0');
+  const day=String(d.getDate()).padStart(2,'0');
+  return y+'-'+m+'-'+day;
 };
 const BK=(ds,sid)=>ds+'|'+sid;
 
@@ -826,7 +827,7 @@ function renderWeek(){
         <div class="cell-body">
           ${isPractice
             ?`<div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-                <div style="font-size:8px;color:#5B21B6;font-weight:600">${practiceInfo[0]}</div>
+                <div style="font-size:8px;color:#5B21B6;font-weight:600;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${practiceInfo[0]}</div>
                 <div style="font-size:9px;color:#5B21B6;font-weight:700">練習</div>
               </div>`
             :c?`<div class="cell-cat" style="color:${c.fg}">${c.name}</div>`
