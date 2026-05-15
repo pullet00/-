@@ -1100,7 +1100,9 @@ function renderFind(){
         ? 'data-find-action="change" data-grp-id="'+activeGrpId+'" data-date="'+s.dStr+'" data-slot-id="'+s.slot.id+'" data-ps-id="'+((decidedPs||{}).id||'')+'"'
         : 'data-find-action="toggle" data-grp-id="'+activeGrpId+'" data-date="'+s.dStr+'" data-slot-id="'+s.slot.id+'"';
       const findKey=s.dStr+'|'+s.slot.id;
-      h+='<a href="javascript:void(0)" class="find-row" data-find-key="'+findKey+'" style="'+selStyle+'" onclick="'+onclick+'">'
+      const action = alreadyDecided ? 'change' : 'toggle';
+      const psId2 = (decidedPs||{}).id||'';
+      h+='<a href="javascript:void(0)" class="find-row" data-find-key="'+findKey+'" data-grp-id="'+activeGrpId+'" data-date="'+s.dStr+'" data-slot-id="'+s.slot.id+'" data-action="'+action+'" data-ps-id="'+psId2+'" style="'+selStyle+'">'
         +'<div style="display:flex;flex-direction:column;flex:1;gap:2px">'
         +'<div style="display:flex;align-items:center;gap:8px">'
         +'<span style="font-size:13px;font-weight:700;color:'+(isSel?'#5B21B6':'var(--accent)')+'">'+s.dn+'曜 '+s.slot.name+'</span>'
@@ -1123,7 +1125,7 @@ function renderFind(){
       const isSel=_findSel.has(key);
       const pct=Math.round(s.count/s.total*100);
       const selStyle=isSel?'background:#EDE9FE;border:2px solid #6D28D9;':'';
-      h+=`<a href="javascript:void(0)" class="find-row" style="${selStyle}" data-find-key="${s.dStr}|${s.slot.id}" onclick="toggleFindSel('${activeGrpId}','${s.dStr}',${s.slot.id})">
+      h+=`<a href="javascript:void(0)" class="find-row" style="${selStyle}" data-find-key="${s.dStr}|${s.slot.id}" data-grp-id="${activeGrpId}" data-date="${s.dStr}" data-slot-id="${s.slot.id}" data-action="toggle">
         <div style="display:flex;flex-direction:column;flex:1;gap:2px">
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:13px;font-weight:700;color:${isSel?'#5B21B6':'var(--text)'}">${s.dn}曜 ${s.slot.name}</span>
@@ -1149,8 +1151,6 @@ function renderFind(){
   }
   h+=`<div style="height:20px"></div>`;
   el.innerHTML=h;
-  // Safari用タッチイベントをバインド
-  setTimeout(bindFindRowTouches, 50);
 }
 
 // ══ BAND ══
@@ -1582,6 +1582,23 @@ async function checkSession(){
 
 function initApp(){
   updTopbar();render();expMe();
+  // 練習候補のイベントデリゲーション（一度だけ設定）
+  const findPanel = document.getElementById('view-find');
+  if(findPanel && !findPanel._delegated){
+    findPanel._delegated = true;
+    findPanel.addEventListener('click', function(e){
+      const row = e.target.closest('[data-find-key]');
+      if(!row) return;
+      const key = row.getAttribute('data-find-key');
+      const grpId = row.getAttribute('data-grp-id');
+      const date = row.getAttribute('data-date');
+      const slotId = row.getAttribute('data-slot-id');
+      const action = row.getAttribute('data-action');
+      const psId = row.getAttribute('data-ps-id');
+      if(action==='change') openChangePracticeSheet(grpId, psId, date, Number(slotId));
+      else toggleFindSel(grpId, date, slotId);
+    });
+  }
   // ログイン成功後にオンボーディング表示を判定
   if(st.boarded){
     document.getElementById('ob').classList.add('gone');
@@ -1818,7 +1835,7 @@ function copyGrpCode(grpId){
 
 // ══ 練習コマ決定シート ══
 
-function openBulkDecideSheet(){
+window.openBulkDecideSheet = function openBulkDecideSheet(){
   if(_findSel.size===0)return;
   const g=myGroups.find(x=>x.id===_findGrpId);
   const items=[..._findSel].map(key=>{
@@ -1878,7 +1895,7 @@ let _practiceCtx = null; // {grpId, date, slotId, existingId}
 let _findSel = new Set(); // 選択中の練習候補 "date|slotId" の集合
 let _findGrpId = null; // 選択中のグループID
 
-function toggleFindSel(grpId, date, slotId){
+window.toggleFindSel = function toggleFindSel(grpId, date, slotId){
   const key = date+'|'+slotId;
   _findGrpId = grpId;
   if(_findSel.has(key)) _findSel.delete(key);
@@ -1887,7 +1904,7 @@ function toggleFindSel(grpId, date, slotId){
   updateFindSelUI();
   updateFindSelBar();
 }
-function clearFindSel(){
+window.clearFindSel = function clearFindSel(){
   _findSel.clear();
   _findGrpId = null;
   updateFindSelUI();
@@ -1978,7 +1995,7 @@ function openDecidePracticeSheet(grpId, date, slotId){
   openSh('practice');
 }
 
-function openChangePracticeSheet(grpId, existingId, date, slotId){
+window.openChangePracticeSheet = function openChangePracticeSheet(grpId, existingId, date, slotId){
   const slot=st.slots.find(s=>s.id==slotId);
   const g=myGroups.find(x=>x.id===grpId);
   _practiceCtx={grpId,date,slotId:Number(slotId),existingId};
