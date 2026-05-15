@@ -805,7 +805,7 @@ function renderWeek(){
         <div class="cell-bar" style="background:${isPractice?'#6D28D9':bg}"></div>
         <div class="cell-body">
           ${isPractice
-            ?`<div class="cell-cat" style="color:#5B21B6;font-size:9px">🎵${practiceInfo[0]}</div>`
+            ?`<div class="cell-cat" style="color:#5B21B6;font-size:9px;font-weight:700">練習</div>`
             :c?`<div class="cell-cat" style="color:${c.fg}">${c.name}</div>`
             :`<div class="cell-empty">${slot.start}</div>`}
         </div>
@@ -941,7 +941,7 @@ function renderMonth(){
         const tpl=(st.tpl||{})[dn+'-'+s.id];
         // 練習コマ確認
         const pracGrp=myGroups.find(g=>(g.practiceSlots||[]).find(p=>p.date===dStr&&p.slot_id==s.id));
-        if(pracGrp) return`<div class="mpip" style="background:#EDE9FE;color:#5B21B6">🎵</div>`;
+        if(pracGrp) return`<div class="mpip" style="background:#EDE9FE;color:#5B21B6;font-weight:700">練</div>`;
         const cid=did||(tpl?'class':null);const cv=cid?ct(cid):null;if(!cv)return'';
         return`<div class="mpip" style="background:${cv.bg};color:${cv.fg};${!did?'opacity:.6':''}">${s.name.replace(/限$/,'')}</div>`;
       }).filter(Boolean).join('');
