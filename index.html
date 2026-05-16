@@ -441,7 +441,7 @@ input:focus{border-color:var(--accent);}
         </div>
       </div>
       <div class="ob-foot">
-        <button class="ob-main" onclick="finishOb()">カレンダーをはじめる 🎵</button>
+        <button class="ob-main" onclick="finishOb()">カレンダーをはじめる </button>
       </div>
     </div>
 
@@ -805,7 +805,7 @@ function renderWeek(){
         <div class="cell-bar" style="background:${isPractice?'#6D28D9':bg}"></div>
         <div class="cell-body">
           ${isPractice
-            ?`<div class="cell-cat" style="color:#5B21B6;font-size:9px">🎵${practiceInfo[0]}</div>`
+            ?`<div class="cell-cat" style="color:#5B21B6;font-size:9px">${practiceInfo[0]}</div>`
             :c?`<div class="cell-cat" style="color:${c.fg}">${c.name}</div>`
             :`<div class="cell-empty">${slot.start}</div>`}
         </div>
@@ -941,7 +941,7 @@ function renderMonth(){
         const tpl=(st.tpl||{})[dn+'-'+s.id];
         // 練習コマ確認
         const pracGrp=myGroups.find(g=>(g.practiceSlots||[]).find(p=>p.date===dStr&&p.slot_id==s.id));
-        if(pracGrp) return`<div class="mpip" style="background:#EDE9FE;color:#5B21B6">🎵</div>`;
+        if(pracGrp) return`<div class="mpip" style="background:#EDE9FE;color:#5B21B6"></div>`;
         const cid=did||(tpl?'class':null);const cv=cid?ct(cid):null;if(!cv)return'';
         return`<div class="mpip" style="background:${cv.bg};color:${cv.fg};${!did?'opacity:.6':''}">${s.name.replace(/限$/,'')}</div>`;
       }).filter(Boolean).join('');
@@ -1027,7 +1027,7 @@ function renderFind(){
     ${myGroups.map(g=>{
       const active=activeGrpId===g.id;
       const hasPractice=(g.practiceSlots||[]).length>0;
-      const decided=hasPractice?'🎵 ':'';
+      const decided=hasPractice?' ':'';
       const bg=active?'var(--accent)':hasPractice?'#EDE9FE':'#FFFFFF';
       const color=active?'#fff':hasPractice?'#5B21B6':'var(--text2)';
       const shadow=active?'0 2px 8px rgba(91,91,246,.3)':hasPractice?'0 1px 3px rgba(109,40,217,.2)':'0 1px 3px rgba(0,0,0,.08)';
@@ -1144,7 +1144,7 @@ function renderFind(){
 
   if(!fullS.length&&!nearS.length){
     h+=`<div style="text-align:center;padding:32px 16px;color:var(--text3)">
-      <div style="font-size:40px;margin-bottom:12px">🎵</div>
+      <div style="font-size:40px;margin-bottom:12px"></div>
       <div style="font-size:14px;font-weight:600;color:var(--text2);margin-bottom:6px">空きが重なるコマが見つかりませんでした</div>
       <div style="font-size:12px">メンバーのスケジュールを入力するか、設定で最低参加人数を変更してください</div>
     </div>`;
@@ -1178,7 +1178,7 @@ function renderBand(){
         const dt=new Date(p.decided_at);
         const dtStr=`${dt.getMonth()+1}/${dt.getDate()} ${dt.getHours()}:${String(dt.getMinutes()).padStart(2,'0')}`;
         return`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#EDE9FE;border-radius:9px;margin-bottom:4px">
-          <div style="color:#6D28D9;font-size:13px;font-weight:600">🎵 ${p.date} ${slot?.name||''}</div>
+          <div style="color:#6D28D9;font-size:13px;font-weight:600"> ${p.date} ${slot?.name||''}</div>
           <div style="margin-left:auto;font-size:10px;color:#8B5CF6">${p.decided_by}が${dtStr}に決定</div>
           <button onclick="cancelPracticeSlot('${g.id}','${p.id}','${p.date}',${p.slot_id})" style="font-size:10px;color:#C0392B;border:none;background:none;cursor:pointer;padding:2px 4px">✕</button>
         </div>`;
