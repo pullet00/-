@@ -742,7 +742,10 @@ function renderFind(){
           return'<div style="font-size:7px;font-weight:700;color:'+tc2+';line-height:1.3;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 1px">'+pLabel+'</div>';
         }).join('');
 
-        h+=`<a href="javascript:void(0)" onclick="${clickFn}" style="min-height:58px;border-radius:8px;border:${bd2};background:${bg2};display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 2px;text-decoration:none;cursor:${clickFn?'pointer':'default'}">`;
+        const cellDataAttrs = decided
+          ? 'data-cell-action="change" data-cell-grp="'+activeGrpId+'" data-cell-date="'+ds+'" data-cell-slot="'+slot.id+'" data-cell-psid="'+decided.id+'"'
+          : (ac>0 ? 'data-cell-action="decide" data-cell-grp="'+activeGrpId+'" data-cell-date="'+ds+'" data-cell-slot="'+slot.id+'"' : '');
+        h+=`<a href="javascript:void(0)" ${cellDataAttrs} style="min-height:58px;border-radius:8px;border:${bd2};background:${bg2};display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 2px;text-decoration:none;cursor:${clickFn?'pointer':'default'}">`;
         if(decided){h+=`<div style="font-size:7px;font-weight:700;color:#5B21B6;text-align:center">決定済</div>`;}
         else if(ac===0){h+=`<div style="font-size:10px;color:var(--text3)">−</div>`;}
         else{
@@ -1004,6 +1007,19 @@ function initApp(){
   if(findPanel&&!findPanel._delegated){
     findPanel._delegated=true;
     findPanel.addEventListener('click',function(e){
+      // カレンダーセルのクリック処理
+      const cell=e.target.closest('[data-cell-action]');
+      if(cell){
+        const action=cell.getAttribute('data-cell-action');
+        const grpId=cell.getAttribute('data-cell-grp');
+        const date=cell.getAttribute('data-cell-date');
+        const slotId=Number(cell.getAttribute('data-cell-slot'));
+        const psId=cell.getAttribute('data-cell-psid');
+        if(action==='change')openChangePracticeSheet(grpId,psId,date,slotId);
+        else if(action==='decide')openDecidePracticeSheet(grpId,date,slotId);
+        return;
+      }
+      // find-rowのクリック処理（旧リスト方式互換）
       const row=e.target.closest('[data-find-key]');if(!row)return;
       const grpId=row.getAttribute('data-grp-id');const date=row.getAttribute('data-date');const slotId=row.getAttribute('data-slot-id');const action=row.getAttribute('data-action');const psId=row.getAttribute('data-ps-id');
       if(action==='change')openChangePracticeSheet(grpId,psId,date,Number(slotId));
@@ -1078,7 +1094,7 @@ function copyGrpCode(grpId){navigator.clipboard.writeText(grpId).then(()=>showTo
 // ══ 練習コマ決定 ══
 let _practiceCtx=null;let _findSel=new Set();let _findGrpId=null;
 
-function openDecidePracticeSheet(grpId,date,slotId){
+window.openDecidePracticeSheet=function openDecidePracticeSheet(grpId,date,slotId){
   const slot=st.slots.find(s=>s.id==slotId);const g=myGroups.find(x=>x.id===grpId);
   _practiceCtx={grpId,date,slotId:Number(slotId),existingId:null};
   const d=new Date(date);const dn=DAYS[d.getDay()===0?6:d.getDay()-1];
@@ -1090,7 +1106,7 @@ function openDecidePracticeSheet(grpId,date,slotId){
       <button class="btn btn-g btn-block" onclick="closeSh('practice')">キャンセル</button>
     </div>`;
   openSh('practice');
-}
+};
 window.openChangePracticeSheet=function openChangePracticeSheet(grpId,existingId,date,slotId){
   const slot=st.slots.find(s=>s.id==slotId);const g=myGroups.find(x=>x.id===grpId);
   _practiceCtx={grpId,date,slotId:Number(slotId),existingId};
