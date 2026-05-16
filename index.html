@@ -1040,9 +1040,15 @@ async function joinGroup(){
 async function leaveGroup(grpId){
   const g=getGroup(grpId);if(!g)return;if(!confirm('「'+g.name+'」から退出しますか？'))return;
   try{await sbClient.from('members').delete().eq('code',st.me.code).eq('group_id',grpId);}catch(e){}
-  (g.practiceSlots||[]).forEach(ps=>{const key=ps.date+'|'+ps.slot_id;if(st.blocks[key]==='practice_'+grpId)delete st.blocks[key];});
+  // このグループの練習コマをカレンダーから削除
+  (g.practiceSlots||[]).forEach(ps=>{
+    const key=ps.date+'|'+ps.slot_id;
+    // 他のグループで同じコマが練習になっていなければ削除
+    const otherGrpHasSame=myGroups.some(og=>og.id!==grpId&&(og.practiceSlots||[]).some(op=>op.date===ps.date&&op.slot_id==ps.slot_id));
+    if(!otherGrpHasSame&&st.blocks[key]==='practice')delete st.blocks[key];
+  });
   myGroups=myGroups.filter(g=>g.id!==grpId);if(activeGrpId===grpId)activeGrpId=myGroups[0]?.id||null;
-  saveGroups();stopSyncFor(grpId);save();showToast('退出しました');renderBand();
+  saveGroups();stopSyncFor(grpId);save();showToast('退出しました');renderBand();renderWeek();
 }
 async function pushMyDataTo(grpId){
   const payload={group_id:grpId,name:st.me.name,part:st.me.part||'',color:st.me.color,code:st.me.code,blocks:st.blocks,tpl:st.tpl||{},cats:st.cats,slots:st.slots,updated_at:new Date().toISOString()};
