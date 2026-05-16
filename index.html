@@ -1002,6 +1002,9 @@ async function onLoginSuccess(user){
   currentUser=user;if(!currentUser)return;
   const loadMsg=document.createElement('div');loadMsg.id='load-msg';loadMsg.style.cssText='position:absolute;bottom:40px;left:0;right:0;text-align:center;font-size:13px;color:#9898AA';loadMsg.textContent='データを読み込み中...';
   document.getElementById('login-screen').appendChild(loadMsg);
+  // まずローカルストレージをクリア（前のアカウントのデータが混入しないように）
+  try{localStorage.removeItem('hrm7');localStorage.removeItem('hrm_groups');localStorage.removeItem('hrm_active_grp');}catch(e){}
+  st=defSt();myGroups=[];activeGrpId=null;
   try{
     const {data:rows,error}=await sbClient.from('user_data').select('data').eq('user_id',currentUser.id).single();
     if(!error&&rows&&rows.data){
@@ -1010,6 +1013,7 @@ async function onLoginSuccess(user){
       if(saved.myGroups&&saved.myGroups.length>0){myGroups=saved.myGroups;activeGrpId=saved.activeGrpId||myGroups[0]?.id||null;localStorage.setItem('hrm_groups',JSON.stringify(myGroups));localStorage.setItem('hrm_active_grp',activeGrpId||'');}
       try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
     }
+    // クラウドにデータなし=新規ユーザー。defSt()のままで問題なし
   }catch(e){console.warn('data load error',e);}
   const lm=document.getElementById('load-msg');if(lm)lm.remove();
   document.getElementById('login-screen').style.display='none';
