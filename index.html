@@ -10,21 +10,21 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
 <style>
 :root{
-color-scheme: light only;
---bg:#F4F4F6; --surf:#FFFFFF; --surf2:#EBEBEF;
---border:#E4E4E8; --border2:#CACACF;
---text:#0D0D10; --text2:#5C5C6E; --text3:#9898AA;
---accent:#5B5BF6; --accent-l:#EEEEFD; --accent-d:#4040D0;
---accent2:#FF6B6B; --accent2-l:#FFF0F0;
---sat:#0EA5AA; --sun:#F43F5E;
---safe-b:env(safe-area-inset-bottom,0px);
---safe-t:env(safe-area-inset-top,0px);
---nav-h:60px; --top-h:52px;
---cell-h:58px;
---r:12px; --r-lg:18px; --r-xl:24px;
---shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 8px rgba(0,0,0,.04);
---shadow:0 2px 8px rgba(0,0,0,.08),0 4px 20px rgba(0,0,0,.06);
---shadow-lg:0 8px 32px rgba(0,0,0,.12);
+  color-scheme: light only;
+  --bg:#F4F4F6; --surf:#FFFFFF; --surf2:#EBEBEF;
+  --border:#E4E4E8; --border2:#CACACF;
+  --text:#0D0D10; --text2:#5C5C6E; --text3:#9898AA;
+  --accent:#5B5BF6; --accent-l:#EEEEFD; --accent-d:#4040D0;
+  --accent2:#FF6B6B; --accent2-l:#FFF0F0;
+  --sat:#0EA5AA; --sun:#F43F5E;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+  --nav-h:60px; --top-h:52px;
+  --cell-h:58px;
+  --r:12px; --r-lg:18px; --r-xl:24px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 8px rgba(0,0,0,.04);
+  --shadow:0 2px 8px rgba(0,0,0,.08),0 4px 20px rgba(0,0,0,.06);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.12);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;}
@@ -196,174 +196,174 @@ input:focus{border-color:var(--accent);}
 
 <!-- ════ LOGIN SCREEN ════ -->
 <div id="login-screen" style="position:fixed;inset:0;z-index:3000;background:#F4F4F6;overflow-y:auto;">
-<div style="min-height:100%;display:flex;align-items:center;justify-content:center;padding:40px 24px;box-sizing:border-box;">
-<div style="width:100%;max-width:340px;">
-<div style="text-align:center;margin-bottom:20px;font-size:28px;font-weight:800;color:#5B5BF6;">こまけず</div>
-<div style="font-size:14px;color:#5C5C6E;text-align:center;margin-bottom:28px;line-height:1.6;">みんなの空きコマを合わせて<br>練習できる時間を見つけよう</div>
-<div style="display:flex;gap:4px;background:#EBEBEF;border-radius:12px;padding:4px;margin-bottom:20px;">
-<a id="tab-login" href="javascript:void(0)" style="flex:1;padding:10px;border-radius:9px;background:#fff;color:#0D0D10;font-size:14px;font-weight:700;text-align:center;text-decoration:none;box-shadow:0 1px 3px rgba(0,0,0,.1);">ログイン</a>
-<a id="tab-signup" href="javascript:void(0)" style="flex:1;padding:10px;border-radius:9px;background:none;color:#9898AA;font-size:14px;font-weight:600;text-align:center;text-decoration:none;">新規登録</a>
-</div>
-<input type="email" id="login-email" placeholder="メールアドレス" autocomplete="email" style="display:block;width:100%;padding:16px;border:2px solid #E4E4E8;border-radius:14px;font-size:16px;background:#FFF;color:#0D0D10;outline:none;box-sizing:border-box;margin-bottom:12px;">
-<input type="password" id="login-password" placeholder="パスワード" autocomplete="current-password" style="display:block;width:100%;padding:16px;border:2px solid #E4E4E8;border-radius:14px;font-size:16px;background:#FFF;color:#0D0D10;outline:none;box-sizing:border-box;margin-bottom:6px;">
-<input type="password" id="login-password2" placeholder="パスワード（確認）" autocomplete="new-password" style="display:none;width:100%;padding:16px;border:2px solid #E4E4E8;border-radius:14px;font-size:16px;background:#FFF;color:#0D0D10;outline:none;box-sizing:border-box;margin-bottom:6px;">
-<div style="font-size:11px;color:#9898AA;text-align:right;margin-bottom:16px;">パスワードは6文字以上</div>
-<a id="login-submit-btn" href="javascript:void(0)" style="display:block;width:100%;padding:17px;border-radius:14px;background:#5B5BF6;color:#fff;font-size:15px;font-weight:700;text-align:center;text-decoration:none;box-sizing:border-box;margin-bottom:8px;">ログイン</a>
-<div id="login-error" style="color:#F43F5E;font-size:12px;text-align:center;margin-top:8px;min-height:20px;"></div>
-</div>
-</div>
+  <div style="min-height:100%;display:flex;align-items:center;justify-content:center;padding:40px 24px;box-sizing:border-box;">
+    <div style="width:100%;max-width:340px;">
+      <div style="text-align:center;margin-bottom:20px;font-size:28px;font-weight:800;color:#5B5BF6;">こまけず</div>
+      <div style="font-size:14px;color:#5C5C6E;text-align:center;margin-bottom:28px;line-height:1.6;">みんなの空きコマを合わせて<br>練習できる時間を見つけよう</div>
+      <div style="display:flex;gap:4px;background:#EBEBEF;border-radius:12px;padding:4px;margin-bottom:20px;">
+        <a id="tab-login" href="javascript:void(0)" style="flex:1;padding:10px;border-radius:9px;background:#fff;color:#0D0D10;font-size:14px;font-weight:700;text-align:center;text-decoration:none;box-shadow:0 1px 3px rgba(0,0,0,.1);">ログイン</a>
+        <a id="tab-signup" href="javascript:void(0)" style="flex:1;padding:10px;border-radius:9px;background:none;color:#9898AA;font-size:14px;font-weight:600;text-align:center;text-decoration:none;">新規登録</a>
+      </div>
+      <input type="email" id="login-email" placeholder="メールアドレス" autocomplete="email" style="display:block;width:100%;padding:16px;border:2px solid #E4E4E8;border-radius:14px;font-size:16px;background:#FFF;color:#0D0D10;outline:none;box-sizing:border-box;margin-bottom:12px;">
+      <input type="password" id="login-password" placeholder="パスワード" autocomplete="current-password" style="display:block;width:100%;padding:16px;border:2px solid #E4E4E8;border-radius:14px;font-size:16px;background:#FFF;color:#0D0D10;outline:none;box-sizing:border-box;margin-bottom:6px;">
+      <input type="password" id="login-password2" placeholder="パスワード（確認）" autocomplete="new-password" style="display:none;width:100%;padding:16px;border:2px solid #E4E4E8;border-radius:14px;font-size:16px;background:#FFF;color:#0D0D10;outline:none;box-sizing:border-box;margin-bottom:6px;">
+      <div style="font-size:11px;color:#9898AA;text-align:right;margin-bottom:16px;">パスワードは6文字以上</div>
+      <a id="login-submit-btn" href="javascript:void(0)" style="display:block;width:100%;padding:17px;border-radius:14px;background:#5B5BF6;color:#fff;font-size:15px;font-weight:700;text-align:center;text-decoration:none;box-sizing:border-box;margin-bottom:8px;">ログイン</a>
+      <div id="login-error" style="color:#F43F5E;font-size:12px;text-align:center;margin-top:8px;min-height:20px;"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ════ ONBOARDING ════ -->
 <div class="ob gone" id="ob">
-<div class="ob-safe"></div>
-<div class="ob-topbar">
-<span class="ob-logo"><svg width="108" height="30" viewBox="0 0 108 30" fill="none"><defs><linearGradient id="lg2" x1="0" y1="0" x2="108" y2="30" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#5B5BF6"/><stop offset="100%" stop-color="#FF6B6B"/></linearGradient></defs><text x="0" y="23" font-family="'Syne','Inter',sans-serif" font-size="22" font-weight="800" fill="url(#lg2)" letter-spacing="-0.5">こまけず</text></svg></span>
-<button class="ob-skip" onclick="skipOb()">スキップ</button>
-</div>
-<div class="ob-prog"><div class="ob-pd" id="op0"></div><div class="ob-pd" id="op1"></div><div class="ob-pd" id="op2"></div></div>
-<div class="ob-body">
-<div class="ob-page on" id="ob0">
-<div class="ob-scroll">
-<h2 class="ob-h">はじめまして！</h2>
-<p class="ob-p">メンバーと共有するときに表示される名前とパートを入力してください。</p>
-<div style="margin-bottom:12px">
-<label class="ob-label">名前</label>
-<input class="ob-input" id="ob-name" type="text" placeholder="例：田中" autocomplete="off">
-</div>
-<div>
-<label class="ob-label">パート（任意）</label>
-<div id="ob-part-selector" style="margin-top:2px"></div>
-</div>
-</div>
-<div class="ob-foot"><button class="ob-main" onclick="obGo(1)">次へ →</button></div>
-</div>
-<div class="ob-page" id="ob1">
-<div class="ob-scroll">
-<h2 class="ob-h">毎週決まっている<br>予定を登録しよう</h2>
-<p class="ob-p">授業やレギュラーシフトなど、<strong>毎週同じコマに入る予定</strong>をタップして選んでください。</p>
-<div class="tpl-grid-wrap" style="margin-bottom:8px"><div id="ob-tpl"></div></div>
-<p style="font-size:11px;color:#ADA8A0;margin-top:8px">タップで選択・もう一度タップで解除。あとから設定で変更できます。</p>
-</div>
-<div class="ob-foot">
-<button class="ob-main" onclick="obGo(2)">次へ →</button>
-<button class="ob-sub" onclick="obGo(2)">毎週の予定はない・後で設定する</button>
-</div>
-</div>
-<div class="ob-page" id="ob2">
-<div class="ob-scroll">
-<h2 class="ob-h">準備完了！</h2>
-<p class="ob-p">カレンダーで<strong>週ごとに変わる予定</strong>を入力していきましょう。</p>
-<div style="background:#FFFFFF;border:1px solid #E2DDD6;border-radius:14px;padding:16px;margin-bottom:12px"><div style="font-size:14px;font-weight:600;color:#1C1A17;margin-bottom:4px">① コマをタップして選択</div><div style="font-size:13px;color:#6B6560">予定が埋まっているコマを複数まとめて選べます</div></div>
-<div style="background:#FFFFFF;border:1px solid #E2DDD6;border-radius:14px;padding:16px;margin-bottom:12px"><div style="font-size:14px;font-weight:600;color:#1C1A17;margin-bottom:4px">② 「予定を選択」で種類を選ぶ</div><div style="font-size:13px;color:#6B6560">授業・バイト・その他など、埋まっている理由を選びます</div></div>
-<div style="background:#E4F0EB;border:1px solid #90C8AD;border-radius:14px;padding:16px"><div style="font-size:14px;font-weight:600;color:#2B6351;margin-bottom:4px">③ 「練習候補」で空き時間を確認</div><div style="font-size:13px;color:#2B6351">全員の空きが自動で計算されます</div></div>
-</div>
-<div class="ob-foot"><button class="ob-main" onclick="finishOb()">カレンダーをはじめる</button></div>
-</div>
-</div>
+  <div class="ob-safe"></div>
+  <div class="ob-topbar">
+    <span class="ob-logo"><svg width="108" height="30" viewBox="0 0 108 30" fill="none"><defs><linearGradient id="lg2" x1="0" y1="0" x2="108" y2="30" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#5B5BF6"/><stop offset="100%" stop-color="#FF6B6B"/></linearGradient></defs><text x="0" y="23" font-family="'Syne','Inter',sans-serif" font-size="22" font-weight="800" fill="url(#lg2)" letter-spacing="-0.5">こまけず</text></svg></span>
+    <button class="ob-skip" onclick="skipOb()">スキップ</button>
+  </div>
+  <div class="ob-prog"><div class="ob-pd" id="op0"></div><div class="ob-pd" id="op1"></div><div class="ob-pd" id="op2"></div></div>
+  <div class="ob-body">
+    <div class="ob-page on" id="ob0">
+      <div class="ob-scroll">
+        <h2 class="ob-h">はじめまして！</h2>
+        <p class="ob-p">メンバーと共有するときに表示される名前とパートを入力してください。</p>
+        <div style="margin-bottom:12px">
+          <label class="ob-label">名前</label>
+          <input class="ob-input" id="ob-name" type="text" placeholder="例：田中" autocomplete="off">
+        </div>
+        <div>
+          <label class="ob-label">パート（任意）</label>
+          <div id="ob-part-selector" style="margin-top:2px"></div>
+        </div>
+      </div>
+      <div class="ob-foot"><button class="ob-main" onclick="obGo(1)">次へ →</button></div>
+    </div>
+    <div class="ob-page" id="ob1">
+      <div class="ob-scroll">
+        <h2 class="ob-h">毎週決まっている<br>予定を登録しよう</h2>
+        <p class="ob-p">授業やレギュラーシフトなど、<strong>毎週同じコマに入る予定</strong>をタップして選んでください。</p>
+        <div class="tpl-grid-wrap" style="margin-bottom:8px"><div id="ob-tpl"></div></div>
+        <p style="font-size:11px;color:#ADA8A0;margin-top:8px">タップで選択・もう一度タップで解除。あとから設定で変更できます。</p>
+      </div>
+      <div class="ob-foot">
+        <button class="ob-main" onclick="obGo(2)">次へ →</button>
+        <button class="ob-sub" onclick="obGo(2)">毎週の予定はない・後で設定する</button>
+      </div>
+    </div>
+    <div class="ob-page" id="ob2">
+      <div class="ob-scroll">
+        <h2 class="ob-h">準備完了！</h2>
+        <p class="ob-p">カレンダーで<strong>週ごとに変わる予定</strong>を入力していきましょう。</p>
+        <div style="background:#FFFFFF;border:1px solid #E2DDD6;border-radius:14px;padding:16px;margin-bottom:12px"><div style="font-size:14px;font-weight:600;color:#1C1A17;margin-bottom:4px">① コマをタップして選択</div><div style="font-size:13px;color:#6B6560">予定が埋まっているコマを複数まとめて選べます</div></div>
+        <div style="background:#FFFFFF;border:1px solid #E2DDD6;border-radius:14px;padding:16px;margin-bottom:12px"><div style="font-size:14px;font-weight:600;color:#1C1A17;margin-bottom:4px">② 「予定を選択」で種類を選ぶ</div><div style="font-size:13px;color:#6B6560">授業・バイト・その他など、埋まっている理由を選びます</div></div>
+        <div style="background:#E4F0EB;border:1px solid #90C8AD;border-radius:14px;padding:16px"><div style="font-size:14px;font-weight:600;color:#2B6351;margin-bottom:4px">③ 「練習候補」で空き時間を確認</div><div style="font-size:13px;color:#2B6351">全員の空きが自動で計算されます</div></div>
+      </div>
+      <div class="ob-foot"><button class="ob-main" onclick="finishOb()">カレンダーをはじめる</button></div>
+    </div>
+  </div>
 </div>
 
 <!-- ════ SHEETS ════ -->
 <div class="sh-ov" id="cat-ov" onclick="closeSh('cat')"></div>
 <div class="sheet" id="cat-sh">
-<div class="sh-handle"></div>
-<div class="sh-head"><div class="sh-title" id="cat-sh-title">この時間の予定</div></div>
-<div class="sh-scroll"><div class="cat-grid" id="cat-grid"></div></div>
+  <div class="sh-handle"></div>
+  <div class="sh-head"><div class="sh-title" id="cat-sh-title">この時間の予定</div></div>
+  <div class="sh-scroll"><div class="cat-grid" id="cat-grid"></div></div>
 </div>
 <div class="sh-ov" id="copy-ov" onclick="closeSh('copy')"></div>
 <div class="sheet" id="copy-sh">
-<div class="sh-handle"></div>
-<div class="sh-head"><div class="sh-title">コピー・削除</div></div>
-<div class="sh-scroll">
-<div class="copy-row" onclick="doCopy(1)"><svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><div><div class="cr-title">来週にコピー</div><div class="cr-sub">選択コマを来週の同じコマに複製</div></div></div>
-<div class="copy-row" onclick="doCopy(2)"><svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><div><div class="cr-title">再来週にコピー</div><div class="cr-sub">2週後に複製</div></div></div>
-<div class="copy-row" onclick="doMCopy(1)"><svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4M8 14h8M8 18h5"/></svg><div><div class="cr-title">今後1ヶ月にコピー</div><div class="cr-sub">毎週同じコマに4週間複製</div></div></div>
-<div class="copy-row" onclick="doMCopy(3)"><svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4M8 14h8M8 18h5"/></svg><div><div class="cr-title">今後3ヶ月にコピー</div><div class="cr-sub">毎週同じコマに12週間複製</div></div></div>
-<div class="copy-row cr-danger" onclick="doClearSel()"><svg style="width:18px;height:18px;flex-shrink:0;color:#F43F5E" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg><div><div class="cr-title">選択コマを空きに戻す</div><div class="cr-sub">選択した予定をすべて削除</div></div></div>
-</div>
+  <div class="sh-handle"></div>
+  <div class="sh-head"><div class="sh-title">コピー・削除</div></div>
+  <div class="sh-scroll">
+    <div class="copy-row" onclick="doCopy(1)"><svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><div><div class="cr-title">来週にコピー</div><div class="cr-sub">選択コマを来週の同じコマに複製</div></div></div>
+    <div class="copy-row" onclick="doCopy(2)"><svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><div><div class="cr-title">再来週にコピー</div><div class="cr-sub">2週後に複製</div></div></div>
+    <div class="copy-row" onclick="doMCopy(1)"><svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4M8 14h8M8 18h5"/></svg><div><div class="cr-title">今後1ヶ月にコピー</div><div class="cr-sub">毎週同じコマに4週間複製</div></div></div>
+    <div class="copy-row" onclick="doMCopy(3)"><svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4M8 14h8M8 18h5"/></svg><div><div class="cr-title">今後3ヶ月にコピー</div><div class="cr-sub">毎週同じコマに12週間複製</div></div></div>
+    <div class="copy-row cr-danger" onclick="doClearSel()"><svg style="width:18px;height:18px;flex-shrink:0;color:#F43F5E" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg><div><div class="cr-title">選択コマを空きに戻す</div><div class="cr-sub">選択した予定をすべて削除</div></div></div>
+  </div>
 </div>
 <div class="sh-ov" id="ddp-ov" onclick="closeSh('ddp')"></div>
 <div class="sh-ov" id="practice-ov" onclick="closeSh('practice')"></div>
 <div class="sheet" id="practice-sh">
-<div class="sh-handle"></div>
-<div class="sh-head"><div class="sh-title" id="psh-title">練習コマを決定</div></div>
-<div class="sh-scroll" id="psh-body"></div>
+  <div class="sh-handle"></div>
+  <div class="sh-head"><div class="sh-title" id="psh-title">練習コマを決定</div></div>
+  <div class="sh-scroll" id="psh-body"></div>
 </div>
 <div class="sheet" id="ddp-sh">
-<div class="sh-handle"></div>
-<div class="sh-head"><div class="sh-title" id="ddp-title"></div></div>
-<div class="sh-scroll" id="ddp-body"></div>
+  <div class="sh-handle"></div>
+  <div class="sh-head"><div class="sh-title" id="ddp-title"></div></div>
+  <div class="sh-scroll" id="ddp-body"></div>
 </div>
 
 <!-- ════ MODALS ════ -->
 <div class="ov" id="ov-share">
-<div class="modal">
-<div class="modal-head"><h3>スケジュールを共有</h3><button class="btn btn-g btn-sm" onclick="closeOv('ov-share')">✕</button></div>
-<div class="modal-body">
-<p style="font-size:13px;color:var(--text2)">このコードをメンバーに送ってください</p>
-<div class="share-code" id="share-code-disp">------</div>
-<button class="btn btn-p btn-block" onclick="copyCode()">📋 コードをコピー</button>
-<button class="btn btn-g btn-block" style="margin-top:4px" onclick="regenCode()">↺ コードを更新</button>
-</div>
-<div style="height:16px"></div>
-</div>
+  <div class="modal">
+    <div class="modal-head"><h3>スケジュールを共有</h3><button class="btn btn-g btn-sm" onclick="closeOv('ov-share')">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text2)">このコードをメンバーに送ってください</p>
+      <div class="share-code" id="share-code-disp">------</div>
+      <button class="btn btn-p btn-block" onclick="copyCode()">📋 コードをコピー</button>
+      <button class="btn btn-g btn-block" style="margin-top:4px" onclick="regenCode()">↺ コードを更新</button>
+    </div>
+    <div style="height:16px"></div>
+  </div>
 </div>
 <div class="ov" id="ov-user">
-<div class="modal">
-<div class="modal-head"><h3>自分の情報</h3><button class="btn btn-g btn-sm" onclick="closeOv('ov-user')">✕</button></div>
-<div class="modal-body">
-<div><label class="form-label">名前</label><input type="text" id="u-name" style="width:100%;padding:14px;font-size:16px;" oninput="markUserChanged()"></div>
-<div><label class="form-label">パート</label><div id="u-part-selector" style="margin-top:4px"></div></div>
-<div><label class="form-label">カラー</label><div id="u-colors" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"></div></div>
-</div>
-<div class="modal-foot">
-<button id="u-save-btn" class="btn btn-block" onclick="saveUser()" style="margin-bottom:4px;background:#E4E4E8;color:#9898AA;font-size:15px;padding:15px;border-radius:14px;border:none;transition:all .2s;">保存</button>
-<button class="btn btn-g btn-block" onclick="doSignOut()" style="color:#F43F5E;margin-bottom:4px">ログアウト</button>
-</div>
-<div style="height:12px"></div>
-</div>
+  <div class="modal">
+    <div class="modal-head"><h3>自分の情報</h3><button class="btn btn-g btn-sm" onclick="closeOv('ov-user')">✕</button></div>
+    <div class="modal-body">
+      <div><label class="form-label">名前</label><input type="text" id="u-name" style="width:100%;padding:14px;font-size:16px;" oninput="markUserChanged()"></div>
+      <div><label class="form-label">パート</label><div id="u-part-selector" style="margin-top:4px"></div></div>
+      <div><label class="form-label">カラー</label><div id="u-colors" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"></div></div>
+    </div>
+    <div class="modal-foot">
+      <button id="u-save-btn" class="btn btn-block" onclick="saveUser()" style="margin-bottom:4px;background:#E4E4E8;color:#9898AA;font-size:15px;padding:15px;border-radius:14px;border:none;transition:all .2s;">保存</button>
+      <button class="btn btn-g btn-block" onclick="doSignOut()" style="color:#F43F5E;margin-bottom:4px">ログアウト</button>
+    </div>
+    <div style="height:12px"></div>
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <!-- ════ APP SHELL ════ -->
 <div class="topbar">
-<span class="logo"><svg width="88" height="24" viewBox="0 0 88 24" fill="none"><defs><linearGradient id="lg1" x1="0" y1="0" x2="88" y2="24" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#5B5BF6"/><stop offset="100%" stop-color="#FF6B6B"/></linearGradient></defs><text x="0" y="18" font-family="'Syne','Inter',sans-serif" font-size="18" font-weight="800" fill="url(#lg1)" letter-spacing="-0.5">こまけず</text></svg></span>
-<div class="topbar-nav" id="cal-nav">
-<button class="nav-btn" onclick="navPrev()">‹</button>
-<span class="nav-lbl" id="nav-lbl"></span>
-<button class="nav-btn" onclick="navNext()">›</button>
-<button class="today-btn" onclick="goToday()">今日</button>
-</div>
-<div class="topbar-right">
-<button class="vm-btn on" id="vm-toggle-btn" onclick="toggleVM()" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surf);font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'Inter','Noto Sans JP',sans-serif;">月で見る</button>
-<button class="btn btn-g btn-sm" id="share-btn" onclick="openOv('ov-share')" style="padding:5px 10px;font-size:11px;display:flex;align-items:center;gap:4px"><svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</button>
-<div class="av" id="tb-av" onclick="openUserModal()"></div>
-</div>
+  <span class="logo"><svg width="88" height="24" viewBox="0 0 88 24" fill="none"><defs><linearGradient id="lg1" x1="0" y1="0" x2="88" y2="24" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#5B5BF6"/><stop offset="100%" stop-color="#FF6B6B"/></linearGradient></defs><text x="0" y="18" font-family="'Syne','Inter',sans-serif" font-size="18" font-weight="800" fill="url(#lg1)" letter-spacing="-0.5">こまけず</text></svg></span>
+  <div class="topbar-nav" id="cal-nav">
+    <button class="nav-btn" onclick="navPrev()">‹</button>
+    <span class="nav-lbl" id="nav-lbl"></span>
+    <button class="nav-btn" onclick="navNext()">›</button>
+    <button class="today-btn" onclick="goToday()">今日</button>
+  </div>
+  <div class="topbar-right">
+    <button class="vm-btn on" id="vm-toggle-btn" onclick="toggleVM()" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surf);font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'Inter','Noto Sans JP',sans-serif;">月で見る</button>
+    <button class="btn btn-g btn-sm" id="share-btn" onclick="openOv('ov-share')" style="padding:5px 10px;font-size:11px;display:flex;align-items:center;gap:4px"><svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</button>
+    <div class="av" id="tb-av" onclick="openUserModal()"></div>
+  </div>
 </div>
 
 <div class="app-body">
-<div id="view-cal" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
-<div class="sel-bar" id="sel-bar">
-<span class="sel-hint" id="sel-hint">コマをタップで選択　長押しでも選択</span>
-<button class="sel-act sel-act-copy" id="sel-copy" onclick="openSh('copy')" style="display:none">コピー・削除</button>
-</div>
-<div class="cal-head" id="cal-head"></div>
-<div class="cal-scroll" id="cal-scroll"><div class="cal-grid" id="cal-grid"></div></div>
-</div>
-<div id="view-month" style="flex:1;display:none;flex-direction:column;overflow:hidden;">
-<div class="m-dow-row" id="m-dow"></div>
-<div class="m-scroll"><div class="m-grid" id="m-grid"></div></div>
-</div>
-<div class="side-panel" id="view-find"></div>
-<div class="side-panel" id="view-band"></div>
-<div class="side-panel" id="view-settings"></div>
+  <div id="view-cal" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+    <div class="sel-bar" id="sel-bar">
+      <span class="sel-hint" id="sel-hint">コマをタップで選択　長押しでも選択</span>
+      <button class="sel-act sel-act-copy" id="sel-copy" onclick="openSh('copy')" style="display:none">コピー・削除</button>
+    </div>
+    <div class="cal-head" id="cal-head"></div>
+    <div class="cal-scroll" id="cal-scroll"><div class="cal-grid" id="cal-grid"></div></div>
+  </div>
+  <div id="view-month" style="flex:1;display:none;flex-direction:column;overflow:hidden;">
+    <div class="m-dow-row" id="m-dow"></div>
+    <div class="m-scroll"><div class="m-grid" id="m-grid"></div></div>
+  </div>
+  <div class="side-panel" id="view-find"></div>
+  <div class="side-panel" id="view-band"></div>
+  <div class="side-panel" id="view-settings"></div>
 </div>
 
 <nav class="bottom-nav">
-<button class="bn on" id="bn-cal" onclick="showPanel('cal')"><svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18"/><path d="M8 2v4M16 2v4"/><path d="M7 13h2M11 13h2M15 13h2M7 17h2M11 17h2M15 17h2"/></svg>カレンダー</button>
-<button class="bn" id="bn-find" onclick="showPanel('find')"><svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20 20"/><path d="M8 10.5h5M10.5 8v5"/></svg>練習候補</button>
-<button class="bn" id="bn-band" onclick="showPanel('band')"><svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="18" cy="8" r="2.5"/><path d="M21 20c0-2.5-1.6-4.5-3.5-5"/></svg>グループ</button>
-<button class="bn" id="bn-settings" onclick="showPanel('settings')"><svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>設定</button>
+  <button class="bn on" id="bn-cal" onclick="showPanel('cal')"><svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18"/><path d="M8 2v4M16 2v4"/><path d="M7 13h2M11 13h2M15 13h2M7 17h2M11 17h2M15 17h2"/></svg>カレンダー</button>
+  <button class="bn" id="bn-find" onclick="showPanel('find')"><svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20 20"/><path d="M8 10.5h5M10.5 8v5"/></svg>練習候補</button>
+  <button class="bn" id="bn-band" onclick="showPanel('band')"><svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="18" cy="8" r="2.5"/><path d="M21 20c0-2.5-1.6-4.5-3.5-5"/></svg>グループ</button>
+  <button class="bn" id="bn-settings" onclick="showPanel('settings')"><svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>設定</button>
 </nav>
 
 <script>
@@ -377,53 +377,53 @@ let currentUser=null;
 const PART_OPTIONS=['1st','2nd','3rd','4th','リード','ベース','パーカス'];
 
 function partSelectorHTML(currentVal,idPrefix){
-const isOther=currentVal&&!PART_OPTIONS.includes(currentVal);
-const otherVal=isOther?currentVal:'';
-let h='<div>';
-h+='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">';
-PART_OPTIONS.forEach(p=>{
-const on=currentVal===p;
-h+='<button type="button" onclick="selectPart(\''+idPrefix+'\',\''+p+'\')" id="'+idPrefix+'-btn-'+p+'" '
-+'style="padding:7px 14px;border-radius:20px;border:1.5px solid '+(on?'var(--accent)':'#E2DDD6')+';'
-+'background:'+(on?'var(--accent)':'#FFFFFF')+';color:'+(on?'#fff':'#1C1A17')+';'
-+'font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;'
-+'touch-action:manipulation;-webkit-user-select:none;user-select:none;">'+p+'</button>';
-});
-const otherOn=isOther;
-h+='<button type="button" onclick="selectPart(\''+idPrefix+'\',\'__other__\')" id="'+idPrefix+'-btn-other" '
-+'style="padding:7px 14px;border-radius:20px;border:1.5px solid '+(otherOn?'var(--accent)':'#E2DDD6')+';'
-+'background:'+(otherOn?'var(--accent)':'#FFFFFF')+';color:'+(otherOn?'#fff':'#1C1A17')+';'
-+'font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;'
-+'touch-action:manipulation;-webkit-user-select:none;user-select:none;">その他</button>';
-h+='</div>';
-h+='<input type="text" id="'+idPrefix+'-other-input" placeholder="パートを入力（例：テナー）" value="'+otherVal+'" '
-+'style="display:'+(otherOn?'block':'none')+';width:100%;padding:10px 12px;border:1.5px solid #E2DDD6;border-radius:10px;font-size:14px;font-family:inherit;background:#fff;color:#1C1A17;outline:none;box-sizing:border-box;" '
-+'oninput="typeof markUserChanged!==\'undefined\'&&markUserChanged()">';
-h+='</div>';
-return h;
+  const isOther=currentVal&&!PART_OPTIONS.includes(currentVal);
+  const otherVal=isOther?currentVal:'';
+  let h='<div>';
+  h+='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">';
+  PART_OPTIONS.forEach(p=>{
+    const on=currentVal===p;
+    h+='<button type="button" onclick="selectPart(\''+idPrefix+'\',\''+p+'\')" id="'+idPrefix+'-btn-'+p+'" '
+      +'style="padding:7px 14px;border-radius:20px;border:1.5px solid '+(on?'var(--accent)':'#E2DDD6')+';'
+      +'background:'+(on?'var(--accent)':'#FFFFFF')+';color:'+(on?'#fff':'#1C1A17')+';'
+      +'font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;'
+      +'touch-action:manipulation;-webkit-user-select:none;user-select:none;">'+p+'</button>';
+  });
+  const otherOn=isOther;
+  h+='<button type="button" onclick="selectPart(\''+idPrefix+'\',\'__other__\')" id="'+idPrefix+'-btn-other" '
+    +'style="padding:7px 14px;border-radius:20px;border:1.5px solid '+(otherOn?'var(--accent)':'#E2DDD6')+';'
+    +'background:'+(otherOn?'var(--accent)':'#FFFFFF')+';color:'+(otherOn?'#fff':'#1C1A17')+';'
+    +'font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;'
+    +'touch-action:manipulation;-webkit-user-select:none;user-select:none;">その他</button>';
+  h+='</div>';
+  h+='<input type="text" id="'+idPrefix+'-other-input" placeholder="パートを入力（例：テナー）" value="'+otherVal+'" '
+    +'style="display:'+(otherOn?'block':'none')+';width:100%;padding:10px 12px;border:1.5px solid #E2DDD6;border-radius:10px;font-size:14px;font-family:inherit;background:#fff;color:#1C1A17;outline:none;box-sizing:border-box;" '
+    +'oninput="typeof markUserChanged!==\'undefined\'&&markUserChanged()">';
+  h+='</div>';
+  return h;
 }
 
 function selectPart(idPrefix,val){
-[...PART_OPTIONS.map(p=>idPrefix+'-btn-'+p),idPrefix+'-btn-other'].forEach(btnId=>{
-const btn=document.getElementById(btnId);if(!btn)return;
-const isOn=(val==='__other__'&&btnId===idPrefix+'-btn-other')||(val!=='__other__'&&btnId===idPrefix+'-btn-'+val);
-btn.style.background=isOn?'var(--accent)':'#FFFFFF';
-btn.style.color=isOn?'#fff':'#1C1A17';
-btn.style.borderColor=isOn?'var(--accent)':'#E2DDD6';
-});
-const inp=document.getElementById(idPrefix+'-other-input');
-if(inp)inp.style.display=val==='__other__'?'block':'none';
-if(typeof markUserChanged!=='undefined')markUserChanged();
+  [...PART_OPTIONS.map(p=>idPrefix+'-btn-'+p),idPrefix+'-btn-other'].forEach(btnId=>{
+    const btn=document.getElementById(btnId);if(!btn)return;
+    const isOn=(val==='__other__'&&btnId===idPrefix+'-btn-other')||(val!=='__other__'&&btnId===idPrefix+'-btn-'+val);
+    btn.style.background=isOn?'var(--accent)':'#FFFFFF';
+    btn.style.color=isOn?'#fff':'#1C1A17';
+    btn.style.borderColor=isOn?'var(--accent)':'#E2DDD6';
+  });
+  const inp=document.getElementById(idPrefix+'-other-input');
+  if(inp)inp.style.display=val==='__other__'?'block':'none';
+  if(typeof markUserChanged!=='undefined')markUserChanged();
 }
 
 function getPartVal(idPrefix){
-const inp=document.getElementById(idPrefix+'-other-input');
-if(inp&&inp.style.display!=='none')return inp.value.trim();
-const active=PART_OPTIONS.find(p=>{
-const btn=document.getElementById(idPrefix+'-btn-'+p);
-return btn&&btn.style.background==='var(--accent)';
-});
-return active||'';
+  const inp=document.getElementById(idPrefix+'-other-input');
+  if(inp&&inp.style.display!=='none')return inp.value.trim();
+  const active=PART_OPTIONS.find(p=>{
+    const btn=document.getElementById(idPrefix+'-btn-'+p);
+    return btn&&btn.style.background==='var(--accent)';
+  });
+  return active||'';
 }
 
 // ══ DATA ══
@@ -442,16 +442,16 @@ if(!st.nid)st.nid=1;if(!st.ncid)st.ncid=10;if(!st.minM)st.minM=5;
 const ct=id=>st.cats.find(c=>c.id===id)||null;
 let _cloudSaveTimer=null;
 const save=()=>{
-try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
-expMe();pushMyData();
-if(currentUser){clearTimeout(_cloudSaveTimer);_cloudSaveTimer=setTimeout(saveToCloud,2000);}
+  try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
+  expMe();pushMyData();
+  if(currentUser){clearTimeout(_cloudSaveTimer);_cloudSaveTimer=setTimeout(saveToCloud,2000);}
 };
 async function saveToCloud(){
-if(!currentUser)return;
-try{
-const {error}=await sbClient.from('user_data').upsert({user_id:currentUser.id,data:{st,myGroups,activeGrpId},updated_at:new Date().toISOString()},{onConflict:'user_id'});
-if(error)console.warn('cloud save error',error.message);
-}catch(e){console.warn('cloud save error',e);}
+  if(!currentUser)return;
+  try{
+    const {error}=await sbClient.from('user_data').upsert({user_id:currentUser.id,data:{st,myGroups,activeGrpId},updated_at:new Date().toISOString()},{onConflict:'user_id'});
+    if(error)console.warn('cloud save error',error.message);
+  }catch(e){console.warn('cloud save error',e);}
 }
 const expMe=()=>{try{localStorage.setItem('hx_'+st.me.code,JSON.stringify({name:st.me.name,part:st.me.part,color:st.me.color,blocks:st.blocks,cats:st.cats}));}catch(e){}};
 const DS=d=>{const jst=new Date(d.getTime()+9*60*60*1000);return jst.toISOString().slice(0,10);};
@@ -465,76 +465,76 @@ const navPrev=()=>{offset--;render();};
 const navNext=()=>{offset++;render();};
 const goToday=()=>{offset=0;render();};
 function toggleVM(){
-vm=vm==='week'?'month':'week';
-const btn=document.getElementById('vm-toggle-btn');
-if(btn)btn.textContent=vm==='week'?'月で見る':'週で見る';
-showPanel('cal');
+  vm=vm==='week'?'month':'week';
+  const btn=document.getElementById('vm-toggle-btn');
+  if(btn)btn.textContent=vm==='week'?'月で見る':'週で見る';
+  showPanel('cal');
 }
 
 // ══ PANEL SWITCH ══
 let curPanel='cal';
 function showPanel(name){
-curPanel=name;
-['cal','month','find','band','settings'].forEach(n=>{const el=document.getElementById('view-'+n);if(el){el.style.display='none';el.classList.remove('active');}});
-const calNav=document.getElementById('cal-nav');const shareBtn=document.getElementById('share-btn');const vmBtn=document.getElementById('vm-toggle-btn');
-['cal','band','find','settings'].forEach(n=>document.getElementById('bn-'+n)?.classList.remove('on'));
-document.getElementById('bn-'+name)?.classList.add('on');
-if(name==='cal'){
-if(calNav)calNav.style.display='flex';if(shareBtn)shareBtn.style.display='';if(vmBtn)vmBtn.style.display='';
-render();
-} else {
-if(calNav)calNav.style.display='none';if(shareBtn)shareBtn.style.display='none';if(vmBtn)vmBtn.style.display='none';
-const el=document.getElementById('view-'+name);if(el){el.style.display='block';el.classList.add('active');}
-if(name==='find')renderFind();if(name==='band')renderBand();if(name==='settings')renderSettings();
-}
+  curPanel=name;
+  ['cal','month','find','band','settings'].forEach(n=>{const el=document.getElementById('view-'+n);if(el){el.style.display='none';el.classList.remove('active');}});
+  const calNav=document.getElementById('cal-nav');const shareBtn=document.getElementById('share-btn');const vmBtn=document.getElementById('vm-toggle-btn');
+  ['cal','band','find','settings'].forEach(n=>document.getElementById('bn-'+n)?.classList.remove('on'));
+  document.getElementById('bn-'+name)?.classList.add('on');
+  if(name==='cal'){
+    if(calNav)calNav.style.display='flex';if(shareBtn)shareBtn.style.display='';if(vmBtn)vmBtn.style.display='';
+    render();
+  } else {
+    if(calNav)calNav.style.display='none';if(shareBtn)shareBtn.style.display='none';if(vmBtn)vmBtn.style.display='none';
+    const el=document.getElementById('view-'+name);if(el){el.style.display='block';el.classList.add('active');}
+    if(name==='find')renderFind();if(name==='band')renderBand();if(name==='settings')renderSettings();
+  }
 }
 function render(){
-if(curPanel!=='cal')return;
-['cal','month'].forEach(n=>{const el=document.getElementById('view-'+n);if(el)el.style.display='none';});
-if(vm==='week'){document.getElementById('view-cal').style.display='flex';renderWeek();}
-else{document.getElementById('view-month').style.display='flex';renderMonth();}
+  if(curPanel!=='cal')return;
+  ['cal','month'].forEach(n=>{const el=document.getElementById('view-'+n);if(el)el.style.display='none';});
+  if(vm==='week'){document.getElementById('view-cal').style.display='flex';renderWeek();}
+  else{document.getElementById('view-month').style.display='flex';renderMonth();}
 }
 
 // ══ WEEK VIEW ══
 function renderWeek(){
-const dates=weekDates();const todayStr=DS(new Date());const fmt=d=>`${d.getMonth()+1}/${d.getDate()}`;
-document.getElementById('nav-lbl').textContent=`${fmt(dates[0])} – ${fmt(dates[6])}`;
-const head=document.getElementById('cal-head');head.style.gridTemplateColumns=`48px repeat(7,1fr)`;
-let hh=`<div style="border-right:1px solid var(--border);background:var(--surf2)"></div>`;
-dates.forEach((d,i)=>{
-const ds=DS(d);const isSat=i===5,isSun=i===6;const nc=isSat?'sat':isSun?'sun':'';
-hh+=`<div class="day-head" style="${isSat?'background:#F0FAFA':isSun?'background:#FFF0F2':''}">
-     <div class="dh-name ${nc}">${DAYS[i]}</div>
-     <div class="dh-num${ds===todayStr?' today':''}${isSat?' sat-c':isSun?' sun-c':''}">${d.getDate()}</div>
-   </div>`;
-});
-head.innerHTML=hh;
-const grid=document.getElementById('cal-grid');grid.style.gridTemplateColumns=`48px repeat(7,1fr)`;
-let gh='';
-st.slots.forEach(slot=>{
-gh+=`<div class="time-col"><div class="tc-name">${slot.name}</div><div class="tc-range">${slot.start}<br>${slot.end}</div></div>`;
-dates.forEach((d,i)=>{
-const ds=DS(d);const key=BK(ds,slot.id);const isSat=i===5,isSun=i===6;
-const direct=st.blocks[key];const tplKey=DAYS[i]+'-'+slot.id;const hasTpl=!direct&&!!(st.tpl||{})[tplKey];
-const effId=direct||(hasTpl?'class':null);const c=effId?ct(effId):null;
-const isSel=selCells.has(key)&&selMode;const weekBg=isSat?'sat-bg':isSun?'sun-bg':'';const bg=c?c.fg:'transparent';
-const practiceInfo=myGroups.map(g=>{const ps=(g.practiceSlots||[]).find(p=>p.date===ds&&p.slot_id==slot.id);return ps?g.name:null;}).filter(Boolean);
-const isPractice=practiceInfo.length>0;
-const cellBg=isPractice?'#EDE9FE':(c?c.bg:'');const cellBgFb=isPractice?'#EDE9FE':(isSat?'#F0FAFA':isSun?'#FFF0F2':'#fff');
-gh+=`<div class="slot-cell${isSel?' sel':''} ${weekBg}"
-       style="background:${cellBg||cellBgFb};${hasTpl&&!isPractice?'opacity:.7':''}"
-       ontouchstart="ts('${key}','${slot.name}',event)" ontouchend="te(event)" ontouchmove="tm(event)"
-       onclick="sc('${key}','${slot.name}')">
-       <div class="cell-bar" style="background:${isPractice?'#6D28D9':bg}"></div>
-       <div class="cell-body">
-         ${isPractice?`<div class="cell-cat" style="color:#5B21B6;font-size:9px">${practiceInfo[0]}</div>`:c?`<div class="cell-cat" style="color:${c.fg}">${c.name}</div>`:`<div class="cell-empty">${slot.start}</div>`}
-       </div>
-       ${hasTpl&&!isPractice?`<div class="cell-tpl">※</div>`:''}
-       ${isSel?`<div class="cell-check">✓</div>`:''}
-     </div>`;
-});
-});
-grid.innerHTML=gh;
+  const dates=weekDates();const todayStr=DS(new Date());const fmt=d=>`${d.getMonth()+1}/${d.getDate()}`;
+  document.getElementById('nav-lbl').textContent=`${fmt(dates[0])} – ${fmt(dates[6])}`;
+  const head=document.getElementById('cal-head');head.style.gridTemplateColumns=`48px repeat(7,1fr)`;
+  let hh=`<div style="border-right:1px solid var(--border);background:var(--surf2)"></div>`;
+  dates.forEach((d,i)=>{
+    const ds=DS(d);const isSat=i===5,isSun=i===6;const nc=isSat?'sat':isSun?'sun':'';
+    hh+=`<div class="day-head" style="${isSat?'background:#F0FAFA':isSun?'background:#FFF0F2':''}">
+      <div class="dh-name ${nc}">${DAYS[i]}</div>
+      <div class="dh-num${ds===todayStr?' today':''}${isSat?' sat-c':isSun?' sun-c':''}">${d.getDate()}</div>
+    </div>`;
+  });
+  head.innerHTML=hh;
+  const grid=document.getElementById('cal-grid');grid.style.gridTemplateColumns=`48px repeat(7,1fr)`;
+  let gh='';
+  st.slots.forEach(slot=>{
+    gh+=`<div class="time-col"><div class="tc-name">${slot.name}</div><div class="tc-range">${slot.start}<br>${slot.end}</div></div>`;
+    dates.forEach((d,i)=>{
+      const ds=DS(d);const key=BK(ds,slot.id);const isSat=i===5,isSun=i===6;
+      const direct=st.blocks[key];const tplKey=DAYS[i]+'-'+slot.id;const hasTpl=!direct&&!!(st.tpl||{})[tplKey];
+      const effId=direct||(hasTpl?'class':null);const c=effId?ct(effId):null;
+      const isSel=selCells.has(key)&&selMode;const weekBg=isSat?'sat-bg':isSun?'sun-bg':'';const bg=c?c.fg:'transparent';
+      const practiceInfo=myGroups.map(g=>{const ps=(g.practiceSlots||[]).find(p=>p.date===ds&&p.slot_id==slot.id);return ps?g.name:null;}).filter(Boolean);
+      const isPractice=practiceInfo.length>0;
+      const cellBg=isPractice?'#EDE9FE':(c?c.bg:'');const cellBgFb=isPractice?'#EDE9FE':(isSat?'#F0FAFA':isSun?'#FFF0F2':'#fff');
+      gh+=`<div class="slot-cell${isSel?' sel':''} ${weekBg}"
+        style="background:${cellBg||cellBgFb};${hasTpl&&!isPractice?'opacity:.7':''}"
+        ontouchstart="ts('${key}','${slot.name}',event)" ontouchend="te(event)" ontouchmove="tm(event)"
+        onclick="sc('${key}','${slot.name}')">
+        <div class="cell-bar" style="background:${isPractice?'#6D28D9':bg}"></div>
+        <div class="cell-body">
+          ${isPractice?`<div class="cell-cat" style="color:#5B21B6;font-size:9px">${practiceInfo[0]}</div>`:c?`<div class="cell-cat" style="color:${c.fg}">${c.name}</div>`:`<div class="cell-empty">${slot.start}</div>`}
+        </div>
+        ${hasTpl&&!isPractice?`<div class="cell-tpl">※</div>`:''}
+        ${isSel?`<div class="cell-check">✓</div>`:''}
+      </div>`;
+    });
+  });
+  grid.innerHTML=gh;
 }
 
 // ══ TOUCH ══
@@ -544,9 +544,9 @@ function tm(e){_tm=true;clearTimeout(_lt);}
 function te(e){clearTimeout(_lt);}
 function sc(key,name){selMode=true;if(selCells.has(key))selCells.delete(key);else selCells.add(key);if(selCells.size===0)selMode=false;updSelBar();renderWeek();}
 function updSelBar(){
-const n=selCells.size;const h=document.getElementById('sel-hint');const cc=document.getElementById('sel-copy');const eb=document.getElementById('entry-bar');const ebl=document.getElementById('entry-bar-label');
-if(!selMode||n===0){h.textContent='コマをタップで選択　複数まとめて入力できます';cc.style.display='none';eb.style.display='none';}
-else{h.innerHTML=`<span class="sel-badge">${n}</span>&nbsp;コマ選択中`;cc.style.display='';ebl.textContent=`${n}コマ選択中`;eb.style.display='flex';}
+  const n=selCells.size;const h=document.getElementById('sel-hint');const cc=document.getElementById('sel-copy');const eb=document.getElementById('entry-bar');const ebl=document.getElementById('entry-bar-label');
+  if(!selMode||n===0){h.textContent='コマをタップで選択　複数まとめて入力できます';cc.style.display='none';eb.style.display='none';}
+  else{h.innerHTML=`<span class="sel-badge">${n}</span>&nbsp;コマ選択中`;cc.style.display='';ebl.textContent=`${n}コマ選択中`;eb.style.display='flex';}
 }
 function clearSel(){selCells.clear();selMode=false;updSelBar();renderWeek();}
 
@@ -555,10 +555,10 @@ let _catKey=null,_catCtx=null;
 function openCatShForSel(){if(selCells.size===0)return;_catKey='__sel__';_catCtx=null;document.getElementById('cat-sh-title').textContent=`${selCells.size}コマの予定を選択`;buildCatGrid();openSh('cat');}
 function buildCatGrid(){const el=document.getElementById('cat-grid');let h=st.cats.map(c=>`<button class="cat-btn" style="background:${c.bg};color:${c.fg}" onclick="applyCat('${c.id}')"><span class="cat-dot" style="background:${c.fg}"></span>${c.name}</button>`).join('');h+=`<button class="cat-btn cat-free" onclick="applyCat('free')">○ 空きに戻す</button>`;el.innerHTML=h;}
 function applyCat(catId){
-closeSh('cat');if(!_catKey)return;
-if(_catKey==='__sel__'){selCells.forEach(key=>{if(catId==='free')delete st.blocks[key];else st.blocks[key]=catId;});save();clearSel();}
-else{if(catId==='free')delete st.blocks[_catKey];else st.blocks[_catKey]=catId;save();if(vm==='week')renderWeek();else{renderMonth();if(_catCtx)setTimeout(()=>monthTap(_catCtx.ds,_catCtx.dn),60);}}
-_catKey=null;_catCtx=null;
+  closeSh('cat');if(!_catKey)return;
+  if(_catKey==='__sel__'){selCells.forEach(key=>{if(catId==='free')delete st.blocks[key];else st.blocks[key]=catId;});save();clearSel();}
+  else{if(catId==='free')delete st.blocks[_catKey];else st.blocks[_catKey]=catId;save();if(vm==='week')renderWeek();else{renderMonth();if(_catCtx)setTimeout(()=>monthTap(_catCtx.ds,_catCtx.dn),60);}}
+  _catKey=null;_catCtx=null;
 }
 function openSh(name){document.getElementById(name+'-ov').classList.add('open');document.getElementById(name+'-sh').classList.add('open');}
 function closeSh(name){document.getElementById(name+'-ov').classList.remove('open');document.getElementById(name+'-sh').classList.remove('open');}
@@ -570,91 +570,89 @@ function doClearSel(){closeSh('copy');let n=0;selCells.forEach(k=>{delete st.blo
 
 // ══ MONTH VIEW ══
 function renderMonth(){
-const now=new Date();const ms=new Date(now.getFullYear(),now.getMonth()+offset,1);const yr=ms.getFullYear(),mo=ms.getMonth();
-document.getElementById('nav-lbl').textContent=`${yr}年 ${mo+1}月`;const todayStr=DS(new Date());
-document.getElementById('m-dow').innerHTML=DAYS.map(d=>`<div class="m-dow">${d}</div>`).join('');
-const fd=ms.getDay()===0?6:ms.getDay()-1;const start=new Date(yr,mo,1-fd);let html='';
-for(let w=0;w<6;w++){
-for(let d=0;d<7;d++){
-const cur=new Date(start);cur.setDate(start.getDate()+w*7+d);const dStr=DS(cur);const isM=cur.getMonth()===mo;const isT=dStr===todayStr;const dn=DAYS[d];
-const pips=st.slots.map(s=>{
-const did=st.blocks[BK(dStr,s.id)];const tpl=(st.tpl||{})[dn+'-'+s.id];
-const pracGrp=myGroups.find(g=>(g.practiceSlots||[]).find(p=>p.date===dStr&&p.slot_id==s.id));
-if(pracGrp)return`<div class="mpip" style="background:#EDE9FE;color:#5B21B6;font-weight:700">練</div>`;
-const cid=did||(tpl?'class':null);const cv=cid?ct(cid):null;if(!cv)return'';
-return`<div class="mpip" style="background:${cv.bg};color:${cv.fg};${!did?'opacity:.6':''}">${s.name.replace(/限$/,'')}</div>`;
-}).filter(Boolean).join('');
-html+=`<div class="m-cell${!isM?' other':''}${isT?' is-today':''}" onclick="monthTap('${dStr}','${dn}')"><div class="m-date${isT?' today-d':''}">${cur.getDate()}</div>${pips?`<div class="m-pips">${pips}</div>`:''}</div>`;
-}
-const nx=new Date(start);nx.setDate(start.getDate()+(w+1)*7);if(nx.getMonth()>mo&&nx.getFullYear()>=yr)break;
-}
-document.getElementById('m-grid').innerHTML=html;
+  const now=new Date();const ms=new Date(now.getFullYear(),now.getMonth()+offset,1);const yr=ms.getFullYear(),mo=ms.getMonth();
+  document.getElementById('nav-lbl').textContent=`${yr}年 ${mo+1}月`;const todayStr=DS(new Date());
+  document.getElementById('m-dow').innerHTML=DAYS.map(d=>`<div class="m-dow">${d}</div>`).join('');
+  const fd=ms.getDay()===0?6:ms.getDay()-1;const start=new Date(yr,mo,1-fd);let html='';
+  for(let w=0;w<6;w++){
+    for(let d=0;d<7;d++){
+      const cur=new Date(start);cur.setDate(start.getDate()+w*7+d);const dStr=DS(cur);const isM=cur.getMonth()===mo;const isT=dStr===todayStr;const dn=DAYS[d];
+      const pips=st.slots.map(s=>{
+        const did=st.blocks[BK(dStr,s.id)];const tpl=(st.tpl||{})[dn+'-'+s.id];
+        const pracGrp=myGroups.find(g=>(g.practiceSlots||[]).find(p=>p.date===dStr&&p.slot_id==s.id));
+        if(pracGrp)return`<div class="mpip" style="background:#EDE9FE;color:#5B21B6;font-weight:700">練</div>`;
+        const cid=did||(tpl?'class':null);const cv=cid?ct(cid):null;if(!cv)return'';
+        return`<div class="mpip" style="background:${cv.bg};color:${cv.fg};${!did?'opacity:.6':''}">${s.name.replace(/限$/,'')}</div>`;
+      }).filter(Boolean).join('');
+      html+=`<div class="m-cell${!isM?' other':''}${isT?' is-today':''}" onclick="monthTap('${dStr}','${dn}')"><div class="m-date${isT?' today-d':''}">${cur.getDate()}</div>${pips?`<div class="m-pips">${pips}</div>`:''}</div>`;
+    }
+    const nx=new Date(start);nx.setDate(start.getDate()+(w+1)*7);if(nx.getMonth()>mo&&nx.getFullYear()>=yr)break;
+  }
+  document.getElementById('m-grid').innerHTML=html;
 }
 function monthTap(dStr,dn){
-const d=new Date(dStr);document.getElementById('ddp-title').textContent=`${d.getMonth()+1}/${d.getDate()}（${dn}）`;
-document.getElementById('ddp-body').innerHTML=st.slots.map(slot=>{
-const key=BK(dStr,slot.id);const did=st.blocks[key];const tpl=(st.tpl||{})[dn+'-'+slot.id];const cid=did||(tpl?'class':null);const c=cid?ct(cid):null;
-const bg=c?c.bg:'var(--surf2)';const fg=c?c.fg:'var(--text2)';
-return`<div class="ddp-row" style="background:${bg};${!did&&tpl?'opacity:.75':''}" onclick="ddpTap('${dStr}','${dn}',${slot.id},'${slot.name}')">
-     <div class="ddp-bar" style="background:${fg}"></div>
-     <div class="ddp-time"><div class="ddp-tn" style="color:${fg}">${slot.name}</div><div class="ddp-tr">${slot.start}–${slot.end}</div></div>
-     <div class="ddp-cat"><div class="ddp-cn" style="color:${fg}">${c?c.name:'空き'}</div>${!did&&tpl?`<div class="ddp-ch">授業テンプレート</div>`:''}</div>
-     <div class="ddp-arr" style="color:${fg}">›</div>
-   </div>`;
-}).join('');
-openSh('ddp');
+  const d=new Date(dStr);document.getElementById('ddp-title').textContent=`${d.getMonth()+1}/${d.getDate()}（${dn}）`;
+  document.getElementById('ddp-body').innerHTML=st.slots.map(slot=>{
+    const key=BK(dStr,slot.id);const did=st.blocks[key];const tpl=(st.tpl||{})[dn+'-'+slot.id];const cid=did||(tpl?'class':null);const c=cid?ct(cid):null;
+    const bg=c?c.bg:'var(--surf2)';const fg=c?c.fg:'var(--text2)';
+    return`<div class="ddp-row" style="background:${bg};${!did&&tpl?'opacity:.75':''}" onclick="ddpTap('${dStr}','${dn}',${slot.id},'${slot.name}')">
+      <div class="ddp-bar" style="background:${fg}"></div>
+      <div class="ddp-time"><div class="ddp-tn" style="color:${fg}">${slot.name}</div><div class="ddp-tr">${slot.start}–${slot.end}</div></div>
+      <div class="ddp-cat"><div class="ddp-cn" style="color:${fg}">${c?c.name:'空き'}</div>${!did&&tpl?`<div class="ddp-ch">授業テンプレート</div>`:''}</div>
+      <div class="ddp-arr" style="color:${fg}">›</div>
+    </div>`;
+  }).join('');
+  openSh('ddp');
 }
 function ddpTap(dStr,dn,slotId,slotName){
-closeSh('ddp');setTimeout(()=>{_catKey=BK(dStr,slotId);_catCtx={ds:dStr,dn};const d=new Date(dStr);document.getElementById('cat-sh-title').textContent=`${d.getMonth()+1}/${d.getDate()}（${dn}）${slotName}`;buildCatGrid();openSh('cat');},120);
+  closeSh('ddp');setTimeout(()=>{_catKey=BK(dStr,slotId);_catCtx={ds:dStr,dn};const d=new Date(dStr);document.getElementById('cat-sh-title').textContent=`${d.getMonth()+1}/${d.getDate()}（${dn}）${slotName}`;buildCatGrid();openSh('cat');},120);
 }
 
 // ══ FIND（カレンダー表示）══
 function renderFind(){
-if(!activeGrpId&&myGroups.length>0){activeGrpId=myGroups[0].id;saveGroups();}
-const activeGrp=myGroups.find(g=>g.id===activeGrpId);
-const grpMembers=activeGrp?activeGrp.members:[];
-const el=document.getElementById('view-find');if(!el)return;
+  if(!activeGrpId&&myGroups.length>0){activeGrpId=myGroups[0].id;saveGroups();}
+  const activeGrp=myGroups.find(g=>g.id===activeGrpId);
+  const grpMembers=activeGrp?activeGrp.members:[];
+  const el=document.getElementById('view-find');if(!el)return;
 
-if(myGroups.length===0){
-el.innerHTML=`<div style="padding:40px 20px;text-align:center;color:var(--text3)"><div style="font-size:40px;margin-bottom:12px">👥</div><div style="font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px">グループがありません</div><div style="font-size:13px">「グループ」タブでグループを作るか参加してください</div></div>`;
-return;
-}
+  if(myGroups.length===0){
+    el.innerHTML=`<div style="padding:40px 20px;text-align:center;color:var(--text3)"><div style="font-size:40px;margin-bottom:12px">👥</div><div style="font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px">グループがありません</div><div style="font-size:13px">「グループ」タブでグループを作るか参加してください</div></div>`;
+    return;
+  }
 
-// グループタブ
-const tabHTML=`<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch">
-   ${myGroups.map(g=>{
-     const active=activeGrpId===g.id;const hasPractice=(g.practiceSlots||[]).length>0;
-     const bg=active?'var(--accent)':hasPractice?'#EDE9FE':'#FFFFFF';
-     const color=active?'#fff':hasPractice?'#5B21B6':'var(--text2)';
-     const shadow=active?'0 2px 8px rgba(91,91,246,.3)':hasPractice?'0 1px 3px rgba(109,40,217,.2)':'0 1px 3px rgba(0,0,0,.08)';
-     return`<button onclick="activeGrpId='${g.id}';saveGroups();renderFind();" style="padding:7px 16px;border-radius:20px;border:none;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter','Noto Sans JP',sans-serif;flex-shrink:0;background:${bg};color:${color};box-shadow:${shadow}">${g.name}</button>`;
-   }).join('')}
- </div>`;
+  // グループタブ
+  const tabHTML=`<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch">
+    ${myGroups.map(g=>{
+      const active=activeGrpId===g.id;const hasPractice=(g.practiceSlots||[]).length>0;
+      const bg=active?'var(--accent)':hasPractice?'#EDE9FE':'#FFFFFF';
+      const color=active?'#fff':hasPractice?'#5B21B6':'var(--text2)';
+      const shadow=active?'0 2px 8px rgba(91,91,246,.3)':hasPractice?'0 1px 3px rgba(109,40,217,.2)':'0 1px 3px rgba(0,0,0,.08)';
+      return`<button onclick="activeGrpId='${g.id}';saveGroups();renderFind();" style="padding:7px 16px;border-radius:20px;border:none;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter','Noto Sans JP',sans-serif;flex-shrink:0;background:${bg};color:${color};box-shadow:${shadow}">${g.name}</button>`;
+    }).join('')}
+  </div>`;
 
-// 決定済み練習コマ
-const ps=activeGrp?activeGrp.practiceSlots||[]:[];
-let psHTML='';
-if(ps.length>0){
-psHTML=`<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">決定済み練習コマ</div>`;
-ps.forEach(p=>{
-const slot=st.slots.find(s=>s.id==p.slot_id);const dt=new Date(p.decided_at);
-const dtStr=`${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
-psHTML+=`<div style="background:#EDE9FE;border-radius:12px;padding:11px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px">
-       <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#5B21B6">${p.date}（${slot?.name||''}）${slot?.start||''}–${slot?.end||''}</div><div style="font-size:11px;color:#8B5CF6;margin-top:2px">${p.decided_by}が${dtStr}に決定</div></div>
-       <button onclick="openChangePracticeSheet('${activeGrpId}','${p.id}','${p.date}',${p.slot_id})" style="padding:6px 12px;border-radius:8px;border:none;background:rgba(91,33,182,.1);color:#5B21B6;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">変更</button>
-     </div>`;
-});
-psHTML+=`</div>`;
-}
+  // 決定済み練習コマ
+  const ps=activeGrp?activeGrp.practiceSlots||[]:[];
+  let psHTML='';
+  if(ps.length>0){
+    psHTML=`<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">決定済み練習コマ</div>`;
+    ps.forEach(p=>{
+      const slot=st.slots.find(s=>s.id==p.slot_id);const dt=new Date(p.decided_at);
+      const dtStr=`${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+      psHTML+=`<div style="background:#EDE9FE;border-radius:12px;padding:11px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px">
+        <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#5B21B6">${p.date}（${slot?.name||''}）${slot?.start||''}–${slot?.end||''}</div><div style="font-size:11px;color:#8B5CF6;margin-top:2px">${p.decided_by}が${dtStr}に決定</div></div>
+        <button onclick="openChangePracticeSheet('${activeGrpId}','${p.id}','${p.date}',${p.slot_id})" style="padding:6px 12px;border-radius:8px;border:none;background:rgba(91,33,182,.1);color:#5B21B6;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">変更</button>
+      </div>`;
+    });
+    psHTML+=`</div>`;
+  }
 
-let h=`<h2 class="scr-title">練習候補</h2>${tabHTML}${psHTML}`;
+  let h=`<h2 class="scr-title">練習候補</h2>${tabHTML}${psHTML}`;
 
-// ── カレンダーグリッド（パート表示）──
-if(activeGrp){
-    const visDays=weekDates().filter((_,i)=>st.days.includes(DAYS[i]));
-    const visDayNames=visDays.map(d=>DAYS[d.getDay()===0?6:d.getDay()-1]);
-const allMembers=[{name:st.me.name,part:st.me.part||'',color:st.me.color,blocks:st.blocks,tpl:st.tpl,isMe:true},...grpMembers];
-const total=allMembers.length;
+  // ── カレンダーグリッド（パート表示）──
+  if(activeGrp){
+    const allMembers=[{name:st.me.name,part:st.me.part||'',color:st.me.color,blocks:st.blocks,tpl:st.tpl,isMe:true},...grpMembers];
+    const total=allMembers.length;
 
     // 期間設定：グループのstartDate〜endDateの全日付（設定なければ今週から4週間）
     function getPeriodDates(grp){
@@ -682,7 +680,9 @@ const total=allMembers.length;
       return weeks;
     }
     const weeksInPeriod=getWeeksInPeriod(activeGrp);
-    const wOff=Math.max(0,Math.min(activeGrp._findWeekOffset,weeksInPeriod.length-1));
+    // weeksInPeriodが空の場合は今週を使う
+    if(weeksInPeriod.length===0)weeksInPeriod.push(getMon(0));
+    const wOff=Math.max(0,Math.min(activeGrp._findWeekOffset||0,weeksInPeriod.length-1));
     activeGrp._findWeekOffset=wOff;
     const currentWeekMon=weeksInPeriod[wOff]||getMon(0);
     const visDays=DAYS.map((_,i)=>{const d=new Date(currentWeekMon);d.setDate(currentWeekMon.getDate()+i);return d;}).filter((_,i)=>st.days.includes(DAYS[i]));
@@ -696,119 +696,118 @@ const total=allMembers.length;
       <a href="javascript:void(0)" onclick="if(myGroups.find(g=>g.id==='${activeGrpId}'))myGroups.find(g=>g.id==='${activeGrpId}')._findWeekOffset=Math.min(${weeksInPeriod.length-1},${wOff}+1);renderFind();" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:${wOff<weeksInPeriod.length-1?'var(--surf)':'var(--surf2)'};display:flex;align-items:center;justify-content:center;font-size:16px;color:${wOff<weeksInPeriod.length-1?'var(--text2)':'var(--text3)'};text-decoration:none;">›</a>
     </div>`;
 
-h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:8px">空きコマをタップして練習を決定できます</div>`;
-h+=`<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px">`;
-h+=`<div style="display:grid;grid-template-columns:40px repeat(${visDays.length},1fr);gap:2px;min-width:280px">`;
+    h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:8px">空きコマをタップして練習を決定できます</div>`;
+    h+=`<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px">`;
+    h+=`<div style="display:grid;grid-template-columns:40px repeat(${visDays.length},1fr);gap:2px;min-width:280px">`;
 
-// ヘッダー
-h+=`<div></div>`;
-visDays.forEach((d,i)=>{
-const ds=DS(d);const isToday=ds===DS(new Date());
-h+=`<div style="text-align:center;padding:4px 2px">
-       <div style="font-size:9px;font-weight:700;color:var(--text3)">${visDayNames[i]}</div>
-       <div style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin:2px auto 0;${isToday?'background:var(--accent);color:#fff;':'color:var(--text2);'}">${d.getDate()}</div>
-     </div>`;
-});
+    // ヘッダー
+    h+=`<div></div>`;
+    visDays.forEach((d,i)=>{
+      const ds=DS(d);const isToday=ds===DS(new Date());
+      h+=`<div style="text-align:center;padding:4px 2px">
+        <div style="font-size:9px;font-weight:700;color:var(--text3)">${visDayNames[i]}</div>
+        <div style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin:2px auto 0;${isToday?'background:var(--accent);color:#fff;':'color:var(--text2);'}">${d.getDate()}</div>
+      </div>`;
+    });
 
-// コマ行
-st.slots.forEach(slot=>{
-h+=`<div style="display:flex;flex-direction:column;justify-content:center;align-items:flex-end;padding:0 4px 0 0;min-height:58px">
-       <div style="font-size:9px;font-weight:600;color:var(--text2)">${slot.name}</div>
-       <div style="font-size:7px;color:var(--text3)">${slot.start}</div>
-     </div>`;
+    // コマ行
+    st.slots.forEach(slot=>{
+      h+=`<div style="display:flex;flex-direction:column;justify-content:center;align-items:flex-end;padding:0 4px 0 0;min-height:58px">
+        <div style="font-size:9px;font-weight:600;color:var(--text2)">${slot.name}</div>
+        <div style="font-size:7px;color:var(--text3)">${slot.start}</div>
+      </div>`;
 
-visDays.forEach((d,di)=>{
-const ds=DS(d);const dn=visDayNames[di];const key=BK(ds,slot.id);
-const availM=allMembers.filter(m=>{
-if((m.blocks||{})[key])return false;
-if(m.isMe&&(st.tpl||{})[dn+'-'+slot.id])return false;
-if(!m.isMe&&(m.tpl||{})[dn+'-'+slot.id])return false;
-return true;
-});
-const decided=ps.find(p=>p.date===ds&&p.slot_id==slot.id);
-const ac=availM.length;const allOk=ac===total&&total>0;const someOk=ac>0&&ac<total&&ac>=st.minM;
+      visDays.forEach((d,di)=>{
+        const ds=DS(d);const dn=visDayNames[di];const key=BK(ds,slot.id);
+        const availM=allMembers.filter(m=>{
+          if((m.blocks||{})[key])return false;
+          if(m.isMe&&(st.tpl||{})[dn+'-'+slot.id])return false;
+          if(!m.isMe&&(m.tpl||{})[dn+'-'+slot.id])return false;
+          return true;
+        });
+        const decided=ps.find(p=>p.date===ds&&p.slot_id==slot.id);
+        const ac=availM.length;const allOk=ac===total&&total>0;const someOk=ac>0&&ac<total&&ac>=st.minM;
 
-let bg2='#F4F4F6',bd2='1px solid #E4E4E8',tc2='var(--text3)';
-if(decided){bg2='#EDE9FE';bd2='2px solid #6D28D9';tc2='#5B21B6';}
-else if(allOk){bg2='#EEFBF0';bd2='1.5px solid #90C8AD';tc2='#2B6351';}
-else if(someOk){bg2='#FFFBE6';bd2='1px solid #E8C86A';tc2='#7A5010';}
+        let bg2='#F4F4F6',bd2='1px solid #E4E4E8',tc2='var(--text3)';
+        if(decided){bg2='#EDE9FE';bd2='2px solid #6D28D9';tc2='#5B21B6';}
+        else if(allOk){bg2='#EEFBF0';bd2='1.5px solid #90C8AD';tc2='#2B6351';}
+        else if(someOk){bg2='#FFFBE6';bd2='1px solid #E8C86A';tc2='#7A5010';}
 
-const clickFn=decided
-?'openChangePracticeSheet("'+activeGrpId+'","'+decided.id+'","'+ds+'",'+slot.id+')'
-:(ac>0?'openDecidePracticeSheet("'+activeGrpId+'","'+ds+'",'+slot.id+')':'');
+        const clickFn=decided
+          ?'openChangePracticeSheet("'+activeGrpId+'","'+decided.id+'","'+ds+'",'+slot.id+')'
+          :(ac>0?'openDecidePracticeSheet("'+activeGrpId+'","'+ds+'",'+slot.id+')':'');
 
-const partLines=availM.slice(0,3).map(m=>{
-const pLabel=m.part?m.part:m.name.slice(0,2);
-return'<div style="font-size:7px;font-weight:700;color:'+tc2+';line-height:1.3;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 1px">'+pLabel+'</div>';
-}).join('');
+        const partLines=availM.slice(0,3).map(m=>{
+          const pLabel=m.part?m.part:m.name.slice(0,2);
+          return'<div style="font-size:7px;font-weight:700;color:'+tc2+';line-height:1.3;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 1px">'+pLabel+'</div>';
+        }).join('');
 
-h+=`<a href="javascript:void(0)" onclick="${clickFn}" style="min-height:58px;border-radius:8px;border:${bd2};background:${bg2};display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 2px;text-decoration:none;cursor:${clickFn?'pointer':'default'}">`;
-if(decided){h+=`<div style="font-size:7px;font-weight:700;color:#5B21B6;text-align:center">決定済</div>`;}
-else if(ac===0){h+=`<div style="font-size:10px;color:var(--text3)">−</div>`;}
-else{
-h+=partLines;
-if(availM.length>3)h+=`<div style="font-size:7px;color:${tc2};opacity:.7">+${availM.length-3}</div>`;
-h+=`<div style="font-size:8px;font-weight:700;color:${tc2};margin-top:1px">${ac}/${total}</div>`;
-}
-h+=`</a>`;
-});
-});
-h+=`</div></div>`;
+        h+=`<a href="javascript:void(0)" onclick="${clickFn}" style="min-height:58px;border-radius:8px;border:${bd2};background:${bg2};display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 2px;text-decoration:none;cursor:${clickFn?'pointer':'default'}">`;
+        if(decided){h+=`<div style="font-size:7px;font-weight:700;color:#5B21B6;text-align:center">決定済</div>`;}
+        else if(ac===0){h+=`<div style="font-size:10px;color:var(--text3)">−</div>`;}
+        else{
+          h+=partLines;
+          if(availM.length>3)h+=`<div style="font-size:7px;color:${tc2};opacity:.7">+${availM.length-3}</div>`;
+          h+=`<div style="font-size:8px;font-weight:700;color:${tc2};margin-top:1px">${ac}/${total}</div>`;
+        }
+        h+=`</a>`;
+      });
+    });
+    h+=`</div></div>`;
 
-// 凡例
-h+=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;font-size:10px;color:var(--text2)">
-     <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:3px;background:#EEFBF0;border:1.5px solid #90C8AD"></div>全員OK</div>
-     <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:3px;background:#FFFBE6;border:1px solid #E8C86A"></div>${st.minM}人以上</div>
-     <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:3px;background:#EDE9FE;border:2px solid #6D28D9"></div>決定済み</div>
-   </div>`;
-}
+    // 凡例
+    h+=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;font-size:10px;color:var(--text2)">
+      <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:3px;background:#EEFBF0;border:1.5px solid #90C8AD"></div>全員OK</div>
+      <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:3px;background:#FFFBE6;border:1px solid #E8C86A"></div>${st.minM}人以上</div>
+      <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:3px;background:#EDE9FE;border:2px solid #6D28D9"></div>決定済み</div>
+    </div>`;
+  }
 
-h+=`<div style="height:20px"></div>`;
-el.innerHTML=h;
+  h+=`<div style="height:20px"></div>`;
+  el.innerHTML=h;
 }
 
 // ══ BAND ══
 function renderBand(){
-const el=document.getElementById('view-band');if(!el)return;
-let html=`<h2 class="scr-title">グループ</h2>`;
-if(myGroups.length>0){
-myGroups.forEach(g=>{
-const all=[{id:0,name:st.me.name,part:st.me.part,color:st.me.color,blocks:st.blocks,isMe:true},...(g.members||[])];
-const isActive=activeGrpId===g.id;
-const avatars=all.map(m=>{const col=AC.find(x=>x.id===m.color)||AC[0];return`<div style="width:28px;height:28px;border-radius:50%;background:${col.bg};color:${col.fg};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-right:2px;border:2px solid #fff">${m.name.slice(0,1)}</div>`;}).join('');
-const ps2=g.practiceSlots||[];
-const psHTML2=ps2.length?ps2.slice(0,3).map(p=>{const slot=st.slots.find(s=>s.id==p.slot_id);const dt=new Date(p.decided_at);const dtStr=`${dt.getMonth()+1}/${dt.getDate()} ${dt.getHours()}:${String(dt.getMinutes()).padStart(2,'0')}`;return`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#EDE9FE;border-radius:9px;margin-bottom:4px"><div style="color:#6D28D9;font-size:13px;font-weight:600">${p.date} ${slot?.name||''}</div><div style="margin-left:auto;font-size:10px;color:#8B5CF6">${p.decided_by}が${dtStr}に決定</div><button onclick="cancelPracticeSlot('${g.id}','${p.id}','${p.date}',${p.slot_id})" style="font-size:10px;color:#C0392B;border:none;background:none;cursor:pointer;padding:2px 4px">✕</button></div>`;}).join(''):'<div style="font-size:12px;color:var(--text3);padding:4px 0">まだ練習コマが決まっていません</div>';
-html+=`<div style="background:var(--surf);border:1px solid ${isActive?'var(--accent)':'var(--border)'};border-radius:16px;margin-bottom:12px;overflow:hidden;${isActive?'box-shadow:0 0 0 3px var(--accent-l)':''}">
-       <div style="padding:13px 14px;border-bottom:1px solid var(--border)">
-         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <div style="font-size:15px;font-weight:700;flex:1">${g.name}</div>
+  const el=document.getElementById('view-band');if(!el)return;
+  let html=`<h2 class="scr-title">グループ</h2>`;
+  if(myGroups.length>0){
+    myGroups.forEach(g=>{
+      const all=[{id:0,name:st.me.name,part:st.me.part,color:st.me.color,blocks:st.blocks,isMe:true},...(g.members||[])];
+      const isActive=activeGrpId===g.id;
+      const avatars=all.map(m=>{const col=AC.find(x=>x.id===m.color)||AC[0];return`<div style="width:28px;height:28px;border-radius:50%;background:${col.bg};color:${col.fg};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-right:2px;border:2px solid #fff">${m.name.slice(0,1)}</div>`;}).join('');
+      const ps2=g.practiceSlots||[];
+      const psHTML2=ps2.length?ps2.slice(0,3).map(p=>{const slot=st.slots.find(s=>s.id==p.slot_id);const dt=new Date(p.decided_at);const dtStr=`${dt.getMonth()+1}/${dt.getDate()} ${dt.getHours()}:${String(dt.getMinutes()).padStart(2,'0')}`;return`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#EDE9FE;border-radius:9px;margin-bottom:4px"><div style="color:#6D28D9;font-size:13px;font-weight:600">${p.date} ${slot?.name||''}</div><div style="margin-left:auto;font-size:10px;color:#8B5CF6">${p.decided_by}が${dtStr}に決定</div><button onclick="cancelPracticeSlot('${g.id}','${p.id}','${p.date}',${p.slot_id})" style="font-size:10px;color:#C0392B;border:none;background:none;cursor:pointer;padding:2px 4px">✕</button></div>`;}).join(''):'<div style="font-size:12px;color:var(--text3);padding:4px 0">まだ練習コマが決まっていません</div>';
+      html+=`<div style="background:var(--surf);border:1px solid ${isActive?'var(--accent)':'var(--border)'};border-radius:16px;margin-bottom:12px;overflow:hidden;${isActive?'box-shadow:0 0 0 3px var(--accent-l)':''}">
+        <div style="padding:13px 14px;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
             <div style="flex:1">
               <div style="font-size:15px;font-weight:700">${g.name}</div>
               ${(g.startDate||g.endDate)?`<div style="font-size:10px;color:var(--text3);margin-top:2px">${g.startDate?g.startDate.replace(/-/g,'/'):''}${g.startDate&&g.endDate?' 〜 ':''}${g.endDate?g.endDate.replace(/-/g,'/'):'不明'}</div>`:''}
             </div>
-           <button onclick="activeGrpId='${g.id}';saveGroups();renderBand();renderFind();" style="font-size:11px;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:${isActive?'var(--accent)':'none'};color:${isActive?'#fff':'var(--text2)'};cursor:pointer;font-family:'Inter',sans-serif">${isActive?'表示中':'表示する'}</button>
-           <button onclick="leaveGroup('${g.id}')" style="font-size:11px;padding:4px 8px;border-radius:8px;border:1px solid #E8A09A;background:none;color:#C0392B;cursor:pointer">退出</button>
-         </div>
-         <div style="display:flex;align-items:center;gap:8px;background:var(--surf2);border-radius:10px;padding:8px 12px">
-           <span style="font-size:11px;color:var(--text3)">コード</span>
-           <span style="font-family:'Inter',monospace;font-size:16px;font-weight:700;letter-spacing:.15em;color:var(--accent);flex:1">${g.id}</span>
-           <button onclick="copyGrpCode('${g.id}')" style="font-size:11px;padding:5px 10px;border-radius:7px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:'Inter',sans-serif">コピー</button>
-         </div>
-       </div>
-       <div style="padding:10px 14px;border-bottom:1px solid var(--border)">
-         <div style="font-size:11px;color:var(--text3);margin-bottom:6px">${all.length}人参加中</div>
-         <div style="display:flex;align-items:center">${avatars}<span style="margin-left:12px;font-size:12px;color:var(--text2)">${all.map(m=>m.name+(m.part?' ('+m.part+')':'')).join('・')}</span></div>
-       </div>
-       <div style="padding:10px 14px">
-         <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">決定済み練習コマ</div>
-         ${psHTML2}
-       </div>
-     </div>`;
-});
-}
-html+=`<div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
-   <div style="font-size:14px;font-weight:600;margin-bottom:10px">＋ 新しいグループを作る</div>
-   <input type="text" id="grp-new-name" placeholder="グループ名（例：アカペラA班）" style="width:100%;margin-bottom:10px;padding:14px;font-size:16px;border:1.5px solid var(--border);border-radius:12px;box-sizing:border-box;background:#fff;color:#0D0D10;outline:none;" oninput="const btn=document.getElementById('grp-create-btn');if(this.value.trim()){btn.style.background='var(--accent)';btn.style.color='#fff';}else{btn.style.background='#E4E4E8';btn.style.color='#9898AA';}">
+            <button onclick="activeGrpId='${g.id}';saveGroups();renderBand();renderFind();" style="font-size:11px;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:${isActive?'var(--accent)':'none'};color:${isActive?'#fff':'var(--text2)'};cursor:pointer;font-family:'Inter',sans-serif">${isActive?'表示中':'表示する'}</button>
+            <button onclick="leaveGroup('${g.id}')" style="font-size:11px;padding:4px 8px;border-radius:8px;border:1px solid #E8A09A;background:none;color:#C0392B;cursor:pointer">退出</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;background:var(--surf2);border-radius:10px;padding:8px 12px">
+            <span style="font-size:11px;color:var(--text3)">コード</span>
+            <span style="font-family:'Inter',monospace;font-size:16px;font-weight:700;letter-spacing:.15em;color:var(--accent);flex:1">${g.id}</span>
+            <button onclick="copyGrpCode('${g.id}')" style="font-size:11px;padding:5px 10px;border-radius:7px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:'Inter',sans-serif">コピー</button>
+          </div>
+        </div>
+        <div style="padding:10px 14px;border-bottom:1px solid var(--border)">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:6px">${all.length}人参加中</div>
+          <div style="display:flex;align-items:center">${avatars}<span style="margin-left:12px;font-size:12px;color:var(--text2)">${all.map(m=>m.name+(m.part?' ('+m.part+')':'')).join('・')}</span></div>
+        </div>
+        <div style="padding:10px 14px">
+          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">決定済み練習コマ</div>
+          ${psHTML2}
+        </div>
+      </div>`;
+    });
+  }
+  html+=`<div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
+    <div style="font-size:14px;font-weight:600;margin-bottom:10px">＋ 新しいグループを作る</div>
+    <input type="text" id="grp-new-name" placeholder="グループ名（例：アカペラA班）" style="width:100%;margin-bottom:10px;padding:14px;font-size:16px;border:1.5px solid var(--border);border-radius:12px;box-sizing:border-box;background:#fff;color:#0D0D10;outline:none;" oninput="const btn=document.getElementById('grp-create-btn');if(this.value.trim()){btn.style.background='var(--accent)';btn.style.color='#fff';}else{btn.style.background='#E4E4E8';btn.style.color='#9898AA';}">
     <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
       <div style="flex:1">
         <label style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">開始日</label>
@@ -821,53 +820,53 @@ html+=`<div style="background:var(--surf);border:1px solid var(--border);border-
       </div>
     </div>
     <div style="font-size:11px;color:var(--text3);margin-bottom:10px">※ 未設定の場合は今週から4週間が対象になります</div>
-   <button id="grp-create-btn" onclick="createGroup()" style="width:100%;font-size:15px;padding:15px;border-radius:14px;border:none;background:#E4E4E8;color:#9898AA;font-family:'Inter','Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;transition:all .2s;">作成してコードを発行</button>
- </div>
- <div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:11px;color:var(--text3)">または</span><div style="flex:1;height:1px;background:var(--border)"></div></div>
- <div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px">
-   <div style="font-size:14px;font-weight:600;margin-bottom:10px">🔑 コードで参加</div>
-   <input type="text" id="grp-join-code" placeholder="例：ABC123" style="width:100%;font-size:20px;letter-spacing:.15em;text-align:center;text-transform:uppercase;margin-bottom:10px;padding:14px;border:1.5px solid var(--border);border-radius:12px;box-sizing:border-box;background:#fff;color:#0D0D10;outline:none;" oninput="this.value=this.value.toUpperCase();const btn=document.getElementById('grp-join-btn');const ok=this.value.trim().length===6;btn.style.background=ok?'var(--accent)':'#E4E4E8';btn.style.color=ok?'#fff':'#9898AA';">
-   <button id="grp-join-btn" onclick="joinGroup()" style="width:100%;font-size:15px;padding:15px;border-radius:14px;border:none;background:#E4E4E8;color:#9898AA;font-family:'Inter','Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;transition:all .2s;">参加する</button>
-   <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px">コードは6文字です</div>
- </div>
- <div style="height:24px"></div>`;
-el.innerHTML=html;
+    <button id="grp-create-btn" onclick="createGroup()" style="width:100%;font-size:15px;padding:15px;border-radius:14px;border:none;background:#E4E4E8;color:#9898AA;font-family:'Inter','Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;transition:all .2s;">作成してコードを発行</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:11px;color:var(--text3)">または</span><div style="flex:1;height:1px;background:var(--border)"></div></div>
+  <div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px">
+    <div style="font-size:14px;font-weight:600;margin-bottom:10px">🔑 コードで参加</div>
+    <input type="text" id="grp-join-code" placeholder="例：ABC123" style="width:100%;font-size:20px;letter-spacing:.15em;text-align:center;text-transform:uppercase;margin-bottom:10px;padding:14px;border:1.5px solid var(--border);border-radius:12px;box-sizing:border-box;background:#fff;color:#0D0D10;outline:none;" oninput="this.value=this.value.toUpperCase();const btn=document.getElementById('grp-join-btn');const ok=this.value.trim().length===6;btn.style.background=ok?'var(--accent)':'#E4E4E8';btn.style.color=ok?'#fff':'#9898AA';">
+    <button id="grp-join-btn" onclick="joinGroup()" style="width:100%;font-size:15px;padding:15px;border-radius:14px;border:none;background:#E4E4E8;color:#9898AA;font-family:'Inter','Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;transition:all .2s;">参加する</button>
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px">コードは6文字です</div>
+  </div>
+  <div style="height:24px"></div>`;
+  el.innerHTML=html;
 }
 
 // ══ SETTINGS ══
 function renderSettings(){
-const obSlots=st.slots.filter(s=>s.name!=='昼');const classCat=ct('class')||{bg:'#EEF1FA',fg:'#2C4BA0'};
-let tH=`<div class="ob-tpl-grid" style="display:grid;gap:3px;grid-template-columns:auto repeat(${DAYS.length},1fr)">`;
-tH+=`<div></div>`;DAYS.forEach(d=>{tH+=`<div class="tpl-dlbl">${d}</div>`;});
-obSlots.forEach(slot=>{
-tH+=`<div class="tpl-slbl">${slot.name}</div>`;
-DAYS.forEach(day=>{const k=day+'-'+slot.id;const on=!!(st.tpl||{})[k];
-tH+=`<div class="tpl-cell${on?' on':''}" style="${on?`background:${classCat.bg};border-color:${classCat.fg};color:${classCat.fg}`:''}" onclick="toggleTpl('${day}',${slot.id})">${on?'✓':''}</div>`;
-});
-});tH+=`</div>`;
-const catRows=st.cats.map(c=>`<div class="cat-row">
-   <div style="position:relative">
-     <div class="cat-sw" style="background:${c.bg};border-color:${c.fg}60" onclick="toggleCCP('${c.id}')"><div style="width:11px;height:11px;border-radius:50%;background:${c.fg}"></div></div>
-     <div class="cat-cpop" id="ccp-${c.id}">${CP.map((p,i)=>`<div class="cdot${c.bg===p.bg?' picked':''}" style="background:${p.fg}" onclick="setCatC('${c.id}',${i})"></div>`).join('')}</div>
-   </div>
-   <input type="text" value="${c.name}" style="flex:1" onchange="updCat('${c.id}',this.value)">
-   <button class="btn btn-g btn-sm" style="color:#C0392B;flex-shrink:0" onclick="rmCat('${c.id}')">削除</button>
- </div>`).join('');
-document.getElementById('view-settings').innerHTML=`
-   <h2 class="scr-title">設定</h2>
-   <div class="scard"><div class="scard-head">練習候補を探す曜日</div><div class="scard-body"><p style="font-size:12px;color:var(--text2);margin-bottom:10px">オンの曜日だけ練習候補に表示されます。タップで切り替え。</p><div class="day-pills">${DAYS.map(d=>`<div class="dpill${st.days.includes(d)?' on':''}" onclick="toggleDay('${d}',this)">${d}</div>`).join('')}</div></div></div>
-   <div class="scard"><div class="scard-head">時限設定 <button class="btn btn-g btn-sm" onclick="addSlot()">＋</button></div><div class="scard-body" id="slot-list">${slotListHTML()}</div></div>
-   <div class="scard"><div class="scard-head">入力の種類 <button class="btn btn-g btn-sm" onclick="addCat()">＋</button></div><div class="scard-body">${catRows}<p style="font-size:10px;color:var(--text3);margin-top:2px">※削除するとその予定は空きに戻ります</p></div></div>
-   <div class="scard"><div class="scard-head">授業テンプレート</div><div class="scard-body"><p style="font-size:12px;color:var(--text2)">タップしたコマに毎週授業が入ります（※印で表示）。</p><div class="tpl-grid-wrap">${tH}</div></div></div>
-   <div class="scard"><div class="scard-head">最低参加人数</div><div class="scard-body"><div style="display:flex;align-items:center;gap:10px"><input type="number" id="set-min" min="1" max="20" value="${st.minM}" style="width:68px" onchange="st.minM=+this.value;save()"><span style="color:var(--text2);font-size:13px">人以上でおすすめ表示</span></div></div></div>
-   <div class="scard"><div class="scard-head">アカウント</div><div class="scard-body">
-     <div id="account-email-disp" style="font-size:13px;color:#5C5C6E;padding:4px 0;margin-bottom:4px"></div>
-     <button class="btn btn-block" onclick="doSignOut()" style="background:#F4F4F6;color:#0D0D10;border:1.5px solid #E4E4E8;margin-bottom:8px">別のアカウントに切り替える</button>
-     <div style="font-size:11px;color:#9898AA">ログアウトするとこのデバイスのデータはクラウドに保存されます。次回ログイン時に復元されます。</div>
-   </div></div>
-   <button class="btn btn-d btn-block" onclick="confirmReset()">🗑 全データをリセット</button>
-   <div style="height:24px"></div>`;
-setTimeout(()=>{const ed=document.getElementById('account-email-disp');if(ed&&currentUser)ed.textContent='ログイン中: '+currentUser.email;},100);
+  const obSlots=st.slots.filter(s=>s.name!=='昼');const classCat=ct('class')||{bg:'#EEF1FA',fg:'#2C4BA0'};
+  let tH=`<div class="ob-tpl-grid" style="display:grid;gap:3px;grid-template-columns:auto repeat(${DAYS.length},1fr)">`;
+  tH+=`<div></div>`;DAYS.forEach(d=>{tH+=`<div class="tpl-dlbl">${d}</div>`;});
+  obSlots.forEach(slot=>{
+    tH+=`<div class="tpl-slbl">${slot.name}</div>`;
+    DAYS.forEach(day=>{const k=day+'-'+slot.id;const on=!!(st.tpl||{})[k];
+      tH+=`<div class="tpl-cell${on?' on':''}" style="${on?`background:${classCat.bg};border-color:${classCat.fg};color:${classCat.fg}`:''}" onclick="toggleTpl('${day}',${slot.id})">${on?'✓':''}</div>`;
+    });
+  });tH+=`</div>`;
+  const catRows=st.cats.map(c=>`<div class="cat-row">
+    <div style="position:relative">
+      <div class="cat-sw" style="background:${c.bg};border-color:${c.fg}60" onclick="toggleCCP('${c.id}')"><div style="width:11px;height:11px;border-radius:50%;background:${c.fg}"></div></div>
+      <div class="cat-cpop" id="ccp-${c.id}">${CP.map((p,i)=>`<div class="cdot${c.bg===p.bg?' picked':''}" style="background:${p.fg}" onclick="setCatC('${c.id}',${i})"></div>`).join('')}</div>
+    </div>
+    <input type="text" value="${c.name}" style="flex:1" onchange="updCat('${c.id}',this.value)">
+    <button class="btn btn-g btn-sm" style="color:#C0392B;flex-shrink:0" onclick="rmCat('${c.id}')">削除</button>
+  </div>`).join('');
+  document.getElementById('view-settings').innerHTML=`
+    <h2 class="scr-title">設定</h2>
+    <div class="scard"><div class="scard-head">練習候補を探す曜日</div><div class="scard-body"><p style="font-size:12px;color:var(--text2);margin-bottom:10px">オンの曜日だけ練習候補に表示されます。タップで切り替え。</p><div class="day-pills">${DAYS.map(d=>`<div class="dpill${st.days.includes(d)?' on':''}" onclick="toggleDay('${d}',this)">${d}</div>`).join('')}</div></div></div>
+    <div class="scard"><div class="scard-head">時限設定 <button class="btn btn-g btn-sm" onclick="addSlot()">＋</button></div><div class="scard-body" id="slot-list">${slotListHTML()}</div></div>
+    <div class="scard"><div class="scard-head">入力の種類 <button class="btn btn-g btn-sm" onclick="addCat()">＋</button></div><div class="scard-body">${catRows}<p style="font-size:10px;color:var(--text3);margin-top:2px">※削除するとその予定は空きに戻ります</p></div></div>
+    <div class="scard"><div class="scard-head">授業テンプレート</div><div class="scard-body"><p style="font-size:12px;color:var(--text2)">タップしたコマに毎週授業が入ります（※印で表示）。</p><div class="tpl-grid-wrap">${tH}</div></div></div>
+    <div class="scard"><div class="scard-head">最低参加人数</div><div class="scard-body"><div style="display:flex;align-items:center;gap:10px"><input type="number" id="set-min" min="1" max="20" value="${st.minM}" style="width:68px" onchange="st.minM=+this.value;save()"><span style="color:var(--text2);font-size:13px">人以上でおすすめ表示</span></div></div></div>
+    <div class="scard"><div class="scard-head">アカウント</div><div class="scard-body">
+      <div id="account-email-disp" style="font-size:13px;color:#5C5C6E;padding:4px 0;margin-bottom:4px"></div>
+      <button class="btn btn-block" onclick="doSignOut()" style="background:#F4F4F6;color:#0D0D10;border:1.5px solid #E4E4E8;margin-bottom:8px">別のアカウントに切り替える</button>
+      <div style="font-size:11px;color:#9898AA">ログアウトするとこのデバイスのデータはクラウドに保存されます。次回ログイン時に復元されます。</div>
+    </div></div>
+    <button class="btn btn-d btn-block" onclick="confirmReset()">🗑 全データをリセット</button>
+    <div style="height:24px"></div>`;
+  setTimeout(()=>{const ed=document.getElementById('account-email-disp');if(ed&&currentUser)ed.textContent='ログイン中: '+currentUser.email;},100);
 }
 const slotListHTML=()=>st.slots.map(s=>`<div class="slot-edit-row"><input type="text" value="${s.name}" style="width:54px" onchange="updSlot(${s.id},'name',this.value)"><input type="time" value="${s.start}" style="width:92px" onchange="updSlot(${s.id},'start',this.value)"><span style="color:var(--text3)">〜</span><input type="time" value="${s.end}" style="width:92px" onchange="updSlot(${s.id},'end',this.value)"><button class="btn btn-g btn-sm" style="color:#C0392B;flex-shrink:0" onclick="rmSlot(${s.id})">削除</button></div>`).join('');
 const toggleDay=(d,el)=>{if(st.days.includes(d)){if(st.days.length<=1)return;st.days=st.days.filter(x=>x!==d);}else{st.days.push(d);st.days.sort((a,b)=>DAYS.indexOf(a)-DAYS.indexOf(b));}el.classList.toggle('on',st.days.includes(d));save();};
@@ -888,23 +887,23 @@ const openOv=id=>document.getElementById(id).classList.add('open');
 const closeOv=id=>document.getElementById(id).classList.remove('open');
 document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 async function doSignOut(){
-if(!confirm('ログアウトしますか？\n次回ログイン時にデータは復元されます。'))return;
-await sbClient.auth.signOut();currentUser=null;
-const ls=document.getElementById('login-screen');ls.style.display='flex';
-document.getElementById('login-email').value='';document.getElementById('login-password').value='';document.getElementById('login-password2').value='';document.getElementById('login-error').textContent='';
-switchLoginMode('login');showToast('ログアウトしました');
+  if(!confirm('ログアウトしますか？\n次回ログイン時にデータは復元されます。'))return;
+  await sbClient.auth.signOut();currentUser=null;
+  const ls=document.getElementById('login-screen');ls.style.display='flex';
+  document.getElementById('login-email').value='';document.getElementById('login-password').value='';document.getElementById('login-password2').value='';document.getElementById('login-error').textContent='';
+  switchLoginMode('login');showToast('ログアウトしました');
 }
 const copyCode=()=>navigator.clipboard.writeText(st.me.code).then(()=>showToast('コードをコピーしました')).catch(()=>prompt('コード:',st.me.code));
 const regenCode=()=>{if(!confirm('更新しますか？'))return;st.me.code=gc();save();document.getElementById('share-code-disp').textContent=st.me.code;};
 function openUserModal(){
-document.getElementById('u-name').value=st.me.name;
-_uC=st.me.color;renderCP('u-colors',_uC,'_uC');
-document.getElementById('share-code-disp').textContent=st.me.code;
-const btn=document.getElementById('u-save-btn');if(btn){btn.style.background='#E4E4E8';btn.style.color='#9898AA';}
-// パート選択UI初期化
-const uPartSel=document.getElementById('u-part-selector');
-if(uPartSel)uPartSel.innerHTML=partSelectorHTML(st.me.part||'','u-part');
-openOv('ov-user');
+  document.getElementById('u-name').value=st.me.name;
+  _uC=st.me.color;renderCP('u-colors',_uC,'_uC');
+  document.getElementById('share-code-disp').textContent=st.me.code;
+  const btn=document.getElementById('u-save-btn');if(btn){btn.style.background='#E4E4E8';btn.style.color='#9898AA';}
+  // パート選択UI初期化
+  const uPartSel=document.getElementById('u-part-selector');
+  if(uPartSel)uPartSel.innerHTML=partSelectorHTML(st.me.part||'','u-part');
+  openOv('ov-user');
 }
 function markUserChanged(){const btn=document.getElementById('u-save-btn');if(btn){btn.style.background='var(--accent)';btn.style.color='#fff';}}
 const saveUser=()=>{st.me.name=document.getElementById('u-name').value.trim()||'自分';st.me.part=getPartVal('u-part');st.me.color=_uC;save();closeOv('ov-user');updTopbar();};
@@ -920,105 +919,105 @@ const showToast=msg=>{const t=document.getElementById('toast');t.textContent=msg
 let _obStep=0;
 const obProg=step=>[0,1,2].forEach(i=>{document.getElementById('op'+i).style.background=i<=step?'var(--accent)':'var(--border)';});
 function obGo(step){
-if(_obStep===0){
-const n=document.getElementById('ob-name').value.trim();const p=getPartVal('ob-part');
-if(n)st.me.name=n;if(p)st.me.part=p;save();updTopbar();
-}
-_obStep=step;[0,1,2].forEach(i=>{document.getElementById('ob'+i).classList.toggle('on',i===step);});obProg(step);
-if(step===1)renderObTpl();
+  if(_obStep===0){
+    const n=document.getElementById('ob-name').value.trim();const p=getPartVal('ob-part');
+    if(n)st.me.name=n;if(p)st.me.part=p;save();updTopbar();
+  }
+  _obStep=step;[0,1,2].forEach(i=>{document.getElementById('ob'+i).classList.toggle('on',i===step);});obProg(step);
+  if(step===1)renderObTpl();
 }
 function renderObTpl(){
-const el=document.getElementById('ob-tpl');if(!el)return;
-const obSlots=st.slots.filter(s=>s.name!=='昼');const classCat=ct('class')||{bg:'#EEF1FA',fg:'#2C4BA0'};
-let h=`<div class="ob-tpl-grid" style="display:grid;gap:4px;grid-template-columns:auto repeat(${DAYS.length},1fr)">`;
-h+=`<div></div>`;DAYS.forEach(d=>{h+=`<div class="ob-dlbl">${d}</div>`;});
-obSlots.forEach(slot=>{h+=`<div class="ob-slbl">${slot.name}</div>`;DAYS.forEach(day=>{const k=day+'-'+slot.id;const on=!!(st.tpl||{})[k];h+=`<div class="ob-tpl-cell${on?' on':''}" style="${on?`background:${classCat.bg};border-color:${classCat.fg};color:${classCat.fg}`:''}" onclick="obTogTpl('${day}',${slot.id})">${on?'✓':''}</div>`;});});
-h+=`</div>`;el.innerHTML=h;
+  const el=document.getElementById('ob-tpl');if(!el)return;
+  const obSlots=st.slots.filter(s=>s.name!=='昼');const classCat=ct('class')||{bg:'#EEF1FA',fg:'#2C4BA0'};
+  let h=`<div class="ob-tpl-grid" style="display:grid;gap:4px;grid-template-columns:auto repeat(${DAYS.length},1fr)">`;
+  h+=`<div></div>`;DAYS.forEach(d=>{h+=`<div class="ob-dlbl">${d}</div>`;});
+  obSlots.forEach(slot=>{h+=`<div class="ob-slbl">${slot.name}</div>`;DAYS.forEach(day=>{const k=day+'-'+slot.id;const on=!!(st.tpl||{})[k];h+=`<div class="ob-tpl-cell${on?' on':''}" style="${on?`background:${classCat.bg};border-color:${classCat.fg};color:${classCat.fg}`:''}" onclick="obTogTpl('${day}',${slot.id})">${on?'✓':''}</div>`;});});
+  h+=`</div>`;el.innerHTML=h;
 }
 const obTogTpl=(day,slotId)=>{if(!st.tpl)st.tpl={};const k=day+'-'+slotId;if(st.tpl[k])delete st.tpl[k];else st.tpl[k]=true;save();renderObTpl();};
 const skipOb=()=>{st.boarded=true;save();document.getElementById('ob').classList.add('gone');};
 function finishOb(){
-const n=document.getElementById('ob-name').value.trim();const p=getPartVal('ob-part');
-if(n)st.me.name=n;if(p)st.me.part=p;st.boarded=true;save();updTopbar();
-document.getElementById('ob').classList.add('gone');render();
+  const n=document.getElementById('ob-name').value.trim();const p=getPartVal('ob-part');
+  if(n)st.me.name=n;if(p)st.me.part=p;st.boarded=true;save();updTopbar();
+  document.getElementById('ob').classList.add('gone');render();
 }
 
 // ══ AUTH ══
 let _loginMode='login';let _submitting=false;
 function switchLoginMode(mode){
-_loginMode=mode;const pw2=document.getElementById('login-password2');const submitBtn=document.getElementById('login-submit-btn');const tabLogin=document.getElementById('tab-login');const tabSignup=document.getElementById('tab-signup');
-if(mode==='login'){pw2.style.display='none';submitBtn.textContent='ログイン';tabLogin.style.background='#fff';tabLogin.style.color='#0D0D10';tabLogin.style.boxShadow='0 1px 3px rgba(0,0,0,.1)';tabSignup.style.background='none';tabSignup.style.color='#9898AA';tabSignup.style.boxShadow='none';document.getElementById('login-password').placeholder='パスワード';document.getElementById('login-password').autocomplete='current-password';}
-else{pw2.style.display='block';submitBtn.textContent='アカウントを作成';tabLogin.style.background='none';tabLogin.style.color='#9898AA';tabLogin.style.boxShadow='none';tabSignup.style.background='#fff';tabSignup.style.color='#0D0D10';tabSignup.style.boxShadow='0 1px 3px rgba(0,0,0,.1)';document.getElementById('login-password').placeholder='パスワード（6文字以上）';document.getElementById('login-password').autocomplete='new-password';}
-document.getElementById('login-error').textContent='';
+  _loginMode=mode;const pw2=document.getElementById('login-password2');const submitBtn=document.getElementById('login-submit-btn');const tabLogin=document.getElementById('tab-login');const tabSignup=document.getElementById('tab-signup');
+  if(mode==='login'){pw2.style.display='none';submitBtn.textContent='ログイン';tabLogin.style.background='#fff';tabLogin.style.color='#0D0D10';tabLogin.style.boxShadow='0 1px 3px rgba(0,0,0,.1)';tabSignup.style.background='none';tabSignup.style.color='#9898AA';tabSignup.style.boxShadow='none';document.getElementById('login-password').placeholder='パスワード';document.getElementById('login-password').autocomplete='current-password';}
+  else{pw2.style.display='block';submitBtn.textContent='アカウントを作成';tabLogin.style.background='none';tabLogin.style.color='#9898AA';tabLogin.style.boxShadow='none';tabSignup.style.background='#fff';tabSignup.style.color='#0D0D10';tabSignup.style.boxShadow='0 1px 3px rgba(0,0,0,.1)';document.getElementById('login-password').placeholder='パスワード（6文字以上）';document.getElementById('login-password').autocomplete='new-password';}
+  document.getElementById('login-error').textContent='';
 }
 async function submitLogin(){
-if(_submitting)return;
-const email=document.getElementById('login-email').value.trim();const password=document.getElementById('login-password').value;
-if(!email||!email.includes('@')){showLoginError('メールアドレスを入力してください');return;}
-if(password.length<6){showLoginError('パスワードは6文字以上で入力してください');return;}
-if(_loginMode==='signup'){const pw2=document.getElementById('login-password2').value;if(password!==pw2){showLoginError('パスワードが一致しません');return;}}
-_submitting=true;const btn=document.getElementById('login-submit-btn');const orig=btn.textContent;btn.textContent='処理中...';btn.style.opacity='0.6';
-try{
-let data,error;
-if(_loginMode==='login')({data,error}=await sbClient.auth.signInWithPassword({email,password}));
-else({data,error}=await sbClient.auth.signUp({email,password}));
-if(error)throw error;
-if(data.user)onLoginSuccess(data.user);
-else showLoginError('確認メールを送りました（届かない場合はそのままログインしてください）');
-}catch(e){
-let msg=e.message;
-if(msg.includes('Invalid login'))msg='メールアドレスまたはパスワードが違います';
-if(msg.includes('already registered'))msg='このメールは登録済みです。ログインタブからどうぞ';
-if(msg.includes('weak'))msg='パスワードが短すぎます（6文字以上）';
-showLoginError(msg);btn.textContent=orig;btn.style.opacity='1';
-}
-_submitting=false;
+  if(_submitting)return;
+  const email=document.getElementById('login-email').value.trim();const password=document.getElementById('login-password').value;
+  if(!email||!email.includes('@')){showLoginError('メールアドレスを入力してください');return;}
+  if(password.length<6){showLoginError('パスワードは6文字以上で入力してください');return;}
+  if(_loginMode==='signup'){const pw2=document.getElementById('login-password2').value;if(password!==pw2){showLoginError('パスワードが一致しません');return;}}
+  _submitting=true;const btn=document.getElementById('login-submit-btn');const orig=btn.textContent;btn.textContent='処理中...';btn.style.opacity='0.6';
+  try{
+    let data,error;
+    if(_loginMode==='login')({data,error}=await sbClient.auth.signInWithPassword({email,password}));
+    else({data,error}=await sbClient.auth.signUp({email,password}));
+    if(error)throw error;
+    if(data.user)onLoginSuccess(data.user);
+    else showLoginError('確認メールを送りました（届かない場合はそのままログインしてください）');
+  }catch(e){
+    let msg=e.message;
+    if(msg.includes('Invalid login'))msg='メールアドレスまたはパスワードが違います';
+    if(msg.includes('already registered'))msg='このメールは登録済みです。ログインタブからどうぞ';
+    if(msg.includes('weak'))msg='パスワードが短すぎます（6文字以上）';
+    showLoginError(msg);btn.textContent=orig;btn.style.opacity='1';
+  }
+  _submitting=false;
 }
 function sendOTP(){submitLogin();}function verifyOTP(){submitLogin();}
 
 async function onLoginSuccess(user){
-currentUser=user;if(!currentUser)return;
-const loadMsg=document.createElement('div');loadMsg.id='load-msg';loadMsg.style.cssText='position:absolute;bottom:40px;left:0;right:0;text-align:center;font-size:13px;color:#9898AA';loadMsg.textContent='データを読み込み中...';
-document.getElementById('login-screen').appendChild(loadMsg);
-try{
-const {data:rows,error}=await sbClient.from('user_data').select('data').eq('user_id',currentUser.id).single();
-if(!error&&rows&&rows.data){
-const saved=rows.data;const savedSt=saved.st||saved;const fresh=defSt();
-st={me:savedSt.me||fresh.me,slots:savedSt.slots||fresh.slots,days:savedSt.days||fresh.days,cats:savedSt.cats||fresh.cats,blocks:savedSt.blocks||{},tpl:savedSt.tpl||{},members:savedSt.members||[],nid:savedSt.nid||1,ncid:savedSt.ncid||10,minM:savedSt.minM||5,boarded:savedSt.boarded||false};
-if(saved.myGroups&&saved.myGroups.length>0){myGroups=saved.myGroups;activeGrpId=saved.activeGrpId||myGroups[0]?.id||null;localStorage.setItem('hrm_groups',JSON.stringify(myGroups));localStorage.setItem('hrm_active_grp',activeGrpId||'');}
-try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
-}
-}catch(e){console.warn('data load error',e);}
-const lm=document.getElementById('load-msg');if(lm)lm.remove();
-document.getElementById('login-screen').style.display='none';
-initApp();
-if(!st.boarded){document.getElementById('ob').classList.remove('gone');obProg(0);// ob-part-selectorを初期化
-setTimeout(()=>{const s=document.getElementById('ob-part-selector');if(s)s.innerHTML=partSelectorHTML(st.me.part||'','ob-part');},100);}
-else{document.getElementById('ob').classList.add('gone');}
+  currentUser=user;if(!currentUser)return;
+  const loadMsg=document.createElement('div');loadMsg.id='load-msg';loadMsg.style.cssText='position:absolute;bottom:40px;left:0;right:0;text-align:center;font-size:13px;color:#9898AA';loadMsg.textContent='データを読み込み中...';
+  document.getElementById('login-screen').appendChild(loadMsg);
+  try{
+    const {data:rows,error}=await sbClient.from('user_data').select('data').eq('user_id',currentUser.id).single();
+    if(!error&&rows&&rows.data){
+      const saved=rows.data;const savedSt=saved.st||saved;const fresh=defSt();
+      st={me:savedSt.me||fresh.me,slots:savedSt.slots||fresh.slots,days:savedSt.days||fresh.days,cats:savedSt.cats||fresh.cats,blocks:savedSt.blocks||{},tpl:savedSt.tpl||{},members:savedSt.members||[],nid:savedSt.nid||1,ncid:savedSt.ncid||10,minM:savedSt.minM||5,boarded:savedSt.boarded||false};
+      if(saved.myGroups&&saved.myGroups.length>0){myGroups=saved.myGroups;activeGrpId=saved.activeGrpId||myGroups[0]?.id||null;localStorage.setItem('hrm_groups',JSON.stringify(myGroups));localStorage.setItem('hrm_active_grp',activeGrpId||'');}
+      try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
+    }
+  }catch(e){console.warn('data load error',e);}
+  const lm=document.getElementById('load-msg');if(lm)lm.remove();
+  document.getElementById('login-screen').style.display='none';
+  initApp();
+  if(!st.boarded){document.getElementById('ob').classList.remove('gone');obProg(0);// ob-part-selectorを初期化
+    setTimeout(()=>{const s=document.getElementById('ob-part-selector');if(s)s.innerHTML=partSelectorHTML(st.me.part||'','ob-part');},100);}
+  else{document.getElementById('ob').classList.add('gone');}
 }
 function showLoginError(msg){const el=document.getElementById('login-error');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',3000);}
 async function checkSession(){try{const {data,error}=await sbClient.auth.getSession();if(!error&&data&&data.session&&data.session.user)onLoginSuccess(data.session.user);}catch(e){console.warn('session check failed:',e.message);}}
 
 function initApp(){
-updTopbar();render();expMe();
-const findPanel=document.getElementById('view-find');
-if(findPanel&&!findPanel._delegated){
-findPanel._delegated=true;
-findPanel.addEventListener('click',function(e){
-const row=e.target.closest('[data-find-key]');if(!row)return;
-const grpId=row.getAttribute('data-grp-id');const date=row.getAttribute('data-date');const slotId=row.getAttribute('data-slot-id');const action=row.getAttribute('data-action');const psId=row.getAttribute('data-ps-id');
-if(action==='change')openChangePracticeSheet(grpId,psId,date,Number(slotId));
-else toggleFindSel(grpId,date,slotId);
-});
-}
-if(st.boarded)document.getElementById('ob').classList.add('gone');
-startAllSync();
+  updTopbar();render();expMe();
+  const findPanel=document.getElementById('view-find');
+  if(findPanel&&!findPanel._delegated){
+    findPanel._delegated=true;
+    findPanel.addEventListener('click',function(e){
+      const row=e.target.closest('[data-find-key]');if(!row)return;
+      const grpId=row.getAttribute('data-grp-id');const date=row.getAttribute('data-date');const slotId=row.getAttribute('data-slot-id');const action=row.getAttribute('data-action');const psId=row.getAttribute('data-ps-id');
+      if(action==='change')openChangePracticeSheet(grpId,psId,date,Number(slotId));
+      else toggleFindSel(grpId,date,slotId);
+    });
+  }
+  if(st.boarded)document.getElementById('ob').classList.add('gone');
+  startAllSync();
 }
 
 async function sbFetch(path,method='GET',body=null){
-const opts={method,headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':''}};
-if(body)opts.body=JSON.stringify(body);
-const res=await fetch(_SB_URL+path,opts);if(!res.ok){const t=await res.text();throw new Error(t);}const txt=await res.text();return txt?JSON.parse(txt):null;
+  const opts={method,headers:{'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':''}};
+  if(body)opts.body=JSON.stringify(body);
+  const res=await fetch(_SB_URL+path,opts);if(!res.ok){const t=await res.text();throw new Error(t);}const txt=await res.text();return txt?JSON.parse(txt):null;
 }
 
 // ══ MULTI-GROUP ══
@@ -1030,47 +1029,46 @@ function saveGroups(){localStorage.setItem('hrm_groups',JSON.stringify(myGroups)
 function getGroup(id){return myGroups.find(g=>g.id===id)||null;}
 
 async function createGroup(){
-const nameInput=document.getElementById('grp-new-name');const name=nameInput?nameInput.value.trim():'';const grpName=name||(st.me.name+'のグループ');const id=genGrpCode();
-  try{await sbClient.from('groups').insert({id,name:grpName});const newGrp={id,name:grpName,members:[],practiceSlots:[]};myGroups.push(newGrp);activeGrpId=id;saveGroups();await pushMyDataTo(id);showToast('グループ「'+grpName+'」を作成しました');startSyncFor(id);renderBand();}catch(e){showToast('エラー: '+e.message);}
+  const nameInput=document.getElementById('grp-new-name');const name=nameInput?nameInput.value.trim():'';const grpName=name||(st.me.name+'のグループ');const id=genGrpCode();
   const startInput=document.getElementById('grp-start-date');const endInput=document.getElementById('grp-end-date');
   const startDate=startInput&&startInput.value?startInput.value:null;
   const endDate=endInput&&endInput.value?endInput.value:null;
   try{await sbClient.from('groups').insert({id,name:grpName});const newGrp={id,name:grpName,members:[],practiceSlots:[],startDate,endDate};myGroups.push(newGrp);activeGrpId=id;saveGroups();await pushMyDataTo(id);showToast('グループ「'+grpName+'」を作成しました');startSyncFor(id);renderBand();}catch(e){showToast('エラー: '+e.message);}
 }
 async function joinGroup(){
-const inp=document.getElementById('grp-join-code');const code=inp?inp.value.trim().toUpperCase():'';if(!code){showToast('コードを入力してください');return;}if(myGroups.find(g=>g.id===code)){showToast('すでに参加中です');return;}
-try{const {data:rows}=await sbClient.from('groups').select('id,name').eq('id',code);if(!rows||rows.length===0){showToast('コードが見つかりませんでした');return;}const newGrp={id:rows[0].id,name:rows[0].name,members:[],practiceSlots:[]};myGroups.push(newGrp);activeGrpId=newGrp.id;saveGroups();await pushMyDataTo(newGrp.id);await pullGroupDataFor(newGrp.id);showToast('「'+newGrp.name+'」に参加しました！');startSyncFor(newGrp.id);renderBand();}catch(e){showToast('エラー: '+e.message);}
+  const inp=document.getElementById('grp-join-code');const code=inp?inp.value.trim().toUpperCase():'';if(!code){showToast('コードを入力してください');return;}if(myGroups.find(g=>g.id===code)){showToast('すでに参加中です');return;}
+  try{const {data:rows}=await sbClient.from('groups').select('id,name').eq('id',code);if(!rows||rows.length===0){showToast('コードが見つかりませんでした');return;}const newGrp={id:rows[0].id,name:rows[0].name,members:[],practiceSlots:[]};myGroups.push(newGrp);activeGrpId=newGrp.id;saveGroups();await pushMyDataTo(newGrp.id);await pullGroupDataFor(newGrp.id);showToast('「'+newGrp.name+'」に参加しました！');startSyncFor(newGrp.id);renderBand();}catch(e){showToast('エラー: '+e.message);}
 }
 async function leaveGroup(grpId){
-const g=getGroup(grpId);if(!g)return;if(!confirm('「'+g.name+'」から退出しますか？'))return;
-try{await sbClient.from('members').delete().eq('code',st.me.code).eq('group_id',grpId);}catch(e){}
-(g.practiceSlots||[]).forEach(ps=>{const key=ps.date+'|'+ps.slot_id;if(st.blocks[key]==='practice_'+grpId)delete st.blocks[key];});
-myGroups=myGroups.filter(g=>g.id!==grpId);if(activeGrpId===grpId)activeGrpId=myGroups[0]?.id||null;
-saveGroups();stopSyncFor(grpId);save();showToast('退出しました');renderBand();
+  const g=getGroup(grpId);if(!g)return;if(!confirm('「'+g.name+'」から退出しますか？'))return;
+  try{await sbClient.from('members').delete().eq('code',st.me.code).eq('group_id',grpId);}catch(e){}
+  // 退出しても練習コマの表示は残す（ユーザー要望）
+  myGroups=myGroups.filter(g=>g.id!==grpId);if(activeGrpId===grpId)activeGrpId=myGroups[0]?.id||null;
+  saveGroups();stopSyncFor(grpId);save();showToast('退出しました');renderBand();renderWeek();
 }
 async function pushMyDataTo(grpId){
-const payload={group_id:grpId,name:st.me.name,part:st.me.part||'',color:st.me.color,code:st.me.code,blocks:st.blocks,tpl:st.tpl||{},cats:st.cats,slots:st.slots,updated_at:new Date().toISOString()};
-try{await sbClient.from('members').delete().eq('code',st.me.code).eq('group_id',grpId);await sbClient.from('members').insert(payload);}catch(e){console.warn('push error',e);}
+  const payload={group_id:grpId,name:st.me.name,part:st.me.part||'',color:st.me.color,code:st.me.code,blocks:st.blocks,tpl:st.tpl||{},cats:st.cats,slots:st.slots,updated_at:new Date().toISOString()};
+  try{await sbClient.from('members').delete().eq('code',st.me.code).eq('group_id',grpId);await sbClient.from('members').insert(payload);}catch(e){console.warn('push error',e);}
 }
 async function pushMyData(){for(const g of myGroups)await pushMyDataTo(g.id);}
 async function pullGroupDataFor(grpId){
-try{
-const g=getGroup(grpId);if(!g)return;
-const {data:rows,error:err1}=await sbClient.from('members').select('*').eq('group_id',grpId);
-if(err1)console.warn('members fetch error',err1.message);
-else if(rows)g.members=rows.filter(r=>r.code!==st.me.code).map(r=>({id:r.id,name:r.name,part:r.part,color:r.color,code:r.code,blocks:r.blocks||{},tpl:r.tpl||{},cats:r.cats||[],slots:r.slots||[]}));
-const {data:ps,error:err2}=await sbClient.from('practice_slots').select('*').eq('group_id',grpId).order('decided_at',{ascending:false});
-if(!err2) g.practiceSlots=ps||[];
-saveGroups();if(curPanel==='band')renderBand();if(curPanel==='find')renderFind();
-}catch(e){console.warn('pull error',e);}
+  try{
+    const g=getGroup(grpId);if(!g)return;
+    const {data:rows,error:err1}=await sbClient.from('members').select('*').eq('group_id',grpId);
+    if(err1)console.warn('members fetch error',err1.message);
+    else if(rows)g.members=rows.filter(r=>r.code!==st.me.code).map(r=>({id:r.id,name:r.name,part:r.part,color:r.color,code:r.code,blocks:r.blocks||{},tpl:r.tpl||{},cats:r.cats||[],slots:r.slots||[]}));
+    const {data:ps,error:err2}=await sbClient.from('practice_slots').select('*').eq('group_id',grpId).order('decided_at',{ascending:false});
+    if(!err2) g.practiceSlots=ps||[];
+    saveGroups();if(curPanel==='band')renderBand();if(curPanel==='find')renderFind();
+  }catch(e){console.warn('pull error',e);}
 }
 async function decidePracticeSlot(grpId,date,slotId){
-const g=getGroup(grpId);if(!g)return;const slot=st.slots.find(s=>s.id===slotId);if(!confirm(`${date} ${slot?.name||''}を「${g.name}」の練習コマに決定しますか？`))return;
-try{await sbClient.from('practice_slots').insert({group_id:grpId,slot_id:slotId,date,decided_by:st.me.name,decided_at:new Date().toISOString()});const key=date+'|'+slotId;if(!st.cats.find(c=>c.id==='practice'))st.cats.push({id:'practice',name:'練習',bg:'#EDE9FE',fg:'#6D28D9'});st.blocks[key]='practice';save();showToast('練習コマを決定しました！');await pullGroupDataFor(grpId);renderBand();renderWeek();}catch(e){showToast('エラー: '+e.message);}
+  const g=getGroup(grpId);if(!g)return;const slot=st.slots.find(s=>s.id===slotId);if(!confirm(`${date} ${slot?.name||''}を「${g.name}」の練習コマに決定しますか？`))return;
+  try{await sbClient.from('practice_slots').insert({group_id:grpId,slot_id:slotId,date,decided_by:st.me.name,decided_at:new Date().toISOString()});const key=date+'|'+slotId;if(!st.cats.find(c=>c.id==='practice'))st.cats.push({id:'practice',name:'練習',bg:'#EDE9FE',fg:'#6D28D9'});st.blocks[key]='practice';save();showToast('練習コマを決定しました！');await pullGroupDataFor(grpId);renderBand();renderWeek();}catch(e){showToast('エラー: '+e.message);}
 }
 async function cancelPracticeSlot(grpId,psId,date,slotId){
-if(!confirm('この練習コマの決定を取り消しますか？'))return;
-try{await sbClient.from('practice_slots').delete().eq('id',psId);const key=date+'|'+slotId;if(st.blocks[key]==='practice')delete st.blocks[key];save();showToast('取り消しました');await pullGroupDataFor(grpId);renderBand();renderWeek();}catch(e){showToast('エラー: '+e.message);}
+  if(!confirm('この練習コマの決定を取り消しますか？'))return;
+  try{await sbClient.from('practice_slots').delete().eq('id',psId);const key=date+'|'+slotId;if(st.blocks[key]==='practice')delete st.blocks[key];save();showToast('取り消しました');await pullGroupDataFor(grpId);renderBand();renderWeek();}catch(e){showToast('エラー: '+e.message);}
 }
 function startSyncFor(grpId){stopSyncFor(grpId);pullGroupDataFor(grpId);_syncTimers[grpId]=setInterval(()=>pullGroupDataFor(grpId),30000);}
 function stopSyncFor(grpId){clearInterval(_syncTimers[grpId]);delete _syncTimers[grpId];}
@@ -1081,39 +1079,39 @@ function copyGrpCode(grpId){navigator.clipboard.writeText(grpId).then(()=>showTo
 let _practiceCtx=null;let _findSel=new Set();let _findGrpId=null;
 
 function openDecidePracticeSheet(grpId,date,slotId){
-const slot=st.slots.find(s=>s.id==slotId);const g=myGroups.find(x=>x.id===grpId);
-_practiceCtx={grpId,date,slotId:Number(slotId),existingId:null};
-const d=new Date(date);const dn=DAYS[d.getDay()===0?6:d.getDay()-1];
-document.getElementById('psh-title').textContent=`${d.getMonth()+1}/${d.getDate()}（${dn}）${slot?.name||''} を練習コマに？`;
-document.getElementById('psh-body').innerHTML=`
-   <div style="padding:16px">
-     <div style="font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.6">グループ「${g?.name||''}」の練習コマとして決定します。<br><span style="font-size:12px;color:var(--text3)">決定者と日時が履歴として残ります。あとで変更もできます。</span></div>
-     <button class="btn btn-p btn-block" style="margin-bottom:8px" onclick="execDecidePractice()">決定する</button>
-     <button class="btn btn-g btn-block" onclick="closeSh('practice')">キャンセル</button>
-   </div>`;
-openSh('practice');
+  const slot=st.slots.find(s=>s.id==slotId);const g=myGroups.find(x=>x.id===grpId);
+  _practiceCtx={grpId,date,slotId:Number(slotId),existingId:null};
+  const d=new Date(date);const dn=DAYS[d.getDay()===0?6:d.getDay()-1];
+  document.getElementById('psh-title').textContent=`${d.getMonth()+1}/${d.getDate()}（${dn}）${slot?.name||''} を練習コマに？`;
+  document.getElementById('psh-body').innerHTML=`
+    <div style="padding:16px">
+      <div style="font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.6">グループ「${g?.name||''}」の練習コマとして決定します。<br><span style="font-size:12px;color:var(--text3)">決定者と日時が履歴として残ります。あとで変更もできます。</span></div>
+      <button class="btn btn-p btn-block" style="margin-bottom:8px" onclick="execDecidePractice()">決定する</button>
+      <button class="btn btn-g btn-block" onclick="closeSh('practice')">キャンセル</button>
+    </div>`;
+  openSh('practice');
 }
 window.openChangePracticeSheet=function openChangePracticeSheet(grpId,existingId,date,slotId){
-const slot=st.slots.find(s=>s.id==slotId);const g=myGroups.find(x=>x.id===grpId);
-_practiceCtx={grpId,date,slotId:Number(slotId),existingId};
-const d=new Date(date);const dn=DAYS[d.getDay()===0?6:d.getDay()-1];
-document.getElementById('psh-title').textContent='練習コマを変更・取消';
-document.getElementById('psh-body').innerHTML=`
-   <div style="padding:16px">
-     <div style="background:#EDE9FE;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:13px;color:#5B21B6;font-weight:600">現在: ${d.getMonth()+1}/${d.getDate()}（${dn}）${slot?.name||''} ${slot?.start||''}–${slot?.end||''}</div>
-     <div style="font-size:13px;color:var(--text2);margin-bottom:14px">取り消すと履歴に残ったまま解除されます。</div>
-     <button class="btn btn-d btn-block" style="margin-bottom:8px" onclick="execCancelPractice()">この練習コマを取り消す</button>
-     <button class="btn btn-g btn-block" onclick="closeSh('practice')">閉じる</button>
-   </div>`;
-openSh('practice');
+  const slot=st.slots.find(s=>s.id==slotId);const g=myGroups.find(x=>x.id===grpId);
+  _practiceCtx={grpId,date,slotId:Number(slotId),existingId};
+  const d=new Date(date);const dn=DAYS[d.getDay()===0?6:d.getDay()-1];
+  document.getElementById('psh-title').textContent='練習コマを変更・取消';
+  document.getElementById('psh-body').innerHTML=`
+    <div style="padding:16px">
+      <div style="background:#EDE9FE;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:13px;color:#5B21B6;font-weight:600">現在: ${d.getMonth()+1}/${d.getDate()}（${dn}）${slot?.name||''} ${slot?.start||''}–${slot?.end||''}</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:14px">取り消すと履歴に残ったまま解除されます。</div>
+      <button class="btn btn-d btn-block" style="margin-bottom:8px" onclick="execCancelPractice()">この練習コマを取り消す</button>
+      <button class="btn btn-g btn-block" onclick="closeSh('practice')">閉じる</button>
+    </div>`;
+  openSh('practice');
 };
 async function execDecidePractice(){
-if(!_practiceCtx)return;const {grpId,date,slotId}=_practiceCtx;closeSh('practice');
-try{await sbClient.from('practice_slots').insert({group_id:grpId,slot_id:slotId,date,decided_by:st.me.name,decided_at:new Date().toISOString()});if(!st.cats.find(c=>c.id==='practice'))st.cats.push({id:'practice',name:'練習',bg:'#EDE9FE',fg:'#6D28D9'});st.blocks[BK(date,slotId)]='practice';save();showToast('練習コマを決定しました！');await pullGroupDataFor(grpId);renderFind();renderWeek();}catch(e){showToast('エラー: '+e.message);}
+  if(!_practiceCtx)return;const {grpId,date,slotId}=_practiceCtx;closeSh('practice');
+  try{await sbClient.from('practice_slots').insert({group_id:grpId,slot_id:slotId,date,decided_by:st.me.name,decided_at:new Date().toISOString()});if(!st.cats.find(c=>c.id==='practice'))st.cats.push({id:'practice',name:'練習',bg:'#EDE9FE',fg:'#6D28D9'});st.blocks[BK(date,slotId)]='practice';save();showToast('練習コマを決定しました！');await pullGroupDataFor(grpId);renderFind();renderWeek();}catch(e){showToast('エラー: '+e.message);}
 }
 async function execCancelPractice(){
-if(!_practiceCtx)return;const {grpId,date,slotId,existingId}=_practiceCtx;closeSh('practice');
-try{await sbClient.from('practice_slots').delete().eq('id',existingId);const key=BK(date,slotId);if(st.blocks[key]==='practice')delete st.blocks[key];save();showToast('練習コマを取り消しました');await pullGroupDataFor(grpId);renderFind();renderWeek();}catch(e){showToast('エラー: '+e.message);}
+  if(!_practiceCtx)return;const {grpId,date,slotId,existingId}=_practiceCtx;closeSh('practice');
+  try{await sbClient.from('practice_slots').delete().eq('id',existingId);const key=BK(date,slotId);if(st.blocks[key]==='practice')delete st.blocks[key];save();showToast('練習コマを取り消しました');await pullGroupDataFor(grpId);renderFind();renderWeek();}catch(e){showToast('エラー: '+e.message);}
 }
 
 // _findSelのウィンドウ関数（互換用）
@@ -1123,19 +1121,19 @@ window.openBulkDecideSheet=function(){};
 
 // ══ INIT ══
 window.addEventListener('load',function(){
-document.getElementById('login-submit-btn').addEventListener('click',submitLogin);
-document.getElementById('tab-login').addEventListener('click',function(){switchLoginMode('login');});
-document.getElementById('tab-signup').addEventListener('click',function(){switchLoginMode('signup');});
-['login-email','login-password','login-password2'].forEach(function(id){const el=document.getElementById(id);if(el)el.addEventListener('keydown',function(e){if(e.key==='Enter')submitLogin();});});
-if(typeof supabase!=='undefined')checkSession().catch(e=>console.warn('init error:',e));
+  document.getElementById('login-submit-btn').addEventListener('click',submitLogin);
+  document.getElementById('tab-login').addEventListener('click',function(){switchLoginMode('login');});
+  document.getElementById('tab-signup').addEventListener('click',function(){switchLoginMode('signup');});
+  ['login-email','login-password','login-password2'].forEach(function(id){const el=document.getElementById(id);if(el)el.addEventListener('keydown',function(e){if(e.key==='Enter')submitLogin();});});
+  if(typeof supabase!=='undefined')checkSession().catch(e=>console.warn('init error:',e));
 });
 </script>
 
 <!-- 予定入力バー -->
 <div id="entry-bar" style="display:none;position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + var(--safe-b));z-index:300;background:var(--accent);padding:10px 14px;align-items:center;gap:10px;box-shadow:0 -2px 12px rgba(43,99,81,.25);">
-<span id="entry-bar-label" style="font-size:13px;color:rgba(255,255,255,.85);flex:1;font-weight:500;"></span>
-<button onclick="openCatShForSel()" style="padding:9px 18px;border-radius:10px;border:none;background:#fff;color:var(--accent);font-size:14px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;white-space:nowrap;">予定を選択 →</button>
-<button onclick="clearSel()" style="padding:9px 12px;border-radius:10px;border:1.5px solid rgba(255,255,255,.4);background:none;color:#fff;font-size:13px;font-weight:500;font-family:'Outfit',sans-serif;cursor:pointer;white-space:nowrap;">解除</button>
+  <span id="entry-bar-label" style="font-size:13px;color:rgba(255,255,255,.85);flex:1;font-weight:500;"></span>
+  <button onclick="openCatShForSel()" style="padding:9px 18px;border-radius:10px;border:none;background:#fff;color:var(--accent);font-size:14px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;white-space:nowrap;">予定を選択 →</button>
+  <button onclick="clearSel()" style="padding:9px 12px;border-radius:10px;border:1.5px solid rgba(255,255,255,.4);background:none;color:#fff;font-size:13px;font-weight:500;font-family:'Outfit',sans-serif;cursor:pointer;white-space:nowrap;">解除</button>
 </div>
 </body>
 </html>
