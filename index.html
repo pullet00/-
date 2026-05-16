@@ -651,10 +651,48 @@ function renderFind(){
 
   // ── カレンダーグリッド（パート表示）──
   if(activeGrp){
-    const visDays=weekDates().filter((_,i)=>st.days.includes(DAYS[i]));
-    const visDayNames=visDays.map(d=>DAYS[d.getDay()===0?6:d.getDay()-1]);
     const allMembers=[{name:st.me.name,part:st.me.part||'',color:st.me.color,blocks:st.blocks,tpl:st.tpl,isMe:true},...grpMembers];
     const total=allMembers.length;
+
+    // 期間設定：グループのstartDate〜endDateの全日付（設定なければ今週から4週間）
+    function getPeriodDates(grp){
+      const start=grp.startDate?new Date(grp.startDate):getMon(0);
+      const end=grp.endDate?new Date(grp.endDate):new Date(getMon(0).getTime()+27*24*60*60*1000);
+      // startを含む週の月曜から
+      const day=start.getDay();const mon=new Date(start);mon.setDate(start.getDate()-(day===0?6:day-1));mon.setHours(0,0,0,0);
+      const dates=[];
+      for(let d=new Date(mon);d<=end;d.setDate(d.getDate()+1)){
+        if(st.days.includes(DAYS[d.getDay()===0?6:d.getDay()-1])){dates.push(new Date(d));}
+      }
+      return dates;
+    }
+    const allPeriodDates=getPeriodDates(activeGrp);
+
+    // 週ナビゲーション：期間内の週を選択
+    if(!activeGrp._findWeekOffset) activeGrp._findWeekOffset=0;
+    // 期間内の週一覧を作成
+    function getWeeksInPeriod(grp){
+      const start=grp.startDate?new Date(grp.startDate):getMon(0);
+      const end=grp.endDate?new Date(grp.endDate):new Date(getMon(0).getTime()+27*24*60*60*1000);
+      const day=start.getDay();const mon=new Date(start);mon.setDate(start.getDate()-(day===0?6:day-1));mon.setHours(0,0,0,0);
+      const weeks=[];
+      for(let w=new Date(mon);w<=end;w.setDate(w.getDate()+7)){weeks.push(new Date(w));}
+      return weeks;
+    }
+    const weeksInPeriod=getWeeksInPeriod(activeGrp);
+    const wOff=Math.max(0,Math.min(activeGrp._findWeekOffset,weeksInPeriod.length-1));
+    activeGrp._findWeekOffset=wOff;
+    const currentWeekMon=weeksInPeriod[wOff]||getMon(0);
+    const visDays=DAYS.map((_,i)=>{const d=new Date(currentWeekMon);d.setDate(currentWeekMon.getDate()+i);return d;}).filter((_,i)=>st.days.includes(DAYS[i]));
+    const visDayNames=visDays.map(d=>DAYS[d.getDay()===0?6:d.getDay()-1]);
+
+    // 週ナビ
+    const weekLabel=`${currentWeekMon.getMonth()+1}/${currentWeekMon.getDate()}〜`;
+    h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <a href="javascript:void(0)" onclick="if(myGroups.find(g=>g.id==='${activeGrpId}'))myGroups.find(g=>g.id==='${activeGrpId}')._findWeekOffset=Math.max(0,${wOff}-1);renderFind();" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:${wOff>0?'var(--surf)':'var(--surf2)'};display:flex;align-items:center;justify-content:center;font-size:16px;color:${wOff>0?'var(--text2)':'var(--text3)'};text-decoration:none;">‹</a>
+      <div style="flex:1;text-align:center;font-size:12px;font-weight:600;color:var(--text2)">${weekLabel}（${wOff+1}/${weeksInPeriod.length}週目）</div>
+      <a href="javascript:void(0)" onclick="if(myGroups.find(g=>g.id==='${activeGrpId}'))myGroups.find(g=>g.id==='${activeGrpId}')._findWeekOffset=Math.min(${weeksInPeriod.length-1},${wOff}+1);renderFind();" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:${wOff<weeksInPeriod.length-1?'var(--surf)':'var(--surf2)'};display:flex;align-items:center;justify-content:center;font-size:16px;color:${wOff<weeksInPeriod.length-1?'var(--text2)':'var(--text3)'};text-decoration:none;">›</a>
+    </div>`;
 
     h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:8px">空きコマをタップして練習を決定できます</div>`;
     h+=`<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px">`;
@@ -741,7 +779,10 @@ function renderBand(){
       html+=`<div style="background:var(--surf);border:1px solid ${isActive?'var(--accent)':'var(--border)'};border-radius:16px;margin-bottom:12px;overflow:hidden;${isActive?'box-shadow:0 0 0 3px var(--accent-l)':''}">
         <div style="padding:13px 14px;border-bottom:1px solid var(--border)">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <div style="font-size:15px;font-weight:700;flex:1">${g.name}</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:700">${g.name}</div>
+              ${(g.startDate||g.endDate)?`<div style="font-size:10px;color:var(--text3);margin-top:2px">${g.startDate?g.startDate.replace(/-/g,'/'):''}${g.startDate&&g.endDate?' 〜 ':''}${g.endDate?g.endDate.replace(/-/g,'/'):'不明'}</div>`:''}
+            </div>
             <button onclick="activeGrpId='${g.id}';saveGroups();renderBand();renderFind();" style="font-size:11px;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:${isActive?'var(--accent)':'none'};color:${isActive?'#fff':'var(--text2)'};cursor:pointer;font-family:'Inter',sans-serif">${isActive?'表示中':'表示する'}</button>
             <button onclick="leaveGroup('${g.id}')" style="font-size:11px;padding:4px 8px;border-radius:8px;border:1px solid #E8A09A;background:none;color:#C0392B;cursor:pointer">退出</button>
           </div>
@@ -765,6 +806,18 @@ function renderBand(){
   html+=`<div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
     <div style="font-size:14px;font-weight:600;margin-bottom:10px">＋ 新しいグループを作る</div>
     <input type="text" id="grp-new-name" placeholder="グループ名（例：アカペラA班）" style="width:100%;margin-bottom:10px;padding:14px;font-size:16px;border:1.5px solid var(--border);border-radius:12px;box-sizing:border-box;background:#fff;color:#0D0D10;outline:none;" oninput="const btn=document.getElementById('grp-create-btn');if(this.value.trim()){btn.style.background='var(--accent)';btn.style.color='#fff';}else{btn.style.background='#E4E4E8';btn.style.color='#9898AA';}">
+    <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+      <div style="flex:1">
+        <label style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">開始日</label>
+        <input type="date" id="grp-start-date" style="width:100%;padding:10px;font-size:14px;border:1.5px solid var(--border);border-radius:10px;box-sizing:border-box;background:#fff;color:#0D0D10;outline:none;">
+      </div>
+      <div style="color:var(--text3);padding-top:20px">〜</div>
+      <div style="flex:1">
+        <label style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">終了日</label>
+        <input type="date" id="grp-end-date" style="width:100%;padding:10px;font-size:14px;border:1.5px solid var(--border);border-radius:10px;box-sizing:border-box;background:#fff;color:#0D0D10;outline:none;">
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:10px">※ 未設定の場合は今週から4週間が対象になります</div>
     <button id="grp-create-btn" onclick="createGroup()" style="width:100%;font-size:15px;padding:15px;border-radius:14px;border:none;background:#E4E4E8;color:#9898AA;font-family:'Inter','Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;transition:all .2s;">作成してコードを発行</button>
   </div>
   <div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:11px;color:var(--text3)">または</span><div style="flex:1;height:1px;background:var(--border)"></div></div>
@@ -975,7 +1028,10 @@ function getGroup(id){return myGroups.find(g=>g.id===id)||null;}
 
 async function createGroup(){
   const nameInput=document.getElementById('grp-new-name');const name=nameInput?nameInput.value.trim():'';const grpName=name||(st.me.name+'のグループ');const id=genGrpCode();
-  try{await sbClient.from('groups').insert({id,name:grpName});const newGrp={id,name:grpName,members:[],practiceSlots:[]};myGroups.push(newGrp);activeGrpId=id;saveGroups();await pushMyDataTo(id);showToast('グループ「'+grpName+'」を作成しました');startSyncFor(id);renderBand();}catch(e){showToast('エラー: '+e.message);}
+  const startInput=document.getElementById('grp-start-date');const endInput=document.getElementById('grp-end-date');
+  const startDate=startInput&&startInput.value?startInput.value:null;
+  const endDate=endInput&&endInput.value?endInput.value:null;
+  try{await sbClient.from('groups').insert({id,name:grpName});const newGrp={id,name:grpName,members:[],practiceSlots:[],startDate,endDate};myGroups.push(newGrp);activeGrpId=id;saveGroups();await pushMyDataTo(id);showToast('グループ「'+grpName+'」を作成しました');startSyncFor(id);renderBand();}catch(e){showToast('エラー: '+e.message);}
 }
 async function joinGroup(){
   const inp=document.getElementById('grp-join-code');const code=inp?inp.value.trim().toUpperCase():'';if(!code){showToast('コードを入力してください');return;}if(myGroups.find(g=>g.id===code)){showToast('すでに参加中です');return;}
