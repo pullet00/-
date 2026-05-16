@@ -518,8 +518,22 @@ function renderWeek(){
       const direct=st.blocks[key];const tplKey=DAYS[i]+'-'+slot.id;const hasTpl=!direct&&!!(st.tpl||{})[tplKey];
       const effId=direct||(hasTpl?'class':null);const c=effId?ct(effId):null;
       const isSel=selCells.has(key)&&selMode;const weekBg=isSat?'sat-bg':isSun?'sun-bg':'';const bg=c?c.fg:'transparent';
-      const practiceInfo=myGroups.map(g=>{const ps=(g.practiceSlots||[]).find(p=>p.date===ds&&p.slot_id==slot.id);return ps?g.name:null;}).filter(Boolean);
-      const isPractice=practiceInfo.length>0;
+      const practiceGrps=myGroups.filter(g=>(g.practiceSlots||[]).find(p=>p.date===ds&&p.slot_id==slot.id));
+      const isPractice=practiceGrps.length>0;
+      // 欠けメンバーを計算（練習決定済みグループで自分が参加できないか）
+      let absentNames=[];
+      if(isPractice){
+        practiceGrps.forEach(pg=>{
+          const allM=[{name:st.me.name,part:st.me.part||'',blocks:st.blocks,tpl:st.tpl,isMe:true},...(pg.members||[])];
+          const dn2=DAYS[i];
+          allM.forEach(m=>{
+            const busy=(m.blocks||{})[key]&&(m.blocks||{})[key]!=='practice';
+            const tplBusy=m.isMe?(st.tpl||{})[dn2+'-'+slot.id]:(m.tpl||{})[dn2+'-'+slot.id];
+            if((busy||tplBusy)&&!absentNames.includes(m.name))absentNames.push(m.name);
+          });
+        });
+      }
+      const practiceInfo=practiceGrps.map(g=>g.name);
       const cellBg=isPractice?'#EDE9FE':(c?c.bg:'');const cellBgFb=isPractice?'#EDE9FE':(isSat?'#F0FAFA':isSun?'#FFF0F2':'#fff');
       gh+=`<div class="slot-cell${isSel?' sel':''} ${weekBg}"
         style="background:${cellBg||cellBgFb};${hasTpl&&!isPractice?'opacity:.7':''}"
@@ -527,7 +541,13 @@ function renderWeek(){
         onclick="sc('${key}','${slot.name}')">
         <div class="cell-bar" style="background:${isPractice?'#6D28D9':bg}"></div>
         <div class="cell-body">
-          ${isPractice?`<div class="cell-cat" style="color:#5B21B6;font-size:9px">${practiceInfo[0]}</div>`:c?`<div class="cell-cat" style="color:${c.fg}">${c.name}</div>`:`<div class="cell-empty">${slot.start}</div>`}
+          ${isPractice
+            ?`<div style="display:flex;flex-direction:column;align-items:center;gap:0px">
+                <div class="cell-cat" style="color:#5B21B6;font-size:8px;font-weight:700">${practiceInfo[0]}</div>
+                ${absentNames.length>0?`<div style="font-size:6px;color:#C0392B;font-weight:600;line-height:1.2;text-align:center">欠:${absentNames.map(n=>n.slice(0,2)).join('・')}</div>`:'<div style="font-size:6px;color:#2B6351;font-weight:600">全員</div>'}
+              </div>`
+            :c?`<div class="cell-cat" style="color:${c.fg}">${c.name}</div>`
+            :`<div class="cell-empty">${slot.start}</div>`}
         </div>
         ${hasTpl&&!isPractice?`<div class="cell-tpl">※</div>`:''}
         ${isSel?`<div class="cell-check">✓</div>`:''}
@@ -1123,7 +1143,16 @@ window.openChangePracticeSheet=function openChangePracticeSheet(grpId,existingId
 };
 async function execDecidePractice(){
   if(!_practiceCtx)return;const {grpId,date,slotId}=_practiceCtx;closeSh('practice');
-  try{await sbClient.from('practice_slots').insert({group_id:grpId,slot_id:slotId,date,decided_by:st.me.name,decided_at:new Date().toISOString()});if(!st.cats.find(c=>c.id==='practice'))st.cats.push({id:'practice',name:'練習',bg:'#EDE9FE',fg:'#6D28D9'});st.blocks[BK(date,slotId)]='practice';save();showToast('練習コマを決定しました！');await pullGroupDataFor(grpId);renderFind();renderWeek();}catch(e){showToast('エラー: '+e.message);}
+  try{
+    await sbClient.from('practice_slots').insert({group_id:grpId,slot_id:slotId,date,decided_by:st.me.name,decided_at:new Date().toISOString()});
+    // 既存予定がなければ練習として記録（上書きしない）
+    const key=BK(date,slotId);
+    if(!st.blocks[key]){
+      if(!st.cats.find(c=>c.id==='practice'))st.cats.push({id:'practice',name:'練習',bg:'#EDE9FE',fg:'#6D28D9'});
+      st.blocks[key]='practice';
+    }
+    save();showToast('練習コマを決定しました！');await pullGroupDataFor(grpId);renderFind();renderWeek();
+  }catch(e){showToast('エラー: '+e.message);}
 }
 async function execCancelPractice(){
   if(!_practiceCtx)return;const {grpId,date,slotId,existingId}=_practiceCtx;closeSh('practice');
