@@ -221,7 +221,7 @@ input:focus{border-color:var(--accent);}
     <span class="ob-logo"><svg width="108" height="30" viewBox="0 0 108 30" fill="none"><defs><linearGradient id="lg2" x1="0" y1="0" x2="108" y2="30" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#5B5BF6"/><stop offset="100%" stop-color="#FF6B6B"/></linearGradient></defs><text x="0" y="23" font-family="'Syne','Inter',sans-serif" font-size="22" font-weight="800" fill="url(#lg2)" letter-spacing="-0.5">こまけず</text></svg></span>
     <button class="ob-skip" onclick="skipOb()">スキップ</button>
   </div>
-  <div class="ob-prog"><div class="ob-pd" id="op0"></div><div class="ob-pd" id="op1"></div><div class="ob-pd" id="op2"></div></div>
+  <div class="ob-prog"><div class="ob-pd" id="op0"></div><div class="ob-pd" id="op1"></div><div class="ob-pd" id="op2"></div><div class="ob-pd" id="op3"></div></div>
   <div class="ob-body">
     <div class="ob-page on" id="ob0">
       <div class="ob-scroll">
@@ -238,19 +238,48 @@ input:focus{border-color:var(--accent);}
       </div>
       <div class="ob-foot"><button class="ob-main" onclick="obGo(1)">次へ →</button></div>
     </div>
+    <!-- PAGE 1: 時間割スキャン -->
     <div class="ob-page" id="ob1">
       <div class="ob-scroll">
-        <h2 class="ob-h">毎週決まっている<br>予定を登録しよう</h2>
-        <p class="ob-p">授業やレギュラーシフトなど、<strong>毎週同じコマに入る予定</strong>をタップして選んでください。</p>
-        <div class="tpl-grid-wrap" style="margin-bottom:8px"><div id="ob-tpl"></div></div>
-        <p style="font-size:11px;color:#ADA8A0;margin-top:8px">タップで選択・もう一度タップで解除。あとから設定で変更できます。</p>
+        <h2 class="ob-h">時間割を<br>読み込もう</h2>
+        <p class="ob-p">時間割アプリのスクリーンショットを選ぶと、<strong>時限・授業テンプレートを自動設定</strong>します。</p>
+        <div id="scan-preview" style="display:none;margin-bottom:12px;border-radius:14px;overflow:hidden;max-height:240px;border:1px solid var(--border)">
+          <img id="scan-img" style="width:100%;object-fit:cover;display:block" />
+        </div>
+        <div id="scan-result-box" style="display:none;background:#EEFBF0;border:1.5px solid #90C8AD;border-radius:14px;padding:14px;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:700;color:#2B6351;margin-bottom:4px">✓ 読み取り完了！</div>
+          <div id="scan-result-text" style="font-size:12px;color:#2B6351;line-height:1.6"></div>
+        </div>
+        <label style="display:block;width:100%;padding:15px;border-radius:14px;border:none;background:var(--accent);color:#fff;font-size:15px;font-weight:700;text-align:center;cursor:pointer;box-sizing:border-box;margin-bottom:10px;">
+          📷 時間割の画像を選択
+          <input type="file" accept="image/*" style="display:none" onchange="scanTimetableOb(this)">
+        </label>
+        <div id="ob-scan-status" style="font-size:12px;color:var(--text3);text-align:center;min-height:18px"></div>
       </div>
       <div class="ob-foot">
         <button class="ob-main" onclick="obGo(2)">次へ →</button>
-        <button class="ob-sub" onclick="obGo(2)">毎週の予定はない・後で設定する</button>
+        <button class="ob-sub" onclick="obGo(2)">スキップ（手動で設定する）</button>
       </div>
     </div>
     <div class="ob-page" id="ob2">
+      <div class="ob-scroll">
+        <h2 class="ob-h">毎週決まっている<br>予定を登録しよう</h2>
+        <p class="ob-p">授業・バイトなど<strong>毎週同じコマに入る予定</strong>をタップして設定。週によって変わる予定はあとでカレンダーから入力できます。</p>
+        <!-- カテゴリ選択 -->
+        <div style="margin-bottom:10px">
+          <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">予定の種類を選んでタップ</div>
+          <div id="ob-cat-btns" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+        </div>
+        <!-- グリッド -->
+        <div class="tpl-grid-wrap"><div id="ob-tpl"></div></div>
+        <p style="font-size:11px;color:#ADA8A0;margin-top:8px">タップで入力・もう一度タップで解除。あとから設定で変更できます。</p>
+      </div>
+      <div class="ob-foot">
+        <button class="ob-main" onclick="obGo(3)">次へ →</button>
+        <button class="ob-sub" onclick="obGo(3)">毎週の予定はない・後で設定する</button>
+      </div>
+    </div>
+    <div class="ob-page" id="ob3">
       <div class="ob-scroll">
         <h2 class="ob-h">準備完了！</h2>
         <p class="ob-p">カレンダーで<strong>週ごとに変わる予定</strong>を入力していきましょう。</p>
@@ -515,8 +544,8 @@ function renderWeek(){
     gh+=`<div class="time-col"><div class="tc-name">${slot.name}</div><div class="tc-range">${slot.start}<br>${slot.end}</div></div>`;
     dates.forEach((d,i)=>{
       const ds=DS(d);const key=BK(ds,slot.id);const isSat=i===5,isSun=i===6;
-      const direct=st.blocks[key];const tplKey=DAYS[i]+'-'+slot.id;const hasTpl=!direct&&!!(st.tpl||{})[tplKey];
-      const effId=direct||(hasTpl?'class':null);const c=effId?ct(effId):null;
+      const direct=st.blocks[key];const tplKey=DAYS[i]+'-'+slot.id;const tplCatId=!direct&&(st.tpl||{})[tplKey]||null;const hasTpl=!!tplCatId;
+      const effId=direct||tplCatId||null;const c=effId?ct(effId):null;
       const isSel=selCells.has(key)&&selMode;const weekBg=isSat?'sat-bg':isSun?'sun-bg':'';const bg=c?c.fg:'transparent';
       const practiceGrps=myGroups.filter(g=>(g.practiceSlots||[]).find(p=>p.date===ds&&p.slot_id==slot.id));
       const isPractice=practiceGrps.length>0;
@@ -601,7 +630,7 @@ function renderMonth(){
         const did=st.blocks[BK(dStr,s.id)];const tpl=(st.tpl||{})[dn+'-'+s.id];
         const pracGrp=myGroups.find(g=>(g.practiceSlots||[]).find(p=>p.date===dStr&&p.slot_id==s.id));
         if(pracGrp)return`<div class="mpip" style="background:#EDE9FE;color:#5B21B6;font-weight:700">練</div>`;
-        const cid=did||(tpl?'class':null);const cv=cid?ct(cid):null;if(!cv)return'';
+        const cid=did||tpl||null;const cv=cid?ct(cid):null;if(!cv)return'';
         return`<div class="mpip" style="background:${cv.bg};color:${cv.fg};${!did?'opacity:.6':''}">${s.name.replace(/限$/,'')}</div>`;
       }).filter(Boolean).join('');
       html+=`<div class="m-cell${!isM?' other':''}${isT?' is-today':''}" onclick="monthTap('${dStr}','${dn}')"><div class="m-date${isT?' today-d':''}">${cur.getDate()}</div>${pips?`<div class="m-pips">${pips}</div>`:''}</div>`;
@@ -741,7 +770,7 @@ function renderFind(){
         const ds=DS(d);const dn=visDayNames[di];const key=BK(ds,slot.id);
         const availM=allMembers.filter(m=>{
           if((m.blocks||{})[key])return false;
-          if(m.isMe&&(st.tpl||{})[dn+'-'+slot.id])return false;
+          if(m.isMe&&(st.tpl||{})[dn+'-'+slot.id])return false; // テンプレートに何か入ってればNG
           if(!m.isMe&&(m.tpl||{})[dn+'-'+slot.id])return false;
           return true;
         });
@@ -896,7 +925,7 @@ const toggleDay=(d,el)=>{if(st.days.includes(d)){if(st.days.length<=1)return;st.
 const updSlot=(id,k,v)=>{const s=st.slots.find(x=>x.id===id);if(s){s[k]=v;save();}};
 const rmSlot=id=>{st.slots=st.slots.filter(s=>s.id!==id);save();renderSettings();};
 const addSlot=()=>{const last=st.slots[st.slots.length-1];const nid=Math.max(...st.slots.map(s=>s.id),0)+1;st.slots.push({id:nid,name:`${st.slots.length+1}限`,start:last?last.end:'09:00',end:'10:40'});save();renderSettings();};
-const toggleTpl=(day,slotId)=>{if(!st.tpl)st.tpl={};const k=day+'-'+slotId;if(st.tpl[k])delete st.tpl[k];else st.tpl[k]=true;save();renderSettings();render();};
+const toggleTpl=(day,slotId)=>{if(!st.tpl)st.tpl={};const k=day+'-'+slotId;if(st.tpl[k])delete st.tpl[k];else st.tpl[k]='class';save();renderSettings();render();};
 const toggleCCP=cid=>{document.querySelectorAll('.cat-cpop').forEach(p=>{if(p.id!=='ccp-'+cid)p.classList.remove('open');});document.getElementById('ccp-'+cid)?.classList.toggle('open');};
 document.addEventListener('click',e=>{if(!e.target.closest('.cat-sw')&&!e.target.closest('.cat-cpop'))document.querySelectorAll('.cat-cpop').forEach(p=>p.classList.remove('open'));});
 const setCatC=(cid,i)=>{const c=st.cats.find(x=>x.id===cid);if(!c)return;const p=CP[i];c.bg=p.bg;c.fg=p.fg;save();renderSettings();};
@@ -940,24 +969,76 @@ const showToast=msg=>{const t=document.getElementById('toast');t.textContent=msg
 
 // ══ ONBOARDING ══
 let _obStep=0;
-const obProg=step=>[0,1,2].forEach(i=>{document.getElementById('op'+i).style.background=i<=step?'var(--accent)':'var(--border)';});
+const obProg=step=>[0,1,2,3].forEach(i=>{const el=document.getElementById('op'+i);if(el)el.style.background=i<=step?'var(--accent)':'var(--border)';});
 function obGo(step){
   if(_obStep===0){
     const n=document.getElementById('ob-name').value.trim();const p=getPartVal('ob-part');
     if(n)st.me.name=n;if(p)st.me.part=p;save();updTopbar();
   }
-  _obStep=step;[0,1,2].forEach(i=>{document.getElementById('ob'+i).classList.toggle('on',i===step);});obProg(step);
-  if(step===1)renderObTpl();
+  _obStep=step;[0,1,2,3].forEach(i=>{const el=document.getElementById('ob'+i);if(el)el.classList.toggle('on',i===step);});obProg(step);
+  if(step===2)renderObTpl();
 }
+let _obSelCat='class'; // 現在選択中のカテゴリID
+
+function renderObCatBtns(){
+  const el=document.getElementById('ob-cat-btns');if(!el)return;
+  let btns='';
+  st.cats.forEach(cat=>{
+    const on=_obSelCat===cat.id;
+    btns+='<button type="button" data-obcat="'+cat.id+'" '
+      +'style="padding:6px 14px;border-radius:20px;border:1.5px solid '+(on?cat.fg:'#E2DDD6')+';'
+      +'background:'+(on?cat.bg:'#FFFFFF')+';color:'+(on?cat.fg:'#9898AA')+';'
+      +'font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;'
+      +'touch-action:manipulation;-webkit-user-select:none;user-select:none;">'+cat.name+'</button>';
+  });
+  const freeOn=_obSelCat==='free';
+  btns+='<button type="button" data-obcat="free" '
+    +'style="padding:6px 14px;border-radius:20px;border:1.5px solid '+(freeOn?'#888':'#E2DDD6')+';'
+    +'background:'+(freeOn?'#E4E4E8':'#FFFFFF')+';color:'+(freeOn?'#333':'#9898AA')+';'
+    +'font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;'
+    +'touch-action:manipulation;-webkit-user-select:none;user-select:none;">空きに戻す</button>';
+  el.innerHTML=btns;
+  // イベントデリゲーション
+  el.querySelectorAll('[data-obcat]').forEach(btn=>{
+    btn.addEventListener('click',function(){selectObCat(this.getAttribute('data-obcat'));});
+  });
+}
+function selectObCat(catId){_obSelCat=catId;renderObCatBtns();renderObTpl();}
+
 function renderObTpl(){
   const el=document.getElementById('ob-tpl');if(!el)return;
-  const obSlots=st.slots.filter(s=>s.name!=='昼');const classCat=ct('class')||{bg:'#EEF1FA',fg:'#2C4BA0'};
-  let h=`<div class="ob-tpl-grid" style="display:grid;gap:4px;grid-template-columns:auto repeat(${DAYS.length},1fr)">`;
-  h+=`<div></div>`;DAYS.forEach(d=>{h+=`<div class="ob-dlbl">${d}</div>`;});
-  obSlots.forEach(slot=>{h+=`<div class="ob-slbl">${slot.name}</div>`;DAYS.forEach(day=>{const k=day+'-'+slot.id;const on=!!(st.tpl||{})[k];h+=`<div class="ob-tpl-cell${on?' on':''}" style="${on?`background:${classCat.bg};border-color:${classCat.fg};color:${classCat.fg}`:''}" onclick="obTogTpl('${day}',${slot.id})">${on?'✓':''}</div>`;});});
+  renderObCatBtns();
+  const obSlots=st.slots;
+  let h=`<div style="display:grid;gap:3px;grid-template-columns:auto repeat(${DAYS.length},1fr)">`;
+  h+=`<div></div>`;
+  DAYS.forEach(d=>{h+=`<div class="ob-dlbl">${d}</div>`;});
+  obSlots.forEach(slot=>{
+    h+=`<div class="ob-slbl">${slot.name}</div>`;
+    DAYS.forEach(day=>{
+      const k=day+'-'+slot.id;
+      const catId=(st.tpl||{})[k];
+      const cat=catId?ct(catId):null;
+      const bg=cat?cat.bg:'#EBEBEF';
+      const fg=cat?cat.fg:'#9898AA';
+      const label=cat?cat.name.slice(0,2):'';
+      h+=`<div style="height:38px;border-radius:7px;border:1.5px solid ${cat?fg+'60':'#D0D0D8'};background:${bg};cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:${fg};-webkit-user-select:none;user-select:none;" onclick="obTapTpl('${day}',${slot.id})">${label}</div>`;
+    });
+  });
   h+=`</div>`;el.innerHTML=h;
 }
-const obTogTpl=(day,slotId)=>{if(!st.tpl)st.tpl={};const k=day+'-'+slotId;if(st.tpl[k])delete st.tpl[k];else st.tpl[k]=true;save();renderObTpl();};
+
+function obTapTpl(day,slotId){
+  if(!st.tpl)st.tpl={};
+  const k=day+'-'+slotId;
+  if(_obSelCat==='free'){
+    delete st.tpl[k];
+  } else {
+    st.tpl[k]=_obSelCat;
+  }
+  save();renderObTpl();
+}
+
+const obTogTpl=(day,slotId)=>{obTapTpl(day,slotId);}; // 互換用
 const skipOb=()=>{st.boarded=true;save();document.getElementById('ob').classList.add('gone');};
 function finishOb(){
   const n=document.getElementById('ob-name').value.trim();const p=getPartVal('ob-part');
@@ -1208,6 +1289,79 @@ async function scanTimetable(input){
     console.warn('scan error',e);
     if(statusEl)statusEl.textContent='';
     showToast('読み取りに失敗しました');
+  }
+  input.value='';
+}
+
+// ── オンボーディング用スキャン ──
+async function scanTimetableOb(input){
+  const file=input.files[0];if(!file)return;
+  const statusEl=document.getElementById('ob-scan-status');
+  const resultBox=document.getElementById('scan-result-box');
+  const resultText=document.getElementById('scan-result-text');
+  const preview=document.getElementById('scan-preview');
+  const img=document.getElementById('scan-img');
+  // プレビュー表示
+  if(preview&&img){img.src=URL.createObjectURL(file);preview.style.display='block';}
+  if(statusEl)statusEl.textContent='AIが読み取り中...';
+  if(resultBox)resultBox.style.display='none';
+  try{
+    const base64=await new Promise((res,rej)=>{
+      const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);
+    });
+    const prompt='この時間割アプリのスクリーンショットを解析してください。\n\n'
+      +'以下のJSONのみ返してください（他のテキスト不要）:\n'
+      +'{"slots":[{"name":"1限","start":"09:00","end":"10:40"},...],'
+      +'"tpl":{"月-1":true,"火-2":true,...},'
+      +'"subjects":[{"day":"月","slot":1,"name":"数学"},...]}\n\n'
+      +'slots: 全時限の名前とHH:MM形式の開始・終了時刻\n'
+      +'tpl: 授業がある曜日-時限番号(1始まり)をtrue\n'
+      +'subjects: 各授業の曜日・時限・科目名（任意）\n'
+      +'曜日は月火水木金土日のみ使用';
+    const res=await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+_GEMINI_KEY,
+      {method:'POST',headers:{'Content-Type':'application/json'},
+       body:JSON.stringify({contents:[{parts:[{text:prompt},{inline_data:{mime_type:file.type,data:base64}}]}],
+         generationConfig:{temperature:0,maxOutputTokens:2048}})}
+    );
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error?.message||'API error');
+    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||'';
+    const jsonMatch=text.match(/\{[\s\S]*\}/);
+    if(!jsonMatch)throw new Error('解析失敗');
+    const result=JSON.parse(jsonMatch[0]);
+    // 時限設定を適用
+    if(result.slots&&result.slots.length>0){
+      st.slots=result.slots.map((s,i)=>({id:i+1,name:s.name||`${i+1}限`,start:s.start||'09:00',end:s.end||'10:30'}));
+    }
+    // 授業テンプレートを適用
+    if(result.tpl){if(!st.tpl)st.tpl={};
+      Object.entries(result.tpl).forEach(([key,val])=>{
+        if(val){const parts=key.split('-');const day=parts[0];const idx=parseInt(parts[1]);
+          if(day&&idx&&st.slots[idx-1])st.tpl[day+'-'+st.slots[idx-1].id]=true;}
+      });}
+    // ブロック（1週分の授業）も設定
+    if(result.subjects&&result.subjects.length>0){
+      const todayMon=getMon(0);
+      result.subjects.forEach(sub=>{
+        const dayIdx=['月','火','水','木','金','土','日'].indexOf(sub.day);
+        if(dayIdx<0)return;
+        const slot=st.slots[sub.slot-1];if(!slot)return;
+        const d=new Date(todayMon);d.setDate(todayMon.getDate()+dayIdx);
+        const key=DS(d)+'|'+slot.id;
+        if(!st.blocks[key])st.tpl[sub.day+'-'+slot.id]=true;
+      });
+    }
+    save();
+    // 結果表示
+    const slotCount=result.slots?result.slots.length:0;
+    const tplCount=result.tpl?Object.values(result.tpl).filter(Boolean).length:0;
+    if(resultText)resultText.textContent=`${slotCount}時限・${tplCount}コマの授業を設定しました`;
+    if(resultBox)resultBox.style.display='block';
+    if(statusEl)statusEl.textContent='';
+  }catch(e){
+    console.warn('scan error',e);
+    if(statusEl)statusEl.textContent='読み取りに失敗しました。スキップして手動設定できます。';
   }
   input.value='';
 }
