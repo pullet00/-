@@ -886,16 +886,8 @@ function renderBand(){
 }
 
 // ══ SETTINGS ══
+let _settingSelCat='class';
 function renderSettings(){
-  const obSlots=st.slots.filter(s=>s.name!=='昼');const classCat=ct('class')||{bg:'#EEF1FA',fg:'#2C4BA0'};
-  let tH=`<div class="ob-tpl-grid" style="display:grid;gap:3px;grid-template-columns:auto repeat(${DAYS.length},1fr)">`;
-  tH+=`<div></div>`;DAYS.forEach(d=>{tH+=`<div class="tpl-dlbl">${d}</div>`;});
-  obSlots.forEach(slot=>{
-    tH+=`<div class="tpl-slbl">${slot.name}</div>`;
-    DAYS.forEach(day=>{const k=day+'-'+slot.id;const on=!!(st.tpl||{})[k];
-      tH+=`<div class="tpl-cell${on?' on':''}" style="${on?`background:${classCat.bg};border-color:${classCat.fg};color:${classCat.fg}`:''}" onclick="toggleTpl('${day}',${slot.id})">${on?'✓':''}</div>`;
-    });
-  });tH+=`</div>`;
   const catRows=st.cats.map(c=>`<div class="cat-row">
     <div style="position:relative">
       <div class="cat-sw" style="background:${c.bg};border-color:${c.fg}60" onclick="toggleCCP('${c.id}')"><div style="width:11px;height:11px;border-radius:50%;background:${c.fg}"></div></div>
@@ -904,12 +896,55 @@ function renderSettings(){
     <input type="text" value="${c.name}" style="flex:1" onchange="updCat('${c.id}',this.value)">
     <button class="btn btn-g btn-sm" style="color:#C0392B;flex-shrink:0" onclick="rmCat('${c.id}')">削除</button>
   </div>`).join('');
+
+  // 毎週の予定グリッド
+  const tplCatBtns=st.cats.map(cat=>{
+    const on=_settingSelCat===cat.id;
+    return'<button type="button" data-setcat="'+cat.id+'" '
+      +'style="padding:5px 12px;border-radius:20px;border:1.5px solid '+(on?cat.fg:'#E2DDD6')+';'
+      +'background:'+(on?cat.bg:'#FFFFFF')+';color:'+(on?cat.fg:'#9898AA')+';'
+      +'font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;'
+      +'touch-action:manipulation;">'+cat.name+'</button>';
+  }).join('');
+  const freeOn=_settingSelCat==='free';
+  const tplCatBtnsFree='<button type="button" data-setcat="free" '
+    +'style="padding:5px 12px;border-radius:20px;border:1.5px solid '+(freeOn?'#888':'#E2DDD6')+';'
+    +'background:'+(freeOn?'#E4E4E8':'#FFFFFF')+';color:'+(freeOn?'#333':'#9898AA')+';'
+    +'font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;'
+    +'touch-action:manipulation;">空きに戻す</button>';
+
+  let tH='<div id="set-tpl-cat-btns" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">'
+    +tplCatBtns+tplCatBtnsFree+'</div>';
+  tH+='<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><div style="display:grid;gap:3px;grid-template-columns:auto repeat('+DAYS.length+',1fr)">';
+  tH+='<div></div>';
+  DAYS.forEach(d=>{tH+='<div class="tpl-dlbl">'+d+'</div>';});
+  st.slots.forEach(slot=>{
+    tH+='<div class="tpl-slbl">'+slot.name+'</div>';
+    DAYS.forEach(day=>{
+      const k=day+'-'+slot.id;
+      const catId=(st.tpl||{})[k];
+      const cat=catId?ct(catId):null;
+      const bg=cat?cat.bg:'#EBEBEF';
+      const fg=cat?cat.fg:'#9898AA';
+      const label=cat?cat.name.slice(0,2):'';
+      tH+='<div data-settpl="'+day+'-'+slot.id+'" style="height:34px;border-radius:6px;border:1.5px solid '+(cat?fg+'60':'#D0D0D8')+';background:'+bg+';cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:'+fg+';touch-action:manipulation;">'+label+'</div>';
+    });
+  });
+  tH+='</div></div>';
+
   document.getElementById('view-settings').innerHTML=`
     <h2 class="scr-title">設定</h2>
-    <div class="scard"><div class="scard-head">練習候補を探す曜日</div><div class="scard-body"><p style="font-size:12px;color:var(--text2);margin-bottom:10px">オンの曜日だけ練習候補に表示されます。タップで切り替え。</p><div class="day-pills">${DAYS.map(d=>`<div class="dpill${st.days.includes(d)?' on':''}" onclick="toggleDay('${d}',this)">${d}</div>`).join('')}</div></div></div>
-    <div class="scard"><div class="scard-head">時限設定 <button class="btn btn-g btn-sm" onclick="addSlot()">＋</button></div><div class="scard-body" id="slot-list">${slotListHTML()}</div></div>
-    <div class="scard"><div class="scard-head">入力の種類 <button class="btn btn-g btn-sm" onclick="addCat()">＋</button></div><div class="scard-body">${catRows}<p style="font-size:10px;color:var(--text3);margin-top:2px">※削除するとその予定は空きに戻ります</p></div></div>
-    <div class="scard"><div class="scard-head">授業テンプレート</div><div class="scard-body"><p style="font-size:12px;color:var(--text2)">タップしたコマに毎週授業が入ります（※印で表示）。</p><div class="tpl-grid-wrap">${tH}</div></div></div>
+    <div class="scard"><div class="scard-head">練習候補を探す曜日</div><div class="scard-body"><p style="font-size:12px;color:var(--text2);margin-bottom:10px">オンの曜日だけ練習候補に表示されます。タップで切り替え。</p><div class="day-pills">\${DAYS.map(d=>\`<div class="dpill\${st.days.includes(d)?' on':''}" onclick="toggleDay('\${d}',this)">\${d}</div>\`).join('')}</div></div></div>
+    <div class="scard"><div class="scard-head">時限設定 <button class="btn btn-g btn-sm" onclick="addSlot()">＋</button><label class="btn btn-g btn-sm" style="cursor:pointer;margin-left:4px">📷<input type="file" accept="image/*" style="display:none" onchange="scanTimetable(this)"></label></div><div class="scard-body" id="slot-list">\${slotListHTML()}</div></div>
+    <div class="scard"><div class="scard-head">入力の種類 <button class="btn btn-g btn-sm" onclick="addCat()">＋</button></div><div class="scard-body">\${catRows}<p style="font-size:10px;color:var(--text3);margin-top:2px">※削除するとその予定は空きに戻ります</p></div></div>
+    <div class="scard">
+      <div class="scard-head">毎週入る予定 <label class="btn btn-g btn-sm" style="cursor:pointer;font-size:11px">📷 画像読み込み<input type="file" accept="image/*" style="display:none" onchange="scanTimetable(this)"></label></div>
+      <div class="scard-body">
+        <p style="font-size:12px;color:var(--text2);margin-bottom:10px">種類を選んでコマをタップ。毎週同じコマに入る予定を設定します（※印で表示）。</p>
+        ${tH}
+        <div id="set-scan-status" style="font-size:11px;color:var(--text3);margin-top:8px;text-align:center;min-height:16px"></div>
+      </div>
+    </div>
     <div class="scard"><div class="scard-head">最低参加人数</div><div class="scard-body"><div style="display:flex;align-items:center;gap:10px"><input type="number" id="set-min" min="1" max="20" value="${st.minM}" style="width:68px" onchange="st.minM=+this.value;save()"><span style="color:var(--text2);font-size:13px">人以上でおすすめ表示</span></div></div></div>
     <div class="scard"><div class="scard-head">アカウント</div><div class="scard-body">
       <div id="account-email-disp" style="font-size:13px;color:#5C5C6E;padding:4px 0;margin-bottom:4px"></div>
@@ -918,6 +953,25 @@ function renderSettings(){
     </div></div>
     <button class="btn btn-d btn-block" onclick="confirmReset()">🗑 全データをリセット</button>
     <div style="height:24px"></div>`;
+
+  // カテゴリボタンのイベント
+  document.querySelectorAll('[data-setcat]').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      _settingSelCat=this.getAttribute('data-setcat');
+      renderSettings();
+    });
+  });
+  // テンプレートグリッドのイベント
+  document.querySelectorAll('[data-settpl]').forEach(cell=>{
+    cell.addEventListener('click',function(){
+      const k=this.getAttribute('data-settpl');
+      const [day,slotId]=k.split('-');
+      if(!st.tpl)st.tpl={};
+      if(_settingSelCat==='free')delete st.tpl[day+'-'+slotId];
+      else st.tpl[day+'-'+slotId]=_settingSelCat;
+      save();renderSettings();render();
+    });
+  });
   setTimeout(()=>{const ed=document.getElementById('account-email-disp');if(ed&&currentUser)ed.textContent='ログイン中: '+currentUser.email;},100);
 }
 const slotListHTML=()=>st.slots.map(s=>`<div class="slot-edit-row"><input type="text" value="${s.name}" style="width:54px" onchange="updSlot(${s.id},'name',this.value)"><input type="time" value="${s.start}" style="width:92px" onchange="updSlot(${s.id},'start',this.value)"><span style="color:var(--text3)">〜</span><input type="time" value="${s.end}" style="width:92px" onchange="updSlot(${s.id},'end',this.value)"><button class="btn btn-g btn-sm" style="color:#C0392B;flex-shrink:0" onclick="rmSlot(${s.id})">削除</button></div>`).join('');
@@ -1253,7 +1307,7 @@ window.openBulkDecideSheet=function(){};
 // ══ 時間割スキャン（Gemini API）══
 async function scanTimetable(input){
   const file=input.files[0];if(!file)return;
-  const statusEl=document.getElementById('scan-status');
+  const statusEl=document.getElementById('scan-status')||document.getElementById('set-scan-status');
   if(statusEl)statusEl.textContent='読み取り中...';
   showToast('時間割を解析中...');
   try{
