@@ -349,7 +349,7 @@ input:focus{border-color:var(--accent);}
     <button class="today-btn" onclick="goToday()">今日</button>
   </div>
   <div class="topbar-right">
-    <button class="vm-btn on" id="vm-toggle-btn" onclick="toggleVM()" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surf);font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'Inter','Noto Sans JP',sans-serif;">月で見る</button>
+    <button class="vm-btn on" id="vm-toggle-btn" onclick="toggleVM()" style="padding:5px 9px;border-radius:20px;border:1px solid var(--border);background:var(--surf);font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'Inter','Noto Sans JP',sans-serif;white-space:nowrap;flex-shrink:0;">月表示</button>
     <button class="btn btn-g btn-sm" id="share-btn" onclick="openOv('ov-share')" style="padding:5px 10px;font-size:11px;display:flex;align-items:center;gap:4px"><svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</button>
     <div class="av" id="tb-av" onclick="openUserModal()"></div>
   </div>
@@ -485,7 +485,7 @@ const goToday=()=>{offset=0;render();};
 function toggleVM(){
   vm=vm==='week'?'month':'week';
   const btn=document.getElementById('vm-toggle-btn');
-  if(btn)btn.textContent=vm==='week'?'月で見る':'週で見る';
+  if(btn)btn.textContent=vm==='week'?'月表示':'週表示';
   showPanel('cal');
 }
 
