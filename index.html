@@ -309,6 +309,21 @@ input:focus{border-color:var(--accent);}
   </div>
 </div>
 
+<!-- ════ 時間割スキャン シート ════ -->
+<div class="sh-ov" id="scan-ov" onclick="closeScanSheet()"></div>
+<div class="sheet" id="scan-sh" style="max-height:94vh;">
+  <div class="sh-handle"></div>
+  <div class="sh-head" style="display:flex;align-items:center;justify-content:space-between;">
+    <div class="sh-title" id="scan-sh-title">時間割スキャン</div>
+    <button onclick="closeScanSheet()" style="background:none;border:none;font-size:18px;color:var(--text3);padding:4px 8px;cursor:pointer;">✕</button>
+  </div>
+  <div class="sh-scroll" id="scan-sh-body" style="padding:16px;">
+    <!-- JS で差し替え -->
+  </div>
+</div>
+<!-- 非表示のファイル入力 -->
+<input type="file" id="scan-file-input" accept="image/*" style="display:none" onchange="onScanFileSelected(event)">
+
 <!-- ════ MODALS ════ -->
 <div class="ov" id="ov-share">
   <div class="modal">
@@ -961,7 +976,7 @@ function renderSettings(){
   document.getElementById('view-settings').innerHTML=`
     <h2 class="scr-title">設定</h2>
     <div class="scard"><div class="scard-head">練習候補を探す曜日</div><div class="scard-body"><p style="font-size:12px;color:var(--text2);margin-bottom:10px">オンの曜日だけ練習候補に表示されます。タップで切り替え。</p><div class="day-pills">${DAYS.map(d=>`<div class="dpill${st.days.includes(d)?' on':''}" onclick="toggleDay('${d}',this)">${d}</div>`).join('')}</div></div></div>
-    <div class="scard"><div class="scard-head">時限設定 <button class="btn btn-g btn-sm" onclick="addSlot()">＋</button></div><div class="scard-body" id="slot-list">${slotListHTML()}</div></div>
+    <div class="scard"><div class="scard-head">時限設定 <div style="display:flex;gap:6px"><button class="btn btn-g btn-sm" onclick="openScanSheet()" style="background:var(--accent);color:#fff;border-color:var(--accent)">📷 スキャン</button><button class="btn btn-g btn-sm" onclick="addSlot()">＋</button></div></div><div class="scard-body" id="slot-list">${slotListHTML()}</div></div>
     <div class="scard"><div class="scard-head">入力の種類 <button class="btn btn-g btn-sm" onclick="addCat()">＋</button></div><div class="scard-body">${catRows}<p style="font-size:10px;color:var(--text3);margin-top:2px">※削除するとその予定は空きに戻ります</p></div></div>
     <div class="scard">
       <div class="scard-head">毎週入る予定</div>
@@ -1277,6 +1292,325 @@ async function execDecidePractice(){
 async function execCancelPractice(){
   if(!_practiceCtx)return;const {grpId,date,slotId,existingId}=_practiceCtx;closeSh('practice');
   try{await sbClient.from('practice_slots').delete().eq('id',existingId);const key=BK(date,slotId);if(st.blocks[key]==='practice')delete st.blocks[key];save();showToast('練習コマを取り消しました');await pullGroupDataFor(grpId);renderFind();renderWeek();}catch(e){showToast('エラー: '+e.message);}
+}
+
+
+// ══ 時間割スキャン ══
+const _GEMINI_KEY = 'AIzaSyCTXiSyyrdBEerLfebDyg9AakkmmXLik0g';
+let _scanResult = null; // { slots: [{id,name,start,end}], tpl: {'月-1': true, ...} }
+
+function openScanSheet() {
+  _scanResult = null;
+  setScanBody('select');
+  document.getElementById('scan-ov').classList.add('open');
+  document.getElementById('scan-sh').classList.add('open');
+}
+
+function closeScanSheet() {
+  document.getElementById('scan-ov').classList.remove('open');
+  document.getElementById('scan-sh').classList.remove('open');
+  _scanResult = null;
+}
+
+// シート内コンテンツを状態ごとに切り替える
+function setScanBody(state, data) {
+  const body = document.getElementById('scan-sh-body');
+  const title = document.getElementById('scan-sh-title');
+
+  if (state === 'select') {
+    title.textContent = '時間割スキャン';
+    body.innerHTML = `
+      <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px">
+        時間割アプリのスクリーンショットを選んでください。<br>
+        <span style="font-size:11px;color:var(--text3)">「すごい時間割」などに対応しています。時限の時間と授業コマを自動で読み取ります。</span>
+      </p>
+      <button class="btn btn-p btn-block" style="margin-bottom:12px;padding:16px;font-size:15px;" onclick="document.getElementById('scan-file-input').click()">
+        📷 画像を選ぶ
+      </button>
+      <button class="btn btn-g btn-block" onclick="closeScanSheet()">キャンセル</button>
+    `;
+  }
+
+  else if (state === 'loading') {
+    title.textContent = '読み取り中...';
+    body.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 0;gap:16px">
+        <div style="width:40px;height:40px;border:3px solid var(--accent-l);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite"></div>
+        <div style="font-size:13px;color:var(--text2)" id="scan-loading-msg">画像を解析しています...</div>
+      </div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+    `;
+  }
+
+  else if (state === 'confirm') {
+    title.textContent = 'スキャン結果を確認';
+    const res = data; // { slots:[{id,name,start,end}], tpl:{key:true} }
+
+    // 時限リスト
+    let slotsHTML = '';
+    res.slots.forEach((s, i) => {
+      slotsHTML += `
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">
+          <div style="width:32px;font-size:12px;font-weight:600;color:var(--text2);flex-shrink:0">${s.name}</div>
+          <input type="time" value="${s.start}" id="scan-s-${i}-start"
+            style="flex:1;padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:#fff;color:#0D0D10;outline:none;"
+            onchange="updateScanSlot(${i},'start',this.value)">
+          <span style="color:var(--text3);font-size:12px">〜</span>
+          <input type="time" value="${s.end}" id="scan-s-${i}-end"
+            style="flex:1;padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:#fff;color:#0D0D10;outline:none;"
+            onchange="updateScanSlot(${i},'end',this.value)">
+        </div>`;
+    });
+
+    // 授業コマグリッド
+    const classCat = (typeof ct === 'function' ? ct('class') : null) || {bg:'#EEF1FA', fg:'#2C4BA0'};
+    let gridHTML = `<div style="display:grid;grid-template-columns:auto repeat(7,1fr);gap:2px;margin-top:4px">`;
+    gridHTML += `<div></div>`;
+    DAYS.forEach(d => {
+      gridHTML += `<div style="text-align:center;font-size:10px;font-weight:700;color:var(--text3);padding:3px 0">${d}</div>`;
+    });
+    res.slots.forEach((s, si) => {
+      gridHTML += `<div style="font-size:9px;font-weight:600;color:var(--text2);display:flex;align-items:center;justify-content:flex-end;padding-right:4px">${s.name}</div>`;
+      DAYS.forEach(d => {
+        const key = d + '-' + s.id;
+        const on = !!(res.tpl[key]);
+        gridHTML += `<div
+          onclick="toggleScanTpl('${d}',${si})"
+          id="scan-cell-${d}-${si}"
+          style="height:32px;border-radius:5px;border:1.5px solid ${on ? classCat.fg : '#E2DDD6'};background:${on ? classCat.bg : '#F8F8FA'};display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;font-weight:700;color:${on ? classCat.fg : 'transparent'};transition:all .1s">
+          授
+        </div>`;
+      });
+    });
+    gridHTML += `</div>`;
+
+    body.innerHTML = `
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">時限の時間</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px">読み取り結果を確認・修正してください</div>
+        ${slotsHTML}
+      </div>
+      <div style="margin-bottom:20px">
+        <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">授業コマ（タップで切り替え）</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px">色のついたコマが毎週の授業として登録されます</div>
+        ${gridHTML}
+      </div>
+      <div style="background:var(--accent-l);border:1px solid rgba(91,91,246,.2);border-radius:12px;padding:12px;margin-bottom:16px;font-size:12px;color:var(--accent);line-height:1.6">
+        ⚠️ 適用すると現在の時限設定と毎週の授業テンプレートが上書きされます
+      </div>
+      <button class="btn btn-p btn-block" style="margin-bottom:8px;padding:14px;font-size:14px" onclick="applyScanResult()">この内容で適用する</button>
+      <button class="btn btn-g btn-block" style="margin-bottom:8px" onclick="setScanBody('select')">撮り直す</button>
+      <button class="btn btn-g btn-block" onclick="closeScanSheet()">キャンセル</button>
+    `;
+  }
+
+  else if (state === 'done') {
+    title.textContent = '適用完了';
+    body.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;padding:40px 0;gap:16px">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:28px">✓</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text)">反映しました</div>
+        <div style="font-size:13px;color:var(--text2);text-align:center;line-height:1.6">${data.slotsCount}個の時限と<br>${data.tplCount}コマの授業を設定しました</div>
+      </div>
+      <button class="btn btn-p btn-block" style="padding:14px;font-size:14px" onclick="closeScanSheet();renderSettings();">設定画面に戻る</button>
+    `;
+  }
+
+  else if (state === 'error') {
+    title.textContent = 'エラー';
+    body.innerHTML = `
+      <div style="padding:24px 0;text-align:center">
+        <div style="font-size:36px;margin-bottom:12px">⚠️</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">読み取りに失敗しました</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:24px">${data.msg}</div>
+      </div>
+      <button class="btn btn-p btn-block" style="margin-bottom:8px" onclick="setScanBody('select')">もう一度試す</button>
+      <button class="btn btn-g btn-block" onclick="closeScanSheet()">キャンセル</button>
+    `;
+  }
+}
+
+// confirmステートでのtpl切り替え
+function toggleScanTpl(day, slotIndex) {
+  if (!_scanResult) return;
+  const s = _scanResult.slots[slotIndex];
+  if (!s) return;
+  const key = day + '-' + s.id;
+  if (_scanResult.tpl[key]) {
+    delete _scanResult.tpl[key];
+  } else {
+    _scanResult.tpl[key] = true;
+  }
+  // セルの見た目だけ更新（全再描画しない）
+  const classCat = (typeof ct === 'function' ? ct('class') : null) || {bg:'#EEF1FA', fg:'#2C4BA0'};
+  const cell = document.getElementById('scan-cell-' + day + '-' + slotIndex);
+  if (cell) {
+    const on = !!_scanResult.tpl[key];
+    cell.style.border = '1.5px solid ' + (on ? classCat.fg : '#E2DDD6');
+    cell.style.background = on ? classCat.bg : '#F8F8FA';
+    cell.style.color = on ? classCat.fg : 'transparent';
+  }
+}
+
+// confirmステートでの時限時間更新
+function updateScanSlot(slotIndex, field, value) {
+  if (!_scanResult) return;
+  if (_scanResult.slots[slotIndex]) {
+    _scanResult.slots[slotIndex][field] = value;
+  }
+}
+
+// ファイル選択後にGeminiへ送信
+async function onScanFileSelected(event) {
+  const file = event.target.files[0];
+  // inputをリセット（同じファイルを再選択できるように）
+  event.target.value = '';
+  if (!file) return;
+
+  setScanBody('loading');
+
+  try {
+    // base64変換
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = () => reject(new Error('ファイルの読み込みに失敗しました'));
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('scan-loading-msg').textContent = 'AIが時間割を解析しています...';
+
+    const prompt = `You are analyzing a Japanese university timetable screenshot.
+Extract the following information and return ONLY a JSON object. No markdown, no explanation, no code block.
+
+The JSON must have exactly this structure:
+{
+  "slots": [
+    {"period": 1, "start": "HH:MM", "end": "HH:MM"},
+    {"period": 2, "start": "HH:MM", "end": "HH:MM"}
+  ],
+  "classes": [
+    {"period": 1, "day": "月"},
+    {"period": 1, "day": "火"}
+  ]
+}
+
+Rules:
+- "slots": list of time periods visible in the timetable. "period" is integer (1,2,3...). "start" and "end" are 24h format "HH:MM".
+- "classes": list of cells that have a class/subject scheduled. "period" is integer matching slots. "day" must be one of: 月,火,水,木,金,土,日
+- If a time period's exact times are not visible, estimate based on common Japanese university schedules.
+- Return ONLY the JSON. No other text.`;
+
+    const response = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + _GEMINI_KEY,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { inline_data: { mime_type: file.type || 'image/jpeg', data: base64 } },
+              { text: prompt }
+            ]
+          }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 1024 }
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error('API error: ' + response.status);
+    }
+
+    const apiData = await response.json();
+    const rawText = apiData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    // JSON部分だけ抽出（```json ... ``` が混入してもOK）
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('JSONを取得できませんでした。別の画像をお試しください。');
+
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch (e) {
+      throw new Error('結果の解析に失敗しました。別の画像をお試しください。');
+    }
+
+    if (!parsed.slots || !Array.isArray(parsed.slots) || parsed.slots.length === 0) {
+      throw new Error('時限情報を読み取れませんでした。時限の時間が見えている画像をお試しください。');
+    }
+
+    // 内部データに変換
+    // slotsは既存st.slotsのIDを保持しつつ、読み取った時間を反映
+    const existingSlots = st.slots;
+    const newSlots = parsed.slots.map(s => {
+      const period = s.period;
+      // 既存の同じ番号の時限があれば id を引き継ぐ
+      const existing = existingSlots.find(e => {
+        const num = parseInt(e.name.replace(/[^0-9]/g, ''), 10);
+        return num === period;
+      });
+      return {
+        id: existing ? existing.id : (Math.max(...existingSlots.map(e => e.id), 0) + period),
+        name: period + '限',
+        start: s.start || '09:00',
+        end: s.end || '10:40'
+      };
+    });
+
+    // tpl変換
+    const newTpl = {};
+    if (parsed.classes && Array.isArray(parsed.classes)) {
+      parsed.classes.forEach(c => {
+        const slot = newSlots.find(s => {
+          const num = parseInt(s.name.replace(/[^0-9]/g, ''), 10);
+          return num === c.period;
+        });
+        if (slot && DAYS.includes(c.day)) {
+          newTpl[c.day + '-' + slot.id] = true;
+        }
+      });
+    }
+
+    _scanResult = { slots: newSlots, tpl: newTpl };
+    setScanBody('confirm', _scanResult);
+
+  } catch (e) {
+    setScanBody('error', { msg: e.message || '不明なエラーが発生しました' });
+  }
+}
+
+// 適用
+function applyScanResult() {
+  if (!_scanResult) return;
+
+  // 時限を上書き（既存の「昼」など名前が数字でないものは残す）
+  const nonNumericSlots = st.slots.filter(s => !/^\d/.test(s.name));
+  st.slots = [..._scanResult.slots, ...nonNumericSlots];
+  // id重複を除去
+  const seenIds = new Set();
+  st.slots = st.slots.filter(s => { if (seenIds.has(s.id)) return false; seenIds.add(s.id); return true; });
+
+  // tpl: スキャン結果の値を'class'に変換してマージ
+  // 既存tplのうちスキャン対象の時限・全曜日に関するキーを削除してから上書き
+  const scanSlotIds = new Set(_scanResult.slots.map(s => s.id));
+  Object.keys(st.tpl || {}).forEach(k => {
+    const parts = k.split('-');
+    if (parts.length >= 2) {
+      const slotId = parseInt(parts[parts.length - 1], 10);
+      if (scanSlotIds.has(slotId)) delete st.tpl[k];
+    }
+  });
+  Object.keys(_scanResult.tpl).forEach(k => {
+    if (_scanResult.tpl[k]) st.tpl[k] = 'class';
+  });
+
+  const tplCount = Object.keys(_scanResult.tpl).filter(k => _scanResult.tpl[k]).length;
+  const slotsCount = _scanResult.slots.length;
+
+  save();
+  setScanBody('done', { slotsCount, tplCount });
 }
 
 window.toggleFindSel=function(){};
