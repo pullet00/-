@@ -993,6 +993,7 @@ function renderSettings(){
       <button class="btn btn-block" onclick="doSignOut()" style="background:#F4F4F6;color:#0D0D10;border:1.5px solid #E4E4E8;margin-bottom:8px">別のアカウントに切り替える</button>
       <div style="font-size:11px;color:#9898AA">ログアウトするとこのデバイスのデータはクラウドに保存されます。次回ログイン時に復元されます。</div>
     </div></div>
+    <div class="scard"><div class="scard-head">Gemini APIキー（時間割スキャン用）</div><div class="scard-body"><p style="font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.6">時間割スキャン機能に必要です。<a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--accent)">Google AI Studio</a>で取得できます。</p><div style="display:flex;gap:8px;align-items:center"><input type="password" id="gemini-key-input" placeholder="AIzaSy..." value="${localStorage.getItem('gemini_api_key')||''}" style="flex:1;padding:10px 12px;font-size:14px;border:1.5px solid var(--border);border-radius:10px;background:#fff;color:#0D0D10;outline:none;" oninput="const sb=document.getElementById('gemini-key-save-btn');sb.style.background=this.value?'var(--accent)':'#E4E4E8';sb.style.color=this.value?'#fff':'#9898AA'"><button id="gemini-key-save-btn" onclick="saveGeminiKey()" style="padding:10px 16px;border-radius:10px;border:none;background:#E4E4E8;color:#9898AA;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;flex-shrink:0;transition:all .2s">保存</button></div><p id="gemini-key-status" style="font-size:11px;margin-top:6px;color:var(--text3)">${localStorage.getItem('gemini_api_key')?'✅ 設定済み':'未設定'}</p></div></div>
     <button class="btn btn-d btn-block" onclick="confirmReset()">🗑 全データをリセット</button>
     <div style="height:24px"></div>`;
   setTimeout(()=>{const ed=document.getElementById('account-email-disp');if(ed&&currentUser)ed.textContent='ログイン中: '+currentUser.email;},100);
@@ -1032,6 +1033,19 @@ const updCat=(cid,v)=>{const c=st.cats.find(x=>x.id===cid);if(c){c.name=v;save()
 const rmCat=cid=>{if(!confirm('削除しますか？'))return;Object.keys(st.blocks).forEach(k=>{if(st.blocks[k]===cid)delete st.blocks[k];});Object.keys(st.tpl||{}).forEach(k=>{if(st.tpl[k]===cid)delete st.tpl[k];});st.cats=st.cats.filter(c=>c.id!==cid);save();renderSettings();};
 const addCat=()=>{const p=CP[st.cats.length%CP.length];st.cats.push({id:'c'+(st.ncid++),name:'新しい種類',bg:p.bg,fg:p.fg});save();renderSettings();};
 const confirmReset=()=>{if(!confirm('全データをリセットしますか？'))return;localStorage.removeItem('hrm7');location.reload();};
+function saveGeminiKey(){
+  const inp=document.getElementById('gemini-key-input');
+  if(!inp)return;
+  const key=inp.value.trim();
+  if(key){
+    localStorage.setItem('gemini_api_key',key);
+    showToast('APIキーを保存しました');
+  } else {
+    localStorage.removeItem('gemini_api_key');
+    showToast('APIキーを削除しました');
+  }
+  renderSettings();
+}
 
 // ══ USER / SHARE ══
 const openOv=id=>document.getElementById(id).classList.add('open');
@@ -1296,10 +1310,14 @@ async function execCancelPractice(){
 
 
 // ══ 時間割スキャン ══
-const _GEMINI_KEY = 'AIzaSyCTXiSyyrdBEerLfebDyg9AakkmmXLik0g';
+const _GEMINI_KEY = () => localStorage.getItem('gemini_api_key') || '';
 let _scanResult = null; // { slots: [{id,name,start,end}], tpl: {'月-1': true, ...} }
 
 function openScanSheet() {
+  if (!_GEMINI_KEY()) {
+    showToast("設定画面でGemini APIキーを入力してください");
+    return;
+  }
   _scanResult = null;
   setScanBody('select');
   document.getElementById('scan-ov').classList.add('open');
@@ -1502,7 +1520,7 @@ Rules:
 - Return ONLY the JSON. No other text.`;
 
     const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + _GEMINI_KEY,
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + _GEMINI_KEY(),
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
