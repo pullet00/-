@@ -453,6 +453,7 @@ const defSt=()=>({me:{name:'自分',part:'',color:'green',code:gc()},slots:[{id:
 let st;
 try{st=JSON.parse(localStorage.getItem('hrm7')||'null')||defSt();}catch(e){st=defSt();}
 ['me','slots','days','cats','blocks','tpl','members'].forEach(k=>{if(!st[k])st[k]=defSt()[k];});
+if(st.tpl)Object.keys(st.tpl).forEach(k=>{if(st.tpl[k]===true)st.tpl[k]='class';});
 if(!st.me.code)st.me.code=gc();
 if(!st.nid)st.nid=1;if(!st.ncid)st.ncid=10;if(!st.minM)st.minM=5;
 const ct=id=>st.cats.find(c=>c.id===id)||null;
@@ -1121,6 +1122,8 @@ async function onLoginSuccess(user){
     if(!error&&rows&&rows.data){
       const saved=rows.data;const savedSt=saved.st||saved;const fresh=defSt();
       st={me:savedSt.me||fresh.me,slots:savedSt.slots||fresh.slots,days:savedSt.days||fresh.days,cats:savedSt.cats||fresh.cats,blocks:savedSt.blocks||{},tpl:savedSt.tpl||{},members:savedSt.members||[],nid:savedSt.nid||1,ncid:savedSt.ncid||10,minM:savedSt.minM||5,boarded:savedSt.boarded||false};
+      // マイグレーション: tplのtrue（旧形式）を'class'に変換
+      Object.keys(st.tpl).forEach(k=>{if(st.tpl[k]===true)st.tpl[k]='class';});
       if(saved.myGroups&&saved.myGroups.length>0){myGroups=saved.myGroups;activeGrpId=saved.activeGrpId||myGroups[0]?.id||null;localStorage.setItem('hrm_groups',JSON.stringify(myGroups));localStorage.setItem('hrm_active_grp',activeGrpId||'');}
       try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
     }
