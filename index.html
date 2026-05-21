@@ -106,7 +106,6 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:#F4F4F6;color:#0D0
 .cdot.picked{border-color:#1C1A17;}
 .tpl-grid-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .tpl-cell{height:36px;border-radius:7px;border:1.5px solid #E2DDD6;background:#FFFFFF;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text3);transition:all .1s;}
-.tpl-cell.on{background:#EEF1FA;border-color:#2C4BA0;color:#2C4BA0;}
 .tpl-dlbl{font-size:11px;font-weight:600;color:var(--text2);display:flex;align-items:center;justify-content:center;}
 .tpl-slbl{font-size:9px;color:var(--text3);display:flex;align-items:center;justify-content:flex-end;padding-right:4px;}
 input[type="text"],input[type="time"],input[type="number"]{padding:9px 11px;border:1.5px solid #E2DDD6;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;background:#FFFFFF;color:#1C1A17;outline:none;}
@@ -295,6 +294,21 @@ input:focus{border-color:var(--accent);}
   <div class="sh-scroll" id="ddp-body"></div>
 </div>
 
+<!-- グループパート設定シート -->
+<div class="sh-ov" id="grppart-ov" onclick="closeSh('grppart')"></div>
+<div class="sheet" id="grppart-sh">
+  <div class="sh-handle"></div>
+  <div class="sh-head"><div class="sh-title" id="grppart-title">このグループでのパート</div></div>
+  <div class="sh-scroll">
+    <div style="padding:16px">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6">このグループ（バンド）での自分のパートを設定します。グループごとに別々のパートを設定できます。</p>
+      <div id="grppart-selector"></div>
+      <button class="btn btn-p btn-block" style="margin-top:16px" onclick="saveGrpPart()">保存する</button>
+      <button class="btn btn-g btn-block" style="margin-top:8px" onclick="closeSh('grppart')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
 <!-- ════ MODALS ════ -->
 <div class="ov" id="ov-share">
   <div class="modal">
@@ -313,7 +327,7 @@ input:focus{border-color:var(--accent);}
     <div class="modal-head"><h3>自分の情報</h3><button class="btn btn-g btn-sm" onclick="closeOv('ov-user')">✕</button></div>
     <div class="modal-body">
       <div><label class="form-label">名前</label><input type="text" id="u-name" style="width:100%;padding:14px;font-size:16px;" oninput="markUserChanged()"></div>
-      <div><label class="form-label">パート</label><div id="u-part-selector" style="margin-top:4px"></div></div>
+      <div><label class="form-label">デフォルトパート</label><div id="u-part-selector" style="margin-top:4px"></div></div>
       <div><label class="form-label">カラー</label><div id="u-colors" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"></div></div>
     </div>
     <div class="modal-foot">
@@ -429,10 +443,12 @@ function getPartVal(idPrefix){
 // ══ DATA ══
 const AC=[{id:'green',bg:'#E4F0EB',fg:'#2B6351'},{id:'blue',bg:'#EEF1FA',fg:'#2C4BA0'},{id:'amber',bg:'#FEF3DC',fg:'#7A5010'},{id:'rose',bg:'#FCEAE8',fg:'#C0392B'},{id:'purple',bg:'#F2EEFB',fg:'#6B38B0'},{id:'teal',bg:'#E2F4F3',fg:'#1E7070'},{id:'slate',bg:'#EFECE6',fg:'#555048'}];
 const CP=[{bg:'#EEF1FA',fg:'#2C4BA0'},{bg:'#E4F0EB',fg:'#2B6351'},{bg:'#FEF3DC',fg:'#7A5010'},{bg:'#FCEAE8',fg:'#C0392B'},{bg:'#F2EEFB',fg:'#6B38B0'},{bg:'#E2F4F3',fg:'#1E7070'},{bg:'#FEF0E0',fg:'#8B4513'},{bg:'#FDE8F5',fg:'#9B2060'},{bg:'#E8F4FE',fg:'#0A5FA3'},{bg:'#F0F8E8',fg:'#3A6B0A'},{bg:'#FFF3E0',fg:'#E65100'},{bg:'#E8EAF6',fg:'#3949AB'},{bg:'#F3E5F5',fg:'#7B1FA2'},{bg:'#E0F2F1',fg:'#00695C'},{bg:'#EFEBE9',fg:'#4E342E'},{bg:'#F1F8E9',fg:'#558B2F'}];
+// ★変更③: DAYSを7日に（土日含む）
 const DAYS=['月','火','水','木','金','土','日'];
 const gc=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from({length:6},()=>c[~~(Math.random()*c.length)]).join('');};
 const defCats=()=>[{id:'class',name:'授業',bg:'#EEF1FA',fg:'#2C4BA0'},{id:'part',name:'他バンド',bg:'#E4F0EB',fg:'#2B6351'},{id:'work',name:'バイト',bg:'#FEF3DC',fg:'#7A5010'},{id:'ng',name:'参加不可',bg:'#FCEAE8',fg:'#C0392B'}];
-const defSt=()=>({me:{name:'自分',part:'',color:'green',code:gc()},slots:[{id:1,name:'1限',start:'09:00',end:'10:40'},{id:2,name:'2限',start:'10:50',end:'12:30'},{id:3,name:'昼',start:'12:30',end:'13:20'},{id:4,name:'3限',start:'13:20',end:'15:00'},{id:5,name:'4限',start:'15:10',end:'16:50'},{id:6,name:'5限',start:'17:00',end:'18:40'},{id:7,name:'6限',start:'18:50',end:'20:30'},{id:8,name:'7限',start:'20:30',end:'21:30'}],days:['月','火','水','木','金'],cats:defCats(),blocks:{},tpl:{},members:[],nid:1,ncid:10,minM:5,boarded:false});
+// ★変更③: daysのデフォルトを7曜日に変更
+const defSt=()=>({me:{name:'自分',part:'',color:'green',code:gc()},slots:[{id:1,name:'1限',start:'09:00',end:'10:40'},{id:2,name:'2限',start:'10:50',end:'12:30'},{id:3,name:'昼',start:'12:30',end:'13:20'},{id:4,name:'3限',start:'13:20',end:'15:00'},{id:5,name:'4限',start:'15:10',end:'16:50'},{id:6,name:'5限',start:'17:00',end:'18:40'},{id:7,name:'6限',start:'18:50',end:'20:30'},{id:8,name:'7限',start:'20:30',end:'21:30'}],days:['月','火','水','木','金','土','日'],cats:defCats(),blocks:{},tpl:{},members:[],nid:1,ncid:10,minM:5,boarded:false});
 
 let st;
 try{st=JSON.parse(localStorage.getItem('hrm7')||'null')||defSt();}catch(e){st=defSt();}
@@ -460,6 +476,7 @@ const BK=(ds,sid)=>ds+'|'+sid;
 // ══ NAV ══
 let offset=0,vm='week',selCells=new Set(),selMode=false;
 const getMon=off=>{const n=new Date(),d=n.getDay(),m=new Date(n);m.setDate(n.getDate()-d+(d===0?-6:1)+off*7);m.setHours(0,0,0,0);return m;};
+// ★ weekDates: 7日分（月〜日）
 const weekDates=()=>{const m=getMon(offset);return DAYS.map((_,i)=>{const d=new Date(m);d.setDate(m.getDate()+i);return d;});};
 const navPrev=()=>{offset--;render();};
 const navNext=()=>{offset++;render();};
@@ -515,12 +532,14 @@ function renderWeek(){
     gh+=`<div class="time-col"><div class="tc-name">${slot.name}</div><div class="tc-range">${slot.start}<br>${slot.end}</div></div>`;
     dates.forEach((d,i)=>{
       const ds=DS(d);const key=BK(ds,slot.id);const isSat=i===5,isSun=i===6;
-      const direct=st.blocks[key];const tplKey=DAYS[i]+'-'+slot.id;const hasTpl=!direct&&!!(st.tpl||{})[tplKey];
-      const effId=direct||(hasTpl?'class':null);const c=effId?ct(effId):null;
+      const direct=st.blocks[key];const tplKey=DAYS[i]+'-'+slot.id;
+      // ★変更①: tplCatId（文字列catId）として参照
+      const tplCatId=!direct?((st.tpl||{})[tplKey]||null):null;
+      const hasTpl=!!tplCatId;
+      const effId=direct||tplCatId;const c=effId?ct(effId):null;
       const isSel=selCells.has(key)&&selMode;const weekBg=isSat?'sat-bg':isSun?'sun-bg':'';const bg=c?c.fg:'transparent';
       const practiceGrps=myGroups.filter(g=>(g.practiceSlots||[]).find(p=>p.date===ds&&p.slot_id==slot.id));
       const isPractice=practiceGrps.length>0;
-      // 欠けメンバーを計算（練習決定済みグループで自分が参加できないか）
       let absentNames=[];
       if(isPractice){
         practiceGrps.forEach(pg=>{
@@ -598,10 +617,12 @@ function renderMonth(){
     for(let d=0;d<7;d++){
       const cur=new Date(start);cur.setDate(start.getDate()+w*7+d);const dStr=DS(cur);const isM=cur.getMonth()===mo;const isT=dStr===todayStr;const dn=DAYS[d];
       const pips=st.slots.map(s=>{
-        const did=st.blocks[BK(dStr,s.id)];const tpl=(st.tpl||{})[dn+'-'+s.id];
+        const did=st.blocks[BK(dStr,s.id)];
+        // ★変更①: tpl参照を tplCatId で
+        const tplCatId=(st.tpl||{})[dn+'-'+s.id]||null;
         const pracGrp=myGroups.find(g=>(g.practiceSlots||[]).find(p=>p.date===dStr&&p.slot_id==s.id));
         if(pracGrp)return`<div class="mpip" style="background:#EDE9FE;color:#5B21B6;font-weight:700">練</div>`;
-        const cid=did||(tpl?'class':null);const cv=cid?ct(cid):null;if(!cv)return'';
+        const cid=did||tplCatId;const cv=cid?ct(cid):null;if(!cv)return'';
         return`<div class="mpip" style="background:${cv.bg};color:${cv.fg};${!did?'opacity:.6':''}">${s.name.replace(/限$/,'')}</div>`;
       }).filter(Boolean).join('');
       html+=`<div class="m-cell${!isM?' other':''}${isT?' is-today':''}" onclick="monthTap('${dStr}','${dn}')"><div class="m-date${isT?' today-d':''}">${cur.getDate()}</div>${pips?`<div class="m-pips">${pips}</div>`:''}</div>`;
@@ -613,12 +634,15 @@ function renderMonth(){
 function monthTap(dStr,dn){
   const d=new Date(dStr);document.getElementById('ddp-title').textContent=`${d.getMonth()+1}/${d.getDate()}（${dn}）`;
   document.getElementById('ddp-body').innerHTML=st.slots.map(slot=>{
-    const key=BK(dStr,slot.id);const did=st.blocks[key];const tpl=(st.tpl||{})[dn+'-'+slot.id];const cid=did||(tpl?'class':null);const c=cid?ct(cid):null;
+    const key=BK(dStr,slot.id);const did=st.blocks[key];
+    // ★変更①: tplCatId参照
+    const tplCatId=(st.tpl||{})[dn+'-'+slot.id]||null;
+    const cid=did||tplCatId;const c=cid?ct(cid):null;
     const bg=c?c.bg:'var(--surf2)';const fg=c?c.fg:'var(--text2)';
-    return`<div class="ddp-row" style="background:${bg};${!did&&tpl?'opacity:.75':''}" onclick="ddpTap('${dStr}','${dn}',${slot.id},'${slot.name}')">
+    return`<div class="ddp-row" style="background:${bg};${!did&&tplCatId?'opacity:.75':''}" onclick="ddpTap('${dStr}','${dn}',${slot.id},'${slot.name}')">
       <div class="ddp-bar" style="background:${fg}"></div>
       <div class="ddp-time"><div class="ddp-tn" style="color:${fg}">${slot.name}</div><div class="ddp-tr">${slot.start}–${slot.end}</div></div>
-      <div class="ddp-cat"><div class="ddp-cn" style="color:${fg}">${c?c.name:'空き'}</div>${!did&&tpl?`<div class="ddp-ch">授業テンプレート</div>`:''}</div>
+      <div class="ddp-cat"><div class="ddp-cn" style="color:${fg}">${c?c.name:'空き'}</div>${!did&&tplCatId?`<div class="ddp-ch">毎週の予定テンプレート</div>`:''}</div>
       <div class="ddp-arr" style="color:${fg}">›</div>
     </div>`;
   }).join('');
@@ -671,14 +695,14 @@ function renderFind(){
 
   // ── カレンダーグリッド（パート表示）──
   if(activeGrp){
-    const allMembers=[{name:st.me.name,part:st.me.part||'',color:st.me.color,blocks:st.blocks,tpl:st.tpl,isMe:true},...grpMembers];
+    // ★変更②: 自分のこのグループでのパートを使う（grpPartあれば優先）
+    const myGrpPart=activeGrp.myPart||st.me.part||'';
+    const allMembers=[{name:st.me.name,part:myGrpPart,color:st.me.color,blocks:st.blocks,tpl:st.tpl,isMe:true},...grpMembers];
     const total=allMembers.length;
 
-    // 期間設定：グループのstartDate〜endDateの全日付（設定なければ今週から4週間）
     function getPeriodDates(grp){
       const start=grp.startDate?new Date(grp.startDate):getMon(0);
       const end=grp.endDate?new Date(grp.endDate):new Date(getMon(0).getTime()+27*24*60*60*1000);
-      // startを含む週の月曜から
       const day=start.getDay();const mon=new Date(start);mon.setDate(start.getDate()-(day===0?6:day-1));mon.setHours(0,0,0,0);
       const dates=[];
       for(let d=new Date(mon);d<=end;d.setDate(d.getDate()+1)){
@@ -688,9 +712,6 @@ function renderFind(){
     }
     const allPeriodDates=getPeriodDates(activeGrp);
 
-    // 週ナビゲーション：期間内の週を選択
-    if(!activeGrp._findWeekOffset) activeGrp._findWeekOffset=0;
-    // 期間内の週一覧を作成
     function getWeeksInPeriod(grp){
       const start=grp.startDate?new Date(grp.startDate):getMon(0);
       const end=grp.endDate?new Date(grp.endDate):new Date(getMon(0).getTime()+27*24*60*60*1000);
@@ -700,15 +721,16 @@ function renderFind(){
       return weeks;
     }
     const weeksInPeriod=getWeeksInPeriod(activeGrp);
-    // weeksInPeriodが空の場合は今週を使う
     if(weeksInPeriod.length===0)weeksInPeriod.push(getMon(0));
     const wOff=Math.max(0,Math.min(activeGrp._findWeekOffset||0,weeksInPeriod.length-1));
     activeGrp._findWeekOffset=wOff;
     const currentWeekMon=weeksInPeriod[wOff]||getMon(0);
-    const visDays=DAYS.map((_,i)=>{const d=new Date(currentWeekMon);d.setDate(currentWeekMon.getDate()+i);return d;}).filter((_,i)=>st.days.includes(DAYS[i]));
-    const visDayNames=visDays.map(d=>DAYS[d.getDay()===0?6:d.getDay()-1]);
 
-    // 週ナビ
+    // ★変更③: st.daysに土日も含まれる前提で7日分を表示（st.daysでフィルタ）
+    const visDays=DAYS.map((_,i)=>{const d=new Date(currentWeekMon);d.setDate(currentWeekMon.getDate()+i);return d;}).filter((_,i)=>st.days.includes(DAYS[i]));
+    const visDayIndices=DAYS.map((_,i)=>i).filter(i=>st.days.includes(DAYS[i]));
+    const visDayNames=visDayIndices.map(i=>DAYS[i]);
+
     const weekLabel=`${currentWeekMon.getMonth()+1}/${currentWeekMon.getDate()}〜`;
     h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
       <a href="javascript:void(0)" onclick="if(myGroups.find(g=>g.id==='${activeGrpId}'))myGroups.find(g=>g.id==='${activeGrpId}')._findWeekOffset=Math.max(0,${wOff}-1);renderFind();" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:${wOff>0?'var(--surf)':'var(--surf2)'};display:flex;align-items:center;justify-content:center;font-size:16px;color:${wOff>0?'var(--text2)':'var(--text3)'};text-decoration:none;">‹</a>
@@ -718,15 +740,18 @@ function renderFind(){
 
     h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:8px">空きコマをタップして練習を決定できます</div>`;
     h+=`<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px">`;
-    h+=`<div style="display:grid;grid-template-columns:40px repeat(${visDays.length},1fr);gap:2px;min-width:280px">`;
+    h+=`<div style="display:grid;grid-template-columns:40px repeat(${visDays.length},1fr);gap:2px;min-width:${Math.max(280,visDays.length*56+40)}px">`;
 
     // ヘッダー
     h+=`<div></div>`;
     visDays.forEach((d,i)=>{
-      const ds=DS(d);const isToday=ds===DS(new Date());
+      const ds=DS(d);const isToday=ds===DS(new Date());const dayIdx=visDayIndices[i];
+      const isSat=dayIdx===5,isSun=dayIdx===6;
+      const nameColor=isSat?'var(--sat)':isSun?'var(--sun)':'var(--text3)';
+      const numStyle=isToday?'background:var(--accent);color:#fff;':(isSat?'color:var(--sat);':isSun?'color:var(--sun);':'color:var(--text2);');
       h+=`<div style="text-align:center;padding:4px 2px">
-        <div style="font-size:9px;font-weight:700;color:var(--text3)">${visDayNames[i]}</div>
-        <div style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin:2px auto 0;${isToday?'background:var(--accent);color:#fff;':'color:var(--text2);'}">${d.getDate()}</div>
+        <div style="font-size:9px;font-weight:700;color:${nameColor}">${visDayNames[i]}</div>
+        <div style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin:2px auto 0;${numStyle}">${d.getDate()}</div>
       </div>`;
     });
 
@@ -753,10 +778,7 @@ function renderFind(){
         else if(allOk){bg2='#EEFBF0';bd2='1.5px solid #90C8AD';tc2='#2B6351';}
         else if(someOk){bg2='#FFFBE6';bd2='1px solid #E8C86A';tc2='#7A5010';}
 
-        const clickFn=decided
-          ?'openChangePracticeSheet("'+activeGrpId+'","'+decided.id+'","'+ds+'",'+slot.id+')'
-          :(ac>0?'openDecidePracticeSheet("'+activeGrpId+'","'+ds+'",'+slot.id+')':'');
-
+        // ★変更②: グループメンバーのパート（grpPart or part）を表示
         const partLines=availM.slice(0,3).map(m=>{
           const pLabel=m.part?m.part:m.name.slice(0,2);
           return'<div style="font-size:7px;font-weight:700;color:'+tc2+';line-height:1.3;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 1px">'+pLabel+'</div>';
@@ -765,7 +787,7 @@ function renderFind(){
         const cellDataAttrs = decided
           ? 'data-cell-action="change" data-cell-grp="'+activeGrpId+'" data-cell-date="'+ds+'" data-cell-slot="'+slot.id+'" data-cell-psid="'+decided.id+'"'
           : (ac>0 ? 'data-cell-action="decide" data-cell-grp="'+activeGrpId+'" data-cell-date="'+ds+'" data-cell-slot="'+slot.id+'"' : '');
-        h+=`<a href="javascript:void(0)" ${cellDataAttrs} style="min-height:58px;border-radius:8px;border:${bd2};background:${bg2};display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 2px;text-decoration:none;cursor:${clickFn?'pointer':'default'}">`;
+        h+=`<a href="javascript:void(0)" ${cellDataAttrs} style="min-height:58px;border-radius:8px;border:${bd2};background:${bg2};display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 2px;text-decoration:none;cursor:${(decided||ac>0)?'pointer':'default'}">`;
         if(decided){h+=`<div style="font-size:7px;font-weight:700;color:#5B21B6;text-align:center">決定済</div>`;}
         else if(ac===0){h+=`<div style="font-size:10px;color:var(--text3)">−</div>`;}
         else{
@@ -796,11 +818,15 @@ function renderBand(){
   let html=`<h2 class="scr-title">グループ</h2>`;
   if(myGroups.length>0){
     myGroups.forEach(g=>{
-      const all=[{id:0,name:st.me.name,part:st.me.part,color:st.me.color,blocks:st.blocks,isMe:true},...(g.members||[])];
+      const all=[{id:0,name:st.me.name,part:g.myPart||st.me.part,color:st.me.color,blocks:st.blocks,isMe:true},...(g.members||[])];
       const isActive=activeGrpId===g.id;
       const avatars=all.map(m=>{const col=AC.find(x=>x.id===m.color)||AC[0];return`<div style="width:28px;height:28px;border-radius:50%;background:${col.bg};color:${col.fg};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-right:2px;border:2px solid #fff">${m.name.slice(0,1)}</div>`;}).join('');
       const ps2=g.practiceSlots||[];
       const psHTML2=ps2.length?ps2.slice(0,3).map(p=>{const slot=st.slots.find(s=>s.id==p.slot_id);const dt=new Date(p.decided_at);const dtStr=`${dt.getMonth()+1}/${dt.getDate()} ${dt.getHours()}:${String(dt.getMinutes()).padStart(2,'0')}`;return`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#EDE9FE;border-radius:9px;margin-bottom:4px"><div style="color:#6D28D9;font-size:13px;font-weight:600">${p.date} ${slot?.name||''}</div><div style="margin-left:auto;font-size:10px;color:#8B5CF6">${p.decided_by}が${dtStr}に決定</div><button onclick="cancelPracticeSlot('${g.id}','${p.id}','${p.date}',${p.slot_id})" style="font-size:10px;color:#C0392B;border:none;background:none;cursor:pointer;padding:2px 4px">✕</button></div>`;}).join(''):'<div style="font-size:12px;color:var(--text3);padding:4px 0">まだ練習コマが決まっていません</div>';
+
+      // ★変更②: 自分のこのグループでのパート表示
+      const myGrpPart=g.myPart||st.me.part||'未設定';
+
       html+=`<div style="background:var(--surf);border:1px solid ${isActive?'var(--accent)':'var(--border)'};border-radius:16px;margin-bottom:12px;overflow:hidden;${isActive?'box-shadow:0 0 0 3px var(--accent-l)':''}">
         <div style="padding:13px 14px;border-bottom:1px solid var(--border)">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
@@ -818,7 +844,13 @@ function renderBand(){
           </div>
         </div>
         <div style="padding:10px 14px;border-bottom:1px solid var(--border)">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:6px">${all.length}人参加中</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div style="font-size:11px;color:var(--text3)">${all.length}人参加中</div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:11px;color:var(--text2)">自分のパート：<strong style="color:var(--accent)">${myGrpPart}</strong></span>
+              <button onclick="openGrpPartSheet('${g.id}')" style="font-size:11px;padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--text2);cursor:pointer;font-family:'Inter',sans-serif">変更</button>
+            </div>
+          </div>
           <div style="display:flex;align-items:center">${avatars}<span style="margin-left:12px;font-size:12px;color:var(--text2)">${all.map(m=>m.name+(m.part?' ('+m.part+')':'')).join('・')}</span></div>
         </div>
         <div style="padding:10px 14px">
@@ -856,17 +888,66 @@ function renderBand(){
   el.innerHTML=html;
 }
 
+// ★変更②: グループ別パートシート
+let _grpPartTargetId=null;
+function openGrpPartSheet(grpId){
+  const g=myGroups.find(x=>x.id===grpId);if(!g)return;
+  _grpPartTargetId=grpId;
+  document.getElementById('grppart-title').textContent=`「${g.name}」でのパート`;
+  const currentPart=g.myPart||st.me.part||'';
+  document.getElementById('grppart-selector').innerHTML=partSelectorHTML(currentPart,'grppart');
+  openSh('grppart');
+}
+async function saveGrpPart(){
+  if(!_grpPartTargetId)return;
+  const g=myGroups.find(x=>x.id===_grpPartTargetId);if(!g)return;
+  const newPart=getPartVal('grppart');
+  g.myPart=newPart;
+  saveGroups();
+  closeSh('grppart');
+  // Supabaseにも反映（このグループのpushMyDataToでpartを上書き）
+  await pushMyDataTo(_grpPartTargetId,newPart);
+  showToast('パートを保存しました');
+  renderBand();
+  if(curPanel==='find')renderFind();
+}
+
 // ══ SETTINGS ══
+// ★変更①: _settingSelCat で選択中カテゴリを管理
+let _settingSelCat='class';
+
 function renderSettings(){
-  const obSlots=st.slots.filter(s=>s.name!=='昼');const classCat=ct('class')||{bg:'#EEF1FA',fg:'#2C4BA0'};
+  const obSlots=st.slots.filter(s=>s.name!=='昼');
+
+  // 選択中カテゴリのオブジェクト（なければclass）
+  const selCatObj=ct(_settingSelCat)||ct('class')||{id:'class',bg:'#EEF1FA',fg:'#2C4BA0',name:'授業'};
+
+  // カテゴリ選択ボタン
+  let catSelHTML='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">';
+  st.cats.forEach(c=>{
+    const on=_settingSelCat===c.id;
+    catSelHTML+=`<button type="button" onclick="setTplCat('${c.id}')" style="padding:6px 13px;border-radius:20px;border:1.5px solid ${on?c.fg:'#E2DDD6'};background:${on?c.bg:'#FFFFFF'};color:${on?c.fg:'#1C1A17'};font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .1s">${c.name}</button>`;
+  });
+  catSelHTML+='</div>';
+
+  // ★変更①: tplのグリッド。各セルのon判定はtpl[k]===_settingSelCatで
   let tH=`<div class="ob-tpl-grid" style="display:grid;gap:3px;grid-template-columns:auto repeat(${DAYS.length},1fr)">`;
   tH+=`<div></div>`;DAYS.forEach(d=>{tH+=`<div class="tpl-dlbl">${d}</div>`;});
   obSlots.forEach(slot=>{
     tH+=`<div class="tpl-slbl">${slot.name}</div>`;
-    DAYS.forEach(day=>{const k=day+'-'+slot.id;const on=!!(st.tpl||{})[k];
-      tH+=`<div class="tpl-cell${on?' on':''}" style="${on?`background:${classCat.bg};border-color:${classCat.fg};color:${classCat.fg}`:''}" onclick="toggleTpl('${day}',${slot.id})">${on?'✓':''}</div>`;
+    DAYS.forEach(day=>{
+      const k=day+'-'+slot.id;
+      const tplCatId=(st.tpl||{})[k]||null;
+      const on=tplCatId===_settingSelCat;
+      const dispCat=tplCatId?ct(tplCatId):null;
+      const cellBg=dispCat?dispCat.bg:'#FFFFFF';
+      const cellFg=dispCat?dispCat.fg:'var(--text3)';
+      const cellBd=dispCat?dispCat.fg:'#E2DDD6';
+      tH+=`<div class="tpl-cell" style="background:${cellBg};border-color:${on?cellBd:'#E2DDD6'};color:${on?cellFg:'var(--text3)'};${on?'font-weight:700':''}" onclick="toggleTpl('${day}',${slot.id})">${dispCat?dispCat.name.slice(0,2):''}</div>`;
     });
-  });tH+=`</div>`;
+  });
+  tH+=`</div>`;
+
   const catRows=st.cats.map(c=>`<div class="cat-row">
     <div style="position:relative">
       <div class="cat-sw" style="background:${c.bg};border-color:${c.fg}60" onclick="toggleCCP('${c.id}')"><div style="width:11px;height:11px;border-radius:50%;background:${c.fg}"></div></div>
@@ -875,12 +956,21 @@ function renderSettings(){
     <input type="text" value="${c.name}" style="flex:1" onchange="updCat('${c.id}',this.value)">
     <button class="btn btn-g btn-sm" style="color:#C0392B;flex-shrink:0" onclick="rmCat('${c.id}')">削除</button>
   </div>`).join('');
+
   document.getElementById('view-settings').innerHTML=`
     <h2 class="scr-title">設定</h2>
     <div class="scard"><div class="scard-head">練習候補を探す曜日</div><div class="scard-body"><p style="font-size:12px;color:var(--text2);margin-bottom:10px">オンの曜日だけ練習候補に表示されます。タップで切り替え。</p><div class="day-pills">${DAYS.map(d=>`<div class="dpill${st.days.includes(d)?' on':''}" onclick="toggleDay('${d}',this)">${d}</div>`).join('')}</div></div></div>
     <div class="scard"><div class="scard-head">時限設定 <button class="btn btn-g btn-sm" onclick="addSlot()">＋</button></div><div class="scard-body" id="slot-list">${slotListHTML()}</div></div>
     <div class="scard"><div class="scard-head">入力の種類 <button class="btn btn-g btn-sm" onclick="addCat()">＋</button></div><div class="scard-body">${catRows}<p style="font-size:10px;color:var(--text3);margin-top:2px">※削除するとその予定は空きに戻ります</p></div></div>
-    <div class="scard"><div class="scard-head">授業テンプレート</div><div class="scard-body"><p style="font-size:12px;color:var(--text2)">タップしたコマに毎週授業が入ります（※印で表示）。</p><div class="tpl-grid-wrap">${tH}</div></div></div>
+    <div class="scard">
+      <div class="scard-head">毎週入る予定</div>
+      <div class="scard-body">
+        <p style="font-size:12px;color:var(--text2);margin-bottom:8px">まず予定の種類を選んで、タップしたコマに毎週その予定を設定します（※印で表示）。</p>
+        ${catSelHTML}
+        <div class="tpl-grid-wrap">${tH}</div>
+        <p style="font-size:10px;color:var(--text3);margin-top:6px">タップしたコマに選択中の種類が入ります。別の種類が入っているコマをタップすると上書きされます。</p>
+      </div>
+    </div>
     <div class="scard"><div class="scard-head">最低参加人数</div><div class="scard-body"><div style="display:flex;align-items:center;gap:10px"><input type="number" id="set-min" min="1" max="20" value="${st.minM}" style="width:68px" onchange="st.minM=+this.value;save()"><span style="color:var(--text2);font-size:13px">人以上でおすすめ表示</span></div></div></div>
     <div class="scard"><div class="scard-head">アカウント</div><div class="scard-body">
       <div id="account-email-disp" style="font-size:13px;color:#5C5C6E;padding:4px 0;margin-bottom:4px"></div>
@@ -891,17 +981,39 @@ function renderSettings(){
     <div style="height:24px"></div>`;
   setTimeout(()=>{const ed=document.getElementById('account-email-disp');if(ed&&currentUser)ed.textContent='ログイン中: '+currentUser.email;},100);
 }
+
+// ★変更①: カテゴリ選択時に _settingSelCat を更新してグリッドだけ再描画
+function setTplCat(catId){
+  _settingSelCat=catId;
+  renderSettings();
+}
+
 const slotListHTML=()=>st.slots.map(s=>`<div class="slot-edit-row"><input type="text" value="${s.name}" style="width:54px" onchange="updSlot(${s.id},'name',this.value)"><input type="time" value="${s.start}" style="width:92px" onchange="updSlot(${s.id},'start',this.value)"><span style="color:var(--text3)">〜</span><input type="time" value="${s.end}" style="width:92px" onchange="updSlot(${s.id},'end',this.value)"><button class="btn btn-g btn-sm" style="color:#C0392B;flex-shrink:0" onclick="rmSlot(${s.id})">削除</button></div>`).join('');
 const toggleDay=(d,el)=>{if(st.days.includes(d)){if(st.days.length<=1)return;st.days=st.days.filter(x=>x!==d);}else{st.days.push(d);st.days.sort((a,b)=>DAYS.indexOf(a)-DAYS.indexOf(b));}el.classList.toggle('on',st.days.includes(d));save();};
 const updSlot=(id,k,v)=>{const s=st.slots.find(x=>x.id===id);if(s){s[k]=v;save();}};
 const rmSlot=id=>{st.slots=st.slots.filter(s=>s.id!==id);save();renderSettings();};
 const addSlot=()=>{const last=st.slots[st.slots.length-1];const nid=Math.max(...st.slots.map(s=>s.id),0)+1;st.slots.push({id:nid,name:`${st.slots.length+1}限`,start:last?last.end:'09:00',end:'10:40'});save();renderSettings();};
-const toggleTpl=(day,slotId)=>{if(!st.tpl)st.tpl={};const k=day+'-'+slotId;if(st.tpl[k])delete st.tpl[k];else st.tpl[k]=true;save();renderSettings();render();};
+
+// ★変更①: toggleTpl を _settingSelCat のcatIdで設定（trueではなく文字列）
+const toggleTpl=(day,slotId)=>{
+  if(!st.tpl)st.tpl={};
+  const k=day+'-'+slotId;
+  const cur=st.tpl[k];
+  if(cur===_settingSelCat){
+    // 同じカテゴリをタップ → 削除
+    delete st.tpl[k];
+  } else {
+    // 別カテゴリ or 空 → 選択中カテゴリをセット
+    st.tpl[k]=_settingSelCat;
+  }
+  save();renderSettings();render();
+};
+
 const toggleCCP=cid=>{document.querySelectorAll('.cat-cpop').forEach(p=>{if(p.id!=='ccp-'+cid)p.classList.remove('open');});document.getElementById('ccp-'+cid)?.classList.toggle('open');};
 document.addEventListener('click',e=>{if(!e.target.closest('.cat-sw')&&!e.target.closest('.cat-cpop'))document.querySelectorAll('.cat-cpop').forEach(p=>p.classList.remove('open'));});
 const setCatC=(cid,i)=>{const c=st.cats.find(x=>x.id===cid);if(!c)return;const p=CP[i];c.bg=p.bg;c.fg=p.fg;save();renderSettings();};
 const updCat=(cid,v)=>{const c=st.cats.find(x=>x.id===cid);if(c){c.name=v;save();}};
-const rmCat=cid=>{if(!confirm('削除しますか？'))return;Object.keys(st.blocks).forEach(k=>{if(st.blocks[k]===cid)delete st.blocks[k];});st.cats=st.cats.filter(c=>c.id!==cid);save();renderSettings();};
+const rmCat=cid=>{if(!confirm('削除しますか？'))return;Object.keys(st.blocks).forEach(k=>{if(st.blocks[k]===cid)delete st.blocks[k];});Object.keys(st.tpl||{}).forEach(k=>{if(st.tpl[k]===cid)delete st.tpl[k];});st.cats=st.cats.filter(c=>c.id!==cid);save();renderSettings();};
 const addCat=()=>{const p=CP[st.cats.length%CP.length];st.cats.push({id:'c'+(st.ncid++),name:'新しい種類',bg:p.bg,fg:p.fg});save();renderSettings();};
 const confirmReset=()=>{if(!confirm('全データをリセットしますか？'))return;localStorage.removeItem('hrm7');location.reload();};
 
@@ -923,7 +1035,6 @@ function openUserModal(){
   _uC=st.me.color;renderCP('u-colors',_uC,'_uC');
   document.getElementById('share-code-disp').textContent=st.me.code;
   const btn=document.getElementById('u-save-btn');if(btn){btn.style.background='#E4E4E8';btn.style.color='#9898AA';}
-  // パート選択UI初期化
   const uPartSel=document.getElementById('u-part-selector');
   if(uPartSel)uPartSel.innerHTML=partSelectorHTML(st.me.part||'','u-part');
   openOv('ov-user');
@@ -954,10 +1065,12 @@ function renderObTpl(){
   const obSlots=st.slots.filter(s=>s.name!=='昼');const classCat=ct('class')||{bg:'#EEF1FA',fg:'#2C4BA0'};
   let h=`<div class="ob-tpl-grid" style="display:grid;gap:4px;grid-template-columns:auto repeat(${DAYS.length},1fr)">`;
   h+=`<div></div>`;DAYS.forEach(d=>{h+=`<div class="ob-dlbl">${d}</div>`;});
-  obSlots.forEach(slot=>{h+=`<div class="ob-slbl">${slot.name}</div>`;DAYS.forEach(day=>{const k=day+'-'+slot.id;const on=!!(st.tpl||{})[k];h+=`<div class="ob-tpl-cell${on?' on':''}" style="${on?`background:${classCat.bg};border-color:${classCat.fg};color:${classCat.fg}`:''}" onclick="obTogTpl('${day}',${slot.id})">${on?'✓':''}</div>`;});});
+  // ★変更①: オンボーディングでは class カテゴリを設定
+  obSlots.forEach(slot=>{h+=`<div class="ob-slbl">${slot.name}</div>`;DAYS.forEach(day=>{const k=day+'-'+slot.id;const tplCatId=(st.tpl||{})[k]||null;const on=!!tplCatId;h+=`<div class="ob-tpl-cell${on?' on':''}" style="${on?`background:${classCat.bg};border-color:${classCat.fg};color:${classCat.fg}`:''}" onclick="obTogTpl('${day}',${slot.id})">${on?'✓':''}</div>`;});});
   h+=`</div>`;el.innerHTML=h;
 }
-const obTogTpl=(day,slotId)=>{if(!st.tpl)st.tpl={};const k=day+'-'+slotId;if(st.tpl[k])delete st.tpl[k];else st.tpl[k]=true;save();renderObTpl();};
+// ★変更①: オンボーディングのtpl設定も文字列'class'で
+const obTogTpl=(day,slotId)=>{if(!st.tpl)st.tpl={};const k=day+'-'+slotId;if(st.tpl[k])delete st.tpl[k];else st.tpl[k]='class';save();renderObTpl();};
 const skipOb=()=>{st.boarded=true;save();document.getElementById('ob').classList.add('gone');};
 function finishOb(){
   const n=document.getElementById('ob-name').value.trim();const p=getPartVal('ob-part');
@@ -996,13 +1109,11 @@ async function submitLogin(){
   }
   _submitting=false;
 }
-function sendOTP(){submitLogin();}function verifyOTP(){submitLogin();}
 
 async function onLoginSuccess(user){
   currentUser=user;if(!currentUser)return;
   const loadMsg=document.createElement('div');loadMsg.id='load-msg';loadMsg.style.cssText='position:absolute;bottom:40px;left:0;right:0;text-align:center;font-size:13px;color:#9898AA';loadMsg.textContent='データを読み込み中...';
   document.getElementById('login-screen').appendChild(loadMsg);
-  // まずローカルストレージをクリア（前のアカウントのデータが混入しないように）
   try{localStorage.removeItem('hrm7');localStorage.removeItem('hrm_groups');localStorage.removeItem('hrm_active_grp');}catch(e){}
   st=defSt();myGroups=[];activeGrpId=null;
   try{
@@ -1013,12 +1124,11 @@ async function onLoginSuccess(user){
       if(saved.myGroups&&saved.myGroups.length>0){myGroups=saved.myGroups;activeGrpId=saved.activeGrpId||myGroups[0]?.id||null;localStorage.setItem('hrm_groups',JSON.stringify(myGroups));localStorage.setItem('hrm_active_grp',activeGrpId||'');}
       try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
     }
-    // クラウドにデータなし=新規ユーザー。defSt()のままで問題なし
   }catch(e){console.warn('data load error',e);}
   const lm=document.getElementById('load-msg');if(lm)lm.remove();
   document.getElementById('login-screen').style.display='none';
   initApp();
-  if(!st.boarded){document.getElementById('ob').classList.remove('gone');obProg(0);// ob-part-selectorを初期化
+  if(!st.boarded){document.getElementById('ob').classList.remove('gone');obProg(0);
     setTimeout(()=>{const s=document.getElementById('ob-part-selector');if(s)s.innerHTML=partSelectorHTML(st.me.part||'','ob-part');},100);}
   else{document.getElementById('ob').classList.add('gone');}
 }
@@ -1031,7 +1141,6 @@ function initApp(){
   if(findPanel&&!findPanel._delegated){
     findPanel._delegated=true;
     findPanel.addEventListener('click',function(e){
-      // カレンダーセルのクリック処理
       const cell=e.target.closest('[data-cell-action]');
       if(cell){
         const action=cell.getAttribute('data-cell-action');
@@ -1043,11 +1152,6 @@ function initApp(){
         else if(action==='decide')openDecidePracticeSheet(grpId,date,slotId);
         return;
       }
-      // find-rowのクリック処理（旧リスト方式互換）
-      const row=e.target.closest('[data-find-key]');if(!row)return;
-      const grpId=row.getAttribute('data-grp-id');const date=row.getAttribute('data-date');const slotId=row.getAttribute('data-slot-id');const action=row.getAttribute('data-action');const psId=row.getAttribute('data-ps-id');
-      if(action==='change')openChangePracticeSheet(grpId,psId,date,Number(slotId));
-      else toggleFindSel(grpId,date,slotId);
     });
   }
   if(st.boarded)document.getElementById('ob').classList.add('gone');
@@ -1073,24 +1177,34 @@ async function createGroup(){
   const startInput=document.getElementById('grp-start-date');const endInput=document.getElementById('grp-end-date');
   const startDate=startInput&&startInput.value?startInput.value:null;
   const endDate=endInput&&endInput.value?endInput.value:null;
-  try{await sbClient.from('groups').insert({id,name:grpName});const newGrp={id,name:grpName,members:[],practiceSlots:[],startDate,endDate};myGroups.push(newGrp);activeGrpId=id;saveGroups();await pushMyDataTo(id);showToast('グループ「'+grpName+'」を作成しました');startSyncFor(id);renderBand();}catch(e){showToast('エラー: '+e.message);}
+  try{await sbClient.from('groups').insert({id,name:grpName});const newGrp={id,name:grpName,members:[],practiceSlots:[],startDate,endDate,myPart:st.me.part||''};myGroups.push(newGrp);activeGrpId=id;saveGroups();await pushMyDataTo(id,newGrp.myPart);showToast('グループ「'+grpName+'」を作成しました');startSyncFor(id);renderBand();}catch(e){showToast('エラー: '+e.message);}
 }
 async function joinGroup(){
   const inp=document.getElementById('grp-join-code');const code=inp?inp.value.trim().toUpperCase():'';if(!code){showToast('コードを入力してください');return;}if(myGroups.find(g=>g.id===code)){showToast('すでに参加中です');return;}
-  try{const {data:rows}=await sbClient.from('groups').select('id,name').eq('id',code);if(!rows||rows.length===0){showToast('コードが見つかりませんでした');return;}const newGrp={id:rows[0].id,name:rows[0].name,members:[],practiceSlots:[]};myGroups.push(newGrp);activeGrpId=newGrp.id;saveGroups();await pushMyDataTo(newGrp.id);await pullGroupDataFor(newGrp.id);showToast('「'+newGrp.name+'」に参加しました！');startSyncFor(newGrp.id);renderBand();}catch(e){showToast('エラー: '+e.message);}
+  try{const {data:rows}=await sbClient.from('groups').select('id,name').eq('id',code);if(!rows||rows.length===0){showToast('コードが見つかりませんでした');return;}const newGrp={id:rows[0].id,name:rows[0].name,members:[],practiceSlots:[],myPart:st.me.part||''};myGroups.push(newGrp);activeGrpId=newGrp.id;saveGroups();await pushMyDataTo(newGrp.id,newGrp.myPart);await pullGroupDataFor(newGrp.id);showToast('「'+newGrp.name+'」に参加しました！');startSyncFor(newGrp.id);renderBand();}catch(e){showToast('エラー: '+e.message);}
 }
 async function leaveGroup(grpId){
   const g=getGroup(grpId);if(!g)return;if(!confirm('「'+g.name+'」から退出しますか？'))return;
   try{await sbClient.from('members').delete().eq('code',st.me.code).eq('group_id',grpId);}catch(e){}
-  // 退出しても練習コマの表示は残す（ユーザー要望）
   myGroups=myGroups.filter(g=>g.id!==grpId);if(activeGrpId===grpId)activeGrpId=myGroups[0]?.id||null;
   saveGroups();stopSyncFor(grpId);save();showToast('退出しました');renderBand();renderWeek();
 }
-async function pushMyDataTo(grpId){
-  const payload={group_id:grpId,name:st.me.name,part:st.me.part||'',color:st.me.color,code:st.me.code,blocks:st.blocks,tpl:st.tpl||{},cats:st.cats,slots:st.slots,updated_at:new Date().toISOString()};
+
+// ★変更②: pushMyDataTo に grpPart 引数を追加
+async function pushMyDataTo(grpId,grpPart){
+  const g=myGroups.find(x=>x.id===grpId);
+  // grpPartが引数で渡されなければg.myPartまたはst.me.partを使う
+  const partToSend=grpPart!==undefined?grpPart:(g?g.myPart||st.me.part||'':st.me.part||'');
+  const payload={group_id:grpId,name:st.me.name,part:partToSend,color:st.me.color,code:st.me.code,blocks:st.blocks,tpl:st.tpl||{},cats:st.cats,slots:st.slots,updated_at:new Date().toISOString()};
   try{await sbClient.from('members').delete().eq('code',st.me.code).eq('group_id',grpId);await sbClient.from('members').insert(payload);}catch(e){console.warn('push error',e);}
 }
-async function pushMyData(){for(const g of myGroups)await pushMyDataTo(g.id);}
+
+async function pushMyData(){
+  for(const g of myGroups){
+    await pushMyDataTo(g.id,g.myPart||st.me.part||'');
+  }
+}
+
 async function pullGroupDataFor(grpId){
   try{
     const g=getGroup(grpId);if(!g)return;
@@ -1116,7 +1230,7 @@ function startAllSync(){myGroups.forEach(g=>startSyncFor(g.id));}
 function copyGrpCode(grpId){navigator.clipboard.writeText(grpId).then(()=>showToast('コードをコピーしました')).catch(()=>prompt('コードをコピー:',grpId));}
 
 // ══ 練習コマ決定 ══
-let _practiceCtx=null;let _findSel=new Set();let _findGrpId=null;
+let _practiceCtx=null;
 
 window.openDecidePracticeSheet=function openDecidePracticeSheet(grpId,date,slotId){
   const slot=st.slots.find(s=>s.id==slotId);const g=myGroups.find(x=>x.id===grpId);
@@ -1149,7 +1263,6 @@ async function execDecidePractice(){
   if(!_practiceCtx)return;const {grpId,date,slotId}=_practiceCtx;closeSh('practice');
   try{
     await sbClient.from('practice_slots').insert({group_id:grpId,slot_id:slotId,date,decided_by:st.me.name,decided_at:new Date().toISOString()});
-    // 既存予定がなければ練習として記録（上書きしない）
     const key=BK(date,slotId);
     if(!st.blocks[key]){
       if(!st.cats.find(c=>c.id==='practice'))st.cats.push({id:'practice',name:'練習',bg:'#EDE9FE',fg:'#6D28D9'});
@@ -1163,8 +1276,7 @@ async function execCancelPractice(){
   try{await sbClient.from('practice_slots').delete().eq('id',existingId);const key=BK(date,slotId);if(st.blocks[key]==='practice')delete st.blocks[key];save();showToast('練習コマを取り消しました');await pullGroupDataFor(grpId);renderFind();renderWeek();}catch(e){showToast('エラー: '+e.message);}
 }
 
-// _findSelのウィンドウ関数（互換用）
-window.toggleFindSel=function(grpId,date,slotId){};
+window.toggleFindSel=function(){};
 window.clearFindSel=function(){};
 window.openBulkDecideSheet=function(){};
 
