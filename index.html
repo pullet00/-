@@ -309,6 +309,14 @@ input:focus{border-color:var(--accent);}
   </div>
 </div>
 
+<!-- ════ 練習一覧シート ════ -->
+<div class="sh-ov" id="plist-ov" onclick="closeSh('plist')"></div>
+<div class="sheet" id="plist-sh" style="max-height:90vh;">
+  <div class="sh-handle"></div>
+  <div class="sh-head"><div class="sh-title">すべての練習</div></div>
+  <div class="sh-scroll" id="plist-body"></div>
+</div>
+
 <!-- ════ 時間割スキャン シート ════ -->
 <div class="sh-ov" id="scan-ov" onclick="closeScanSheet()"></div>
 <div class="sheet" id="scan-sh" style="max-height:94vh;">
@@ -831,7 +839,59 @@ function renderFind(){
 // ══ BAND ══
 function renderBand(){
   const el=document.getElementById('view-band');if(!el)return;
-  let html=`<h2 class="scr-title">グループ</h2>`;
+
+  // ── 全グループの練習コマを集めて日付順ソート ──
+  const todayStr=DS(new Date());
+  const allPractices=[];
+  myGroups.forEach(g=>{
+    (g.practiceSlots||[]).forEach(p=>{
+      allPractices.push({date:p.date,slot_id:p.slot_id,groupName:g.name,groupId:g.id,id:p.id,decided_by:p.decided_by,decided_at:p.decided_at});
+    });
+  });
+  // 今日以降のみ・日付→slot_id順
+  const upcoming=allPractices
+    .filter(p=>p.date>=todayStr)
+    .sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):a.slot_id-b.slot_id);
+  const past=allPractices
+    .filter(p=>p.date<todayStr)
+    .sort((a,b)=>b.date!==a.date?b.date.localeCompare(a.date):b.slot_id-a.slot_id);
+  const allSorted=[...upcoming,...past];
+
+  // 次の練習カード（直近3件）
+  let nextHTML='';
+  if(upcoming.length>0){
+    const show=upcoming.slice(0,3);
+    const rows=show.map(p=>{
+      const slot=st.slots.find(s=>s.id==p.slot_id);
+      const d=new Date(p.date);
+      const dn=DAYS[d.getDay()===0?6:d.getDay()-1];
+      const dateLabel=`${d.getMonth()+1}/${d.getDate()}（${dn}）`;
+      const slotLabel=slot?`${slot.name}　${slot.start}–${slot.end}`:'';
+      return`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;color:var(--text)">${dateLabel}　${slot?.name||''}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${p.groupName}　${slot?.start||''}${slot?'–'+slot.end:''}</div>
+        </div>
+      </div>`;
+    }).join('');
+    const moreBtn=allSorted.length>3
+      ?`<div style="text-align:right;margin-top:10px"><button onclick="openPracticeList()" style="background:none;border:none;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter','Noto Sans JP',sans-serif;padding:4px 0">さらに表示 ›</button></div>`
+      :'';
+    nextHTML=`<div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:16px;box-shadow:var(--shadow-sm)">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">次の練習</div>
+      ${rows}
+      ${moreBtn}
+    </div>`;
+  } else if(allSorted.length>0){
+    // 過去の練習しかない場合
+    nextHTML=`<div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:16px;box-shadow:var(--shadow-sm)">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">次の練習</div>
+      <div style="font-size:13px;color:var(--text3)">予定されている練習はありません</div>
+      <div style="text-align:right;margin-top:8px"><button onclick="openPracticeList()" style="background:none;border:none;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter','Noto Sans JP',sans-serif;padding:4px 0">過去の練習を見る ›</button></div>
+    </div>`;
+  }
+
+  let html=`<h2 class="scr-title">グループ</h2>${nextHTML}`;
   if(myGroups.length>0){
     myGroups.forEach(g=>{
       const all=[{id:0,name:st.me.name,part:g.myPart||st.me.part,color:st.me.color,blocks:st.blocks,isMe:true},...(g.members||[])];
@@ -1629,6 +1689,49 @@ function applyScanResult() {
 
   save();
   setScanBody('done', { slotsCount, tplCount });
+}
+
+// ══ 練習一覧シート ══
+function openPracticeList(){
+  const todayStr=DS(new Date());
+  const allPractices=[];
+  myGroups.forEach(g=>{
+    (g.practiceSlots||[]).forEach(p=>{
+      allPractices.push({date:p.date,slot_id:p.slot_id,groupName:g.name,groupId:g.id,id:p.id,decided_by:p.decided_by,decided_at:p.decided_at});
+    });
+  });
+  const upcoming=allPractices.filter(p=>p.date>=todayStr).sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):a.slot_id-b.slot_id);
+  const past=allPractices.filter(p=>p.date<todayStr).sort((a,b)=>b.date!==a.date?b.date.localeCompare(a.date):b.slot_id-a.slot_id);
+
+  function practiceRow(p,isPast){
+    const slot=st.slots.find(s=>s.id==p.slot_id);
+    const d=new Date(p.date);
+    const dn=DAYS[d.getDay()===0?6:d.getDay()-1];
+    const dateLabel=`${d.getMonth()+1}/${d.getDate()}（${dn}）`;
+    const bg=isPast?'var(--surf2)':'var(--surf)';
+    const textColor=isPast?'var(--text3)':'var(--text)';
+    return`<div style="display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--border);background:${bg}">
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:${isPast?'500':'700'};color:${textColor}">${dateLabel}　${slot?.name||''}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">${p.groupName}　${slot?.start||''}${slot?'–'+slot.end:''}</div>
+      </div>
+    </div>`;
+  }
+
+  let body='';
+  if(upcoming.length>0){
+    body+=`<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:10px 16px 4px;background:var(--bg)">これから</div>`;
+    body+=upcoming.map(p=>practiceRow(p,false)).join('');
+  }
+  if(past.length>0){
+    body+=`<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:10px 16px 4px;background:var(--bg)">過去</div>`;
+    body+=past.map(p=>practiceRow(p,true)).join('');
+  }
+  if(!body){
+    body=`<div style="padding:40px 20px;text-align:center;color:var(--text3);font-size:13px">練習コマがまだありません</div>`;
+  }
+  document.getElementById('plist-body').innerHTML=body;
+  openSh('plist');
 }
 
 window.toggleFindSel=function(){};
