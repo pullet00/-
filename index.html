@@ -443,6 +443,7 @@ body.chc .drawer{display:none;}
     <div class="m-scroll"><div class="m-grid" id="m-grid"></div></div>
   </div>
   <div class="side-panel" id="view-find"></div>
+  <div class="side-panel" id="view-chat" style="position:relative;padding:0;overflow:hidden"></div>
   <div class="side-panel" id="view-band"></div>
   <div class="side-panel" id="view-settings"></div>
 </div>
@@ -580,7 +581,7 @@ let curPanel='cal';
 const PANEL_TITLES={cal:'カレンダー',settings:'マイページ',find:'練習候補',band:'ライブ管理'};
 function showPanel(name){
   curPanel=name;
-  ['cal','month','find','band','settings'].forEach(n=>{const el=document.getElementById('view-'+n);if(el){el.style.display='none';el.classList.remove('active');}});
+  ['cal','month','find','band','settings','chat'].forEach(n=>{const el=document.getElementById('view-'+n);if(el){el.style.display='none';el.classList.remove('active');}});
   const calNav=document.getElementById('cal-nav');const shareBtn=document.getElementById('share-btn');const vmBtn=document.getElementById('vm-toggle-btn');const tbTitle=document.getElementById('tb-title');
   if(name==='cal'){
     if(calNav)calNav.style.display='flex';if(shareBtn)shareBtn.style.display='';if(vmBtn)vmBtn.style.display='';if(tbTitle)tbTitle.style.display='none';
@@ -589,7 +590,7 @@ function showPanel(name){
     if(calNav)calNav.style.display='none';if(shareBtn)shareBtn.style.display='none';if(vmBtn)vmBtn.style.display='none';
     if(tbTitle){tbTitle.textContent=PANEL_TITLES[name]||'';tbTitle.style.display='block';}
     const el=document.getElementById('view-'+name);if(el){el.style.display='block';el.classList.add('active');}
-    if(name==='find')renderFind();if(name==='band')renderBand();if(name==='settings')renderSettings();
+    if(name==='find')renderFind();if(name==='band')renderBand();if(name==='settings')renderSettings();if(name==='chat')renderChat();
   }
 }
 
@@ -597,7 +598,7 @@ function showPanel(name){
 let drawerCtx='me';
 function effCtx(){
   if(curPanel==='cal'||curPanel==='settings')return 'me';
-  if(curPanel==='find')return activeGrpId||'me';
+  if(curPanel==='find'||curPanel==='chat')return activeGrpId||'me';
   return 'add';
 }
 function openDrawer(){
@@ -613,9 +614,15 @@ function addSong(){
   const n=prompt('曲名');if(!n||!n.trim())return;
   (g.songs=g.songs||[]).push({id:'s'+Date.now(),name:n.trim()});saveGroups();renderDrawer();
 }
-function openSong(id){
-  const g=myGroups.find(x=>x.id===drawerCtx);if(g){g.curSong=id;}
-  openChannel('find');
+let curChan='announce';const _exp={};
+function toggleSong(id){const g=curLive();const cur=_exp[id]!==undefined?_exp[id]:(g&&g.curSong===id);_exp[id]=!cur;renderDrawer();}
+function openChan(kind,sid){
+  const g=myGroups.find(x=>x.id===drawerCtx);if(!g)return;
+  activeGrpId=g.id;g.curSong=(kind==='announce'||kind==='members')?null:(sid||null);
+  if(sid)_exp[sid]=true;
+  curChan=kind;saveGroups();
+  showPanel(kind==='find'?'find':kind==='members'?'band':'chat');
+  if(window.innerWidth<700)document.body.classList.add('chc');
 }
 function openChannel(panel){
   if(drawerCtx!=='me'&&drawerCtx!=='add'&&myGroups.find(g=>g.id===drawerCtx)){activeGrpId=drawerCtx;saveGroups();}
@@ -641,13 +648,20 @@ function renderDrawer(){
     ch=`<div class="ch-head">ライブを追加</div>`+item('band','ライブの作成・参加',curPanel==='band');
   } else {
     const g=myGroups.find(x=>x.id===drawerCtx);
-    ch=`<div class="ch-head">${esc(g?g.name:'')}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="margin-left:8px;vertical-align:middle"><path d="M6 9l6 6 6-6"/></svg></div><div class="ch-sec">曲</div>`
-      +(g&&g.songs&&g.songs.length?g.songs.map(sg=>`<button class="ch-item${curPanel==='find'&&activeGrpId===drawerCtx&&g.curSong===sg.id?' on':''}" onclick="openSong('${sg.id}')"><span class="hash">#</span><span style="flex:1">${esc(sg.name)}</span>${sg.scoreUrl?`<a href="${esc(sg.scoreUrl)}" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;color:#9AA5FF">譜面</a>`:''}${sg.videoUrl?`<a href="${esc(sg.videoUrl)}" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;color:#9AA5FF">動画</a>`:''}</button>`).join(''):`<div class="ch-note">曲がまだありません</div>`)
-      
-      +`<button class="ch-item" onclick="openSongSheet()"><span class="hash">＋</span>曲を追加</button>`
+    const onC=(k,sid)=>(curPanel==='chat'||curPanel==='find'||curPanel==='band')&&activeGrpId===drawerCtx&&curChan===k&&((sid||null)===(k==='announce'||k==='members'?null:(g&&g.curSong)||null));
+    const sub=(k,sid,label)=>`<button class="ch-item" style="margin-left:22px;width:calc(100% - 30px)${onC(k,sid)?';background:#404249;color:#fff':''}" onclick="openChan('${k}','${sid}')"><span class="hash">#</span>${label}</button>`;
+    ch=`<div class="ch-head">${esc(g?g.name:'')}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="margin-left:8px;vertical-align:middle"><path d="M6 9l6 6 6-6"/></svg></div>`
+      +`<div class="ch-sec">ライブ全体</div>`
+      +`<button class="ch-item${onC('announce')?' on':''}" onclick="openChan('announce','')"><span class="hash">#</span>お知らせ</button>`
+      +`<div class="ch-sec">曲</div>`;
+    ((g&&g.songs)||[]).forEach(sg=>{
+      const open=_exp[sg.id]!==undefined?_exp[sg.id]:(g.curSong===sg.id);
+      ch+=`<button class="ch-item" style="font-weight:700;color:${g.curSong===sg.id?'#fff':'#B5BAC1'}" onclick="toggleSong('${sg.id}')"><span style="width:16px;text-align:center;font-size:10px">${open?'▼':'▶'}</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(sg.name)}</span></button>`;
+      if(open)ch+=sub('find',sg.id,'練習可能コマ')+sub('score',sg.id,'楽譜')+sub('rec',sg.id,'録音')+sub('review',sg.id,'反省')+sub('contact',sg.id,'連絡');
+    });
+    ch+=`<button class="ch-item" onclick="openSongSheet()"><span class="hash">＋</span>曲を追加</button>`
       +`<div class="ch-sec">ライブ管理</div>`
-      +item('find','練習候補',curPanel==='find'&&activeGrpId===drawerCtx&&!(g&&g.curSong))
-      +item('band','メンバー・管理',false);
+      +`<button class="ch-item${curPanel==='band'&&activeGrpId===drawerCtx?' on':''}" onclick="openChan('members','')"><span class="hash">#</span>メンバー・管理</button>`;
   }
   ch=`<div style="flex:1;overflow-y:auto">${ch}</div><div class="ch-user"><div class="ch-av">${esc((st.me.name||'?').slice(0,1))}</div><div><div class="ch-un">${esc(st.me.name||'未設定')}</div></div></div>`;
   document.getElementById('chlist').innerHTML=ch;
@@ -882,7 +896,9 @@ function renderFind(){
   if(activeGrp){
     // ★変更②: 自分のこのグループでのパートを使う（grpPartあれば優先）
     const myGrpPart=activeGrp.myPart||st.me.part||'';
-    const allMembers=[{name:st.me.name,part:myGrpPart,color:st.me.color,blocks:st.blocks,tpl:st.tpl,isMe:true},...grpMembers];
+    let allMembers=[{name:st.me.name,part:myGrpPart,color:st.me.color,blocks:st.blocks,tpl:st.tpl,isMe:true},...grpMembers];
+     {const _sg=((activeGrp&&activeGrp.songs)||[]).find(x=>x.id===activeGrp.curSong);const _asg=_sg?Object.values(_sg.parts||{}).flat():[];
+      if(_asg.length)allMembers=allMembers.filter(m=>_asg.includes(m.name));}
     const total=allMembers.length;
 
     function getPeriodDates(grp){
@@ -1966,6 +1982,79 @@ function renderMembers(){
   }
   h+=`<div class="m-sec" style="padding-top:16px">メンバー — ${all.length}</div>`+all.map(row).join('');
   el.innerHTML=h;
+}
+
+
+// ══ チャット／録音／楽譜チャンネル ══
+const CHAN_LABEL={announce:'お知らせ',score:'楽譜',rec:'録音',review:'反省',contact:'連絡'};
+let _msgs=[],_chatKey='',_chatTimer=null;
+function chatKey(g){return curChan==='announce'?'announce':(g.curSong||'')+':'+curChan;}
+function localMsgs(key){try{return (JSON.parse(localStorage.getItem('hrm_msgs')||'{}')[key])||[];}catch(e){return[];}}
+function saveLocalMsgs(key,arr){try{const o=JSON.parse(localStorage.getItem('hrm_msgs')||'{}');o[key]=arr.slice(-200);localStorage.setItem('hrm_msgs',JSON.stringify(o));}catch(e){}}
+async function fetchMsgs(g,key){
+  if(!currentUser)return localMsgs(g.id+'|'+key);
+  const {data,error}=await sbClient.from('messages').select('*').eq('group_id',g.id).eq('channel',key).order('created_at',{ascending:true}).limit(200);
+  if(error){console.warn('msg fetch',error.message);return null;}
+  return data||[];
+}
+function renderChat(){
+  const el=document.getElementById('view-chat');const g=myGroups.find(x=>x.id===activeGrpId);
+  clearInterval(_chatTimer);
+  if(!g){el.innerHTML='<div style="padding:30px;color:var(--text3)">ライブを選んでください</div>';return;}
+  const song=(g.songs||[]).find(x=>x.id===g.curSong);
+  const title=(song?song.name+' / ':'')+'# '+(CHAN_LABEL[curChan]||'');
+  const tb=document.getElementById('tb-title');if(tb)tb.textContent=title;
+  if(curChan==='score'){renderScoreChan(el,song);return;}
+  _chatKey=chatKey(g);const isRec=curChan==='rec';
+  el.innerHTML=`<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+    <div id="msg-list" style="flex:1;overflow-y:auto;padding:14px 14px 6px"></div>
+    <div style="padding:8px 12px calc(var(--safe-b) + 10px);background:#F6F4EF;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center">
+      ${isRec?`<label class="btn btn-p" style="padding:11px 16px;cursor:pointer;flex:1;justify-content:center">録音ファイルを置く<input type="file" accept="audio/*,video/*" style="display:none" onchange="sendFile(this)"></label>`
+      :`<input id="msg-in" placeholder="#${CHAN_LABEL[curChan]}にメッセージを送信" style="flex:1;padding:12px 14px;font-size:15px;border:1.5px solid var(--border);border-radius:20px;background:#fff;color:#0D0D10;outline:none" onkeydown="if(event.key==='Enter'&&!event.isComposing)sendMsg()"><button class="btn btn-p" onclick="sendMsg()" style="padding:11px 16px">送信</button>`}
+    </div></div>`;
+  loadMsgs(true);
+  _chatTimer=setInterval(()=>{if(curPanel==='chat')loadMsgs(false);},8000);
+}
+async function loadMsgs(scroll){
+  const g=myGroups.find(x=>x.id===activeGrpId);if(!g)return;const key=_chatKey;
+  const arr=await fetchMsgs(g,key);if(arr===null||key!==_chatKey)return;
+  _msgs=arr;drawMsgs(scroll);
+}
+function drawMsgs(scroll){
+  const box=document.getElementById('msg-list');if(!box)return;
+  const near=box.scrollHeight-box.scrollTop-box.clientHeight<80;
+  const fmt=t=>{const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;};
+  box.innerHTML=_msgs.length?_msgs.map(m=>{
+    const col=AC[(m.author_name||'?').charCodeAt(0)%AC.length];
+    const body=m.kind==='file'?`<div style="font-size:12px;color:var(--text2);margin-bottom:4px">${_esc(m.body)}</div><audio controls preload="none" src="${_esc(m.url)}" style="width:100%;max-width:320px"></audio>`:`<div style="font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word">${_esc(m.body)}</div>`;
+    return `<div style="display:flex;gap:10px;margin-bottom:14px"><div style="width:36px;height:36px;border-radius:50%;background:${col.bg};color:${col.fg};display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">${_esc((m.author_name||'?').slice(0,1))}</div><div style="min-width:0"><div><b style="font-size:14px">${_esc(m.author_name)}</b> <span style="font-size:11px;color:var(--text3)">${fmt(m.created_at)}</span></div>${body}</div></div>`;
+  }).join(''):`<div style="padding:40px 10px;text-align:center;color:var(--text3);font-size:13px">まだ投稿がありません</div>`;
+  if(scroll||near)box.scrollTop=box.scrollHeight;
+}
+async function postMsg(rec){
+  const g=myGroups.find(x=>x.id===activeGrpId);if(!g)return;
+  const m=Object.assign({group_id:g.id,channel:_chatKey,author_name:st.me.name||'自分',author_id:currentUser?currentUser.id:'dev',kind:'text',body:'',url:'',created_at:new Date().toISOString()},rec);
+  _msgs.push(m);drawMsgs(true);
+  if(!currentUser){saveLocalMsgs(g.id+'|'+_chatKey,_msgs);return;}
+  const {error}=await sbClient.from('messages').insert({group_id:m.group_id,channel:m.channel,author_name:m.author_name,author_id:m.author_id,kind:m.kind,body:m.body,url:m.url});
+  if(error){showToast('送信エラー: '+error.message);_msgs.pop();drawMsgs(false);}
+}
+function sendMsg(){const i=document.getElementById('msg-in');const t=i&&i.value.trim();if(!t)return;i.value='';postMsg({body:t});}
+async function sendFile(inp){
+  const f=inp.files[0];if(!f)return;const g=myGroups.find(x=>x.id===activeGrpId);if(!g)return;
+  if(!currentUser){postMsg({kind:'file',body:f.name,url:URL.createObjectURL(f)});showToast('DEV: この端末内だけに保存されます');return;}
+  showToast('アップロード中...');
+  const ext=(f.name.split('.').pop()||'bin').toLowerCase();const path=`${g.id}/${g.curSong||'x'}/rec/${Date.now()}.${ext}`;
+  const {error}=await sbClient.storage.from('scores').upload(path,f,{upsert:true});
+  if(error){showToast('アップロード失敗: '+error.message);return;}
+  postMsg({kind:'file',body:f.name,url:sbClient.storage.from('scores').getPublicUrl(path).data.publicUrl});
+}
+function renderScoreChan(el,song){
+  if(!song){el.innerHTML='';return;}
+  const sc=song.scoreUrl?`<a class="btn btn-p" href="${_esc(song.scoreUrl)}" target="_blank" download>楽譜(.mscz)をダウンロード</a>`:'<div style="color:var(--text3);font-size:13px">楽譜が登録されていません</div>';
+  const vd=song.videoUrl?`<video controls preload="metadata" src="${_esc(song.videoUrl)}" style="width:100%;border-radius:12px;margin-top:14px;background:#000"></video>`:'';
+  const parts=Object.entries(song.parts||{}).map(([k,v])=>`<div style="font-size:13px;margin-top:4px"><b>${_esc(k)}</b>　${v.map(_esc).join('・')}</div>`).join('');
+  el.innerHTML=`<div style="position:absolute;inset:0;overflow-y:auto;padding:16px"><h2 class="scr-title" style="margin-bottom:12px">${_esc(song.name)}</h2>${sc}${vd}${parts?`<div style="margin-top:18px"><div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:4px">パート担当</div>${parts}</div>`:''}</div>`;
 }
 
 // 常時表示レールの更新フック
