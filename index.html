@@ -203,11 +203,15 @@ input:focus{border-color:var(--accent);}
 .rail-btn.on::before{content:'';position:absolute;left:-10px;top:11px;width:4px;height:24px;border-radius:0 4px 4px 0;background:#fff;}
 .rail-btn.add{background:#23243B;color:#6BE0A4;font-size:22px;font-weight:400;}
 .rail-sep{width:28px;height:2px;background:#2A2B45;border-radius:1px;flex-shrink:0;}
-.chlist{flex:1;background:#fff;display:flex;flex-direction:column;padding-top:var(--safe-t);overflow-y:auto;min-width:0;}
+.chlist{flex:1;background:#fff;display:flex;flex-direction:column;padding-top:var(--safe-t);overflow:hidden;min-width:0;}
 .ch-head{padding:18px 14px 12px;font-size:15px;font-weight:800;color:var(--text);border-bottom:1px solid var(--border);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .ch-sec{padding:10px 14px 4px;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--text3);text-transform:uppercase;}
 .ch-item{display:flex;align-items:center;gap:8px;margin:2px 8px;padding:11px 10px;border-radius:8px;font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;border:none;background:none;text-align:left;font-family:'Inter','Noto Sans JP',sans-serif;width:calc(100% - 16px);}
 .ch-item.on{background:var(--accent-l);color:var(--accent);}
+.ch-user{display:flex;align-items:center;gap:10px;padding:10px 12px calc(var(--safe-b) + 10px);background:var(--surf2);border-top:1px solid var(--border);}
+.ch-av{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.ch-un{font-size:13px;font-weight:700;color:var(--text);}
+.ch-up{font-size:11px;color:var(--text3);}
 .ch-item .hash{color:var(--text3);font-weight:700;}
 .ch-item.on .hash{color:var(--accent);}
 .ch-note{margin:10px 14px;font-size:11px;color:var(--text3);line-height:1.6;}
@@ -321,10 +325,10 @@ input:focus{border-color:var(--accent);}
 <div class="sh-ov" id="grppart-ov" onclick="closeSh('grppart')"></div>
 <div class="sheet" id="grppart-sh">
   <div class="sh-handle"></div>
-  <div class="sh-head"><div class="sh-title" id="grppart-title">このグループでのパート</div></div>
+  <div class="sh-head"><div class="sh-title" id="grppart-title">このライブでのパート</div></div>
   <div class="sh-scroll">
     <div style="padding:16px">
-      <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6">このグループ（バンド）での自分のパートを設定します。グループごとに別々のパートを設定できます。</p>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6">このライブでの自分のパートを設定します。グループごとに別々のパートを設定できます。</p>
       <div id="grppart-selector"></div>
       <button class="btn btn-p btn-block" style="margin-top:16px" onclick="saveGrpPart()">保存する</button>
       <button class="btn btn-g btn-block" style="margin-top:8px" onclick="closeSh('grppart')">キャンセル</button>
@@ -546,7 +550,7 @@ function toggleVM(){
 
 // ══ PANEL SWITCH ══
 let curPanel='cal';
-const PANEL_TITLES={cal:'カレンダー',settings:'マイページ',find:'練習候補',band:'グループ管理'};
+const PANEL_TITLES={cal:'カレンダー',settings:'マイページ',find:'練習候補',band:'ライブ管理'};
 function showPanel(name){
   curPanel=name;
   ['cal','month','find','band','settings'].forEach(n=>{const el=document.getElementById('view-'+n);if(el){el.style.display='none';el.classList.remove('active');}});
@@ -610,16 +614,17 @@ function renderDrawer(){
       +item('cal','カレンダー',cur==='me'&&curPanel==='cal')
       +item('settings','毎週の予定・設定',cur==='me'&&curPanel==='settings');
   } else if(drawerCtx==='add'){
-    ch=`<div class="ch-head">追加</div>`+item('band','作成・参加・管理',curPanel==='band');
+    ch=`<div class="ch-head">ライブを追加</div>`+item('band','ライブの作成・参加',curPanel==='band');
   } else {
     const g=myGroups.find(x=>x.id===drawerCtx);
-    ch=`<div class="ch-head">${esc(g?g.name:'')}</div><div class="ch-sec">曲</div>`
+    ch=`<div class="ch-head">${esc(g?g.name:'')}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="margin-left:8px;vertical-align:middle"><path d="M6 9l6 6 6-6"/></svg></div><div class="ch-sec">曲</div>`
       +(g&&g.songs&&g.songs.length?g.songs.map(sg=>`<button class="ch-item${curPanel==='find'&&activeGrpId===drawerCtx&&g.curSong===sg.id?' on':''}" onclick="openSong('${sg.id}')"><span class="hash">#</span>${esc(sg.name)}</button>`).join(''):`<div class="ch-note">曲がまだありません</div>`)
       +`<button class="ch-item" onclick="addSong()"><span class="hash">＋</span>曲を追加</button>`
-      +`<div class="ch-sec">ライブ</div>`
+      +`<div class="ch-sec">ライブ管理</div>`
       +item('find','練習候補',curPanel==='find'&&activeGrpId===drawerCtx&&!(g&&g.curSong))
       +item('band','メンバー・管理',false);
   }
+  ch=`<div style="flex:1;overflow-y:auto">${ch}</div><div class="ch-user"><div class="ch-av">${esc((st.me.name||'?').slice(0,1))}</div><div><div class="ch-un">${esc(st.me.name||'未設定')}</div><div class="ch-up">${esc(st.me.part||'パート未設定')}</div></div></div>`;
   document.getElementById('chlist').innerHTML=ch;
 }
 function render(){
@@ -777,7 +782,7 @@ function renderFind(){
   const el=document.getElementById('view-find');if(!el)return;
 
   if(myGroups.length===0){
-    el.innerHTML=`<div style="padding:40px 20px;text-align:center;color:var(--text3)"><div style="font-size:40px;margin-bottom:12px">👥</div><div style="font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px">グループがありません</div><div style="font-size:13px">「グループ」タブでグループを作るか参加してください</div></div>`;
+    el.innerHTML=`<div style="padding:40px 20px;text-align:center;color:var(--text3)"><div style="font-size:40px;margin-bottom:12px">👥</div><div style="font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px">ライブがありません</div><div style="font-size:13px">左の＋からライブを作るか参加してください</div></div>`;
     return;
   }
 
@@ -973,7 +978,7 @@ function renderBand(){
 
   // デバッグボタン（一時的）
   const debugBtn=`<button onclick="debugSync()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #E8C86A;background:#FFFBE6;color:#7A5010;font-size:13px;font-weight:600;margin-bottom:12px;cursor:pointer;font-family:'Inter','Noto Sans JP',sans-serif;">🔄 同期状態を確認</button>`;
-  let html=`<h2 class="scr-title">グループ</h2>${debugBtn}`;
+  let html=`<h2 class="scr-title">ライブ</h2>${debugBtn}`;
   if(myGroups.length>0){
     myGroups.forEach(g=>{
       const all=[{id:0,name:st.me.name,part:g.myPart||st.me.part,color:st.me.color,blocks:st.blocks,isMe:true},...(g.members||[])];
@@ -1019,8 +1024,8 @@ function renderBand(){
     });
   }
   html+=`<div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
-    <div style="font-size:14px;font-weight:600;margin-bottom:10px">＋ 新しいグループを作る</div>
-    <input type="text" id="grp-new-name" placeholder="グループ名（例：アカペラA班）" style="width:100%;margin-bottom:10px;padding:14px;font-size:16px;border:1.5px solid var(--border);border-radius:12px;box-sizing:border-box;background:#fff;color:#0D0D10;outline:none;" oninput="const btn=document.getElementById('grp-create-btn');if(this.value.trim()){btn.style.background='var(--accent)';btn.style.color='#fff';}else{btn.style.background='#E4E4E8';btn.style.color='#9898AA';}">
+    <div style="font-size:14px;font-weight:600;margin-bottom:10px">＋ ライブを追加</div>
+    <input type="text" id="grp-new-name" placeholder="ライブ名（例：秋の定演）" style="width:100%;margin-bottom:10px;padding:14px;font-size:16px;border:1.5px solid var(--border);border-radius:12px;box-sizing:border-box;background:#fff;color:#0D0D10;outline:none;" oninput="const btn=document.getElementById('grp-create-btn');if(this.value.trim()){btn.style.background='var(--accent)';btn.style.color='#fff';}else{btn.style.background='#E4E4E8';btn.style.color='#9898AA';}">
     <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
       <div style="flex:1">
         <label style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">開始日</label>
@@ -1318,7 +1323,7 @@ function saveGroups(){localStorage.setItem('hrm_groups',JSON.stringify(myGroups)
 function getGroup(id){return myGroups.find(g=>g.id===id)||null;}
 
 async function createGroup(){
-  const nameInput=document.getElementById('grp-new-name');const name=nameInput?nameInput.value.trim():'';const grpName=name||(st.me.name+'のグループ');const id=genGrpCode();
+  const nameInput=document.getElementById('grp-new-name');const name=nameInput?nameInput.value.trim():'';const grpName=name||(st.me.name+'のライブ');const id=genGrpCode();
   const startInput=document.getElementById('grp-start-date');const endInput=document.getElementById('grp-end-date');
   const startDate=startInput&&startInput.value?startInput.value:null;
   const endDate=endInput&&endInput.value?endInput.value:null;
@@ -1386,7 +1391,7 @@ window.openDecidePracticeSheet=function openDecidePracticeSheet(grpId,date,slotI
   document.getElementById('psh-title').textContent=`${d.getMonth()+1}/${d.getDate()}（${dn}）${slot?.name||''} を練習コマに？`;
   document.getElementById('psh-body').innerHTML=`
     <div style="padding:16px">
-      <div style="font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.6">グループ「${g?.name||''}」の練習コマとして決定します。<br><span style="font-size:12px;color:var(--text3)">決定者と日時が履歴として残ります。あとで変更もできます。</span></div>
+      <div style="font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.6">ライブ「${g?.name||''}」の練習コマとして決定します。<br><span style="font-size:12px;color:var(--text3)">決定者と日時が履歴として残ります。あとで変更もできます。</span></div>
       <button class="btn btn-p btn-block" style="margin-bottom:8px" onclick="execDecidePractice()">決定する</button>
       <button class="btn btn-g btn-block" onclick="closeSh('practice')">キャンセル</button>
     </div>`;
@@ -1822,7 +1827,7 @@ window.addEventListener('load',function(){
   if(/[?&]dev(=|&|$)/.test(location.search)){
     // 開発用: ログインなし・クラウド同期なし(currentUserはnullのまま)
     st.boarded=true;st.me.name=st.me.name||'開発';st.me.part=st.me.part||'1st';
-    if(!myGroups.length){myGroups=[{id:'dev1',name:'テスト曲',members:[],practiceSlots:[]}];activeGrpId='dev1';}
+    if(!myGroups.length){myGroups=[{id:'dev1',name:'テストライブ',members:[],practiceSlots:[]}];activeGrpId='dev1';}
     document.getElementById('login-screen').style.display='none';
     document.getElementById('ob').classList.add('gone');
     initApp();
