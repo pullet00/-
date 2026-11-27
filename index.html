@@ -450,6 +450,8 @@ body.chc .drawer{display:none;}
 
 <!-- Discord風ドロワー -->
 <div class="mbr" id="mbr"></div>
+<div class="sh-ov" id="ls-ov" onclick="closeSh('ls')"></div>
+<div class="sheet" id="ls-sh" style="max-height:92vh"><div class="sh-handle"></div><div class="sh-head"><div class="sh-title">ライブ設定</div></div><div class="sh-scroll" id="ls-body"></div></div>
 <div class="sh-ov" id="song-ov" onclick="closeSh('song')"></div>
 <div class="sheet" id="song-sh" style="max-height:92vh"><div class="sh-handle"></div><div class="sh-head"><div class="sh-title">曲を追加</div></div><div class="sh-scroll" id="song-body"></div></div>
 <div class="dr-ov" id="dr-ov" onclick="closeDrawer()"></div>
@@ -531,6 +533,7 @@ const defSt=()=>({me:{name:'自分',part:'',color:'green',code:gc()},slots:[{id:
 
 // 毎週の予定は区別しない: 値は常に'class'、classカテゴリは常に存在させる
 function normalizeSt(){
+  try{Object.keys(st.blocks||{}).forEach(k=>{if(st.blocks[k]==='practice')delete st.blocks[k];});}catch(e){}
   if(!st.tpl)st.tpl={};
   Object.keys(st.tpl).forEach(k=>{if(st.tpl[k])st.tpl[k]='class';else delete st.tpl[k];});
   if(!st.cats.find(c=>c.id==='class'))st.cats.unshift({id:'class',name:'授業',bg:'#EEF1FA',fg:'#2C4BA0'});
@@ -650,18 +653,17 @@ function renderDrawer(){
     const g=myGroups.find(x=>x.id===drawerCtx);
     const onC=(k,sid)=>(curPanel==='chat'||curPanel==='find'||curPanel==='band')&&activeGrpId===drawerCtx&&curChan===k&&((sid||null)===(k==='announce'||k==='members'?null:(g&&g.curSong)||null));
     const sub=(k,sid,label)=>`<button class="ch-item" style="margin-left:22px;width:calc(100% - 30px)${onC(k,sid)?';background:#404249;color:#fff':''}" onclick="openChan('${k}','${sid}')"><span class="hash">#</span>${label}</button>`;
-    ch=`<div class="ch-head">${esc(g?g.name:'')}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="margin-left:8px;vertical-align:middle"><path d="M6 9l6 6 6-6"/></svg></div>`
+    ch=`<div class="ch-head"><button onclick="openLiveSettings()" title="ライブ設定" style="width:30px;height:30px;border-radius:8px;border:none;background:#383A40;color:#DBDEE1;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:8px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g?g.name:'')}</span></div>`
       +`<div class="ch-sec">ライブ全体</div>`
       +`<button class="ch-item${onC('announce')?' on':''}" onclick="openChan('announce','')"><span class="hash">#</span>お知らせ</button>`
       +`<div class="ch-sec">曲</div>`;
-    ((g&&g.songs)||[]).forEach(sg=>{
+    ((g&&g.songs)||[]).filter(sg=>songVisible(g,sg)).forEach(sg=>{
       const open=_exp[sg.id]!==undefined?_exp[sg.id]:(g.curSong===sg.id);
       ch+=`<button class="ch-item" style="font-weight:700;color:${g.curSong===sg.id?'#fff':'#B5BAC1'}" onclick="toggleSong('${sg.id}')"><span style="width:16px;text-align:center;font-size:10px">${open?'▼':'▶'}</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(sg.name)}</span></button>`;
       if(open)ch+=sub('find',sg.id,'練習可能コマ')+sub('score',sg.id,'楽譜')+sub('rec',sg.id,'録音')+sub('review',sg.id,'反省')+sub('contact',sg.id,'連絡');
     });
-    ch+=`<button class="ch-item" onclick="openSongSheet()"><span class="hash">＋</span>曲を追加</button>`
-      +`<div class="ch-sec">ライブ管理</div>`
-      +`<button class="ch-item${curPanel==='band'&&activeGrpId===drawerCtx?' on':''}" onclick="openChan('members','')"><span class="hash">#</span>メンバー・管理</button>`;
+    ch+=(isStaff(g)?`<button class="ch-item" onclick="openSongSheet()"><span class="hash">＋</span>曲を追加</button>`:'')
+;
   }
   ch=`<div style="flex:1;overflow-y:auto">${ch}</div><div class="ch-user"><div class="ch-av">${esc((st.me.name||'?').slice(0,1))}</div><div><div class="ch-un">${esc(st.me.name||'未設定')}</div></div></div>`;
   document.getElementById('chlist').innerHTML=ch;
@@ -837,15 +839,15 @@ function renderFind(){
   </div>`;
 
   // 決定済み練習コマ
-  const ps=activeGrp?activeGrp.practiceSlots||[]:[];
-  let psHTML='';
+  const ps=(activeGrp?activeGrp.practiceSlots||[]:[]).filter(p=>(p.song_id||'')===((activeGrp&&activeGrp.curSong)||'')).sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):a.slot_id-b.slot_id);
+  let psHTML=`<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.06em;margin-bottom:8px">練習予定</div>${ps.length?'':'<div style="font-size:13px;color:var(--text3);padding:6px 2px">まだ練習予定はありません。下の表の空きコマをタップして追加できます。</div>'}</div>`;
   if(ps.length>0){
-    psHTML=`<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">決定済み練習コマ</div>`;
+    psHTML=`<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.06em;margin-bottom:8px">練習予定</div>`;
     ps.forEach(p=>{
       const slot=st.slots.find(s=>s.id==p.slot_id);const dt=new Date(p.decided_at);
       const dtStr=`${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
       psHTML+=`<div style="background:#EDE9FE;border-radius:12px;padding:11px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px">
-        <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#5B21B6">${p.date}（${slot?.name||''}）${slot?.start||''}–${slot?.end||''}</div><div style="font-size:11px;color:#8B5CF6;margin-top:2px">${p.decided_by}が${dtStr}に決定</div></div>
+        <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#5B21B6">${(()=>{const d=new Date(p.date);return (d.getMonth()+1)+'/'+d.getDate()+'（'+DAYS[d.getDay()===0?6:d.getDay()-1]+'）';})()}${slot?.name||''}　${slot?.start||''}–${slot?.end||''}</div><div style="font-size:11px;color:#8B5CF6;margin-top:2px">${p.decided_by}が${dtStr}に決定</div></div>
         <button onclick="openChangePracticeSheet('${activeGrpId}','${p.id}','${p.date}',${p.slot_id})" style="padding:6px 12px;border-radius:8px;border:none;background:rgba(91,33,182,.1);color:#5B21B6;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">変更</button>
       </div>`;
     });
@@ -890,7 +892,8 @@ function renderFind(){
     </div>`;
   }
 
-  let h=`<h2 class="scr-title">練習候補</h2>${nextCardHTML}${tabHTML}${psHTML}`;
+  const _fs=((activeGrp&&activeGrp.songs)||[]).find(x=>x.id===(activeGrp&&activeGrp.curSong));
+  let h=`<h2 class="scr-title">${_fs?_esc(_fs.name)+' / ':''}練習可能コマ</h2>${psHTML}`;
 
   // ── カレンダーグリッド（パート表示）──
   if(activeGrp){
@@ -939,7 +942,7 @@ function renderFind(){
       <a href="javascript:void(0)" onclick="if(myGroups.find(g=>g.id==='${activeGrpId}'))myGroups.find(g=>g.id==='${activeGrpId}')._findWeekOffset=Math.min(${weeksInPeriod.length-1},${wOff}+1);renderFind();" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:${wOff<weeksInPeriod.length-1?'var(--surf)':'var(--surf2)'};display:flex;align-items:center;justify-content:center;font-size:16px;color:${wOff<weeksInPeriod.length-1?'var(--text2)':'var(--text3)'};text-decoration:none;">›</a>
     </div>`;
 
-    h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:8px">空きコマをタップして練習を決定できます</div>`;
+    h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:8px">この表は空き状況の確認用です。空きコマをタップすると、上の「練習予定」に追加できます</div>`;
     h+=`<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px">`;
     h+=`<div style="display:grid;grid-template-columns:40px repeat(${visDays.length},1fr);gap:2px;min-width:${Math.max(280,visDays.length*56+40)}px">`;
 
@@ -971,7 +974,7 @@ function renderFind(){
           if(!m.isMe&&(m.tpl||{})[dn+'-'+slot.id])return false;
           return true;
         });
-        const decided=ps.find(p=>p.date===ds&&p.slot_id==slot.id);
+        const decided=null;
         const ac=availM.length;const allOk=ac===total&&total>0;const someOk=ac>0&&ac<total&&ac>=st.minM;
 
         let bg2='#F4F4F6',bd2='1px solid #E4E4E8',tc2='var(--text3)';
@@ -1005,7 +1008,6 @@ function renderFind(){
     h+=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;font-size:10px;color:var(--text2)">
       <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:3px;background:#EEFBF0;border:1.5px solid #90C8AD"></div>全員OK</div>
       <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:3px;background:#FFFBE6;border:1px solid #E8C86A"></div>${st.minM}人以上</div>
-      <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:3px;background:#EDE9FE;border:2px solid #6D28D9"></div>決定済み</div>
     </div>`;
   }
 
@@ -1379,8 +1381,8 @@ async function pushMyData(){
 async function pullGroupDataFor(grpId){
   try{
     const g=getGroup(grpId);if(!g)return;
-    try{const {data:gr}=await sbClient.from('groups').select('name,start_date,end_date,songs').eq('id',grpId).single();
-      if(gr){g.name=gr.name||g.name;g.startDate=gr.start_date||g.startDate;g.endDate=gr.end_date||g.endDate;g.songs=gr.songs||g.songs||[];}}catch(e){}
+    try{const {data:gr}=await sbClient.from('groups').select('name,start_date,end_date,songs,roles').eq('id',grpId).single();
+      if(gr){g.roles=gr.roles||g.roles||{};g.name=gr.name||g.name;g.startDate=gr.start_date||g.startDate;g.endDate=gr.end_date||g.endDate;g.songs=gr.songs||g.songs||[];}}catch(e){}
     const {data:rows,error:err1}=await sbClient.from('members').select('*').eq('group_id',grpId);
     if(err1)console.warn('members fetch error',err1.message);
     else if(rows)g.members=rows.filter(r=>r.code!==st.me.code).map(r=>({id:r.id,name:r.name,part:r.part,color:r.color,code:r.code,blocks:r.blocks||{},tpl:r.tpl||{},cats:r.cats||[],slots:r.slots||[]}));
@@ -1437,19 +1439,22 @@ window.openChangePracticeSheet=function openChangePracticeSheet(grpId,existingId
 };
 async function execDecidePractice(){
   if(!_practiceCtx)return;const {grpId,date,slotId}=_practiceCtx;closeSh('practice');
+  const g=getGroup(grpId);if(!g)return;
+  const row={group_id:grpId,slot_id:slotId,date,decided_by:st.me.name,decided_at:new Date().toISOString(),song_id:g.curSong||null};
   try{
-    await sbClient.from('practice_slots').insert({group_id:grpId,slot_id:slotId,date,decided_by:st.me.name,decided_at:new Date().toISOString()});
-    const key=BK(date,slotId);
-    if(!st.blocks[key]){
-      if(!st.cats.find(c=>c.id==='practice'))st.cats.push({id:'practice',name:'練習',bg:'#EDE9FE',fg:'#6D28D9'});
-      st.blocks[key]='practice';
-    }
-    save();showToast('練習コマを決定しました！');await pullGroupDataFor(grpId);renderFind();renderWeek();
+    if(currentUser){const {error}=await sbClient.from('practice_slots').insert(row);if(error)throw new Error(error.message);await pullGroupDataFor(grpId);}
+    else{g.practiceSlots=g.practiceSlots||[];g.practiceSlots.push(Object.assign({id:'l'+Date.now()},row));saveGroups();}
+    showToast('練習予定に追加しました');renderFind();
   }catch(e){showToast('エラー: '+e.message);}
 }
 async function execCancelPractice(){
-  if(!_practiceCtx)return;const {grpId,date,slotId,existingId}=_practiceCtx;closeSh('practice');
-  try{await sbClient.from('practice_slots').delete().eq('id',existingId);const key=BK(date,slotId);if(st.blocks[key]==='practice')delete st.blocks[key];save();showToast('練習コマを取り消しました');await pullGroupDataFor(grpId);renderFind();renderWeek();}catch(e){showToast('エラー: '+e.message);}
+  if(!_practiceCtx)return;const {grpId,existingId}=_practiceCtx;closeSh('practice');
+  const g=getGroup(grpId);if(!g)return;
+  try{
+    if(currentUser){const {error}=await sbClient.from('practice_slots').delete().eq('id',existingId);if(error)throw new Error(error.message);await pullGroupDataFor(grpId);}
+    else{g.practiceSlots=(g.practiceSlots||[]).filter(p=>p.id!==existingId);saveGroups();}
+    showToast('取り消しました');renderFind();
+  }catch(e){showToast('エラー: '+e.message);}
 }
 
 
@@ -1882,10 +1887,10 @@ async function createLive(){
   const id=genGrpCode();const name=L.name.trim();
   try{
     if(currentUser){
-      const {error}=await sbClient.from('groups').insert({id,name,start_date:L.start,end_date:L.end,songs:[],owner:currentUser.id});
+      const {error}=await sbClient.from('groups').insert({id,name,start_date:L.start,end_date:L.end,songs:[],owner:currentUser.id,roles:{[st.me.code]:'staff'}});
       if(error)throw new Error(error.message);
     }
-    const g={id,name,members:[],practiceSlots:[],startDate:L.start,endDate:L.end,songs:[],myPart:st.me.part||''};
+    const g={id,name,members:[],practiceSlots:[],startDate:L.start,endDate:L.end,songs:[],roles:{[st.me.code]:'staff'},myPart:st.me.part||''};
     myGroups.push(g);activeGrpId=id;drawerCtx=id;saveGroups();
     if(currentUser){await pushMyDataTo(id,g.myPart);startSyncFor(id);}
     L.busy=false;L.code=id;renderLiveSheet();renderBand();renderRail();
@@ -1970,9 +1975,9 @@ function renderMembers(){
   const el=document.getElementById('mbr');if(!el)return;
   const c=effCtx();const g=myGroups.find(x=>x.id===(drawerCtx!=='me'&&drawerCtx!=='add'?drawerCtx:c));
   if(!g){el.innerHTML=`<div class="m-sec">メンバー</div><div class="ch-note">ライブを選ぶとメンバーが表示されます</div>`;return;}
-  const me={name:st.me.name||'自分',color:st.me.color,part:g.myPart||st.me.part};
+  const me={name:st.me.name||'自分',color:st.me.color,part:g.myPart||st.me.part,isMe:true,code:st.me.code};
   const all=[me,...(g.members||[])];
-  const row=m=>{const col=AC.find(x=>x.id===m.color)||AC[0];return `<div class="m-row"><div class="m-av" style="background:${col.bg};color:${col.fg}">${_esc((m.name||'?').slice(0,1))}</div><div><div>${_esc(m.name)}</div>${m.part?`<div class="m-pt">${_esc(m.part)}</div>`:''}</div></div>`;};
+  const row=m=>{const col=AC.find(x=>x.id===m.color)||AC[0];return `<div class="m-row"><div class="m-av" style="background:${col.bg};color:${col.fg}">${_esc((m.name||'?').slice(0,1))}</div><div><div>${_esc(m.name)}${isStaffCode(g,m.code||(m.isMe?st.me.code:''))?' <span style="font-size:10px;color:#F0B232;font-weight:700">ライブ係</span>':''}</div>${m.part?`<div class="m-pt">${_esc(m.part)}</div>`:''}</div></div>`;};
   const song=(g.songs||[]).find(x=>x.id===g.curSong);
   let h='';
   if(song&&song.parts&&Object.keys(song.parts).length){
@@ -2009,7 +2014,7 @@ function renderChat(){
   el.innerHTML=`<div style="position:absolute;inset:0;display:flex;flex-direction:column">
     <div id="msg-list" style="flex:1;overflow-y:auto;padding:14px 14px 6px"></div>
     <div style="padding:8px 12px calc(var(--safe-b) + 10px);background:#F6F4EF;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center">
-      ${isRec?`<label class="btn btn-p" style="padding:11px 16px;cursor:pointer;flex:1;justify-content:center">録音ファイルを置く<input type="file" accept="audio/*,video/*" style="display:none" onchange="sendFile(this)"></label>`
+      ${(curChan==='announce'&&!isStaff(g))?`<div style="flex:1;text-align:center;font-size:13px;color:var(--text3);padding:10px">お知らせはライブ係のみ書き込めます</div>`:isRec?`<label class="btn btn-p" style="padding:11px 16px;cursor:pointer;flex:1;justify-content:center">録音ファイルを置く<input type="file" accept="audio/*,video/*" style="display:none" onchange="sendFile(this)"></label>`
       :`<input id="msg-in" placeholder="#${CHAN_LABEL[curChan]}にメッセージを送信" style="flex:1;padding:12px 14px;font-size:15px;border:1.5px solid var(--border);border-radius:20px;background:#fff;color:#0D0D10;outline:none" onkeydown="if(event.key==='Enter'&&!event.isComposing)sendMsg()"><button class="btn btn-p" onclick="sendMsg()" style="padding:11px 16px">送信</button>`}
     </div></div>`;
   loadMsgs(true);
@@ -2055,6 +2060,58 @@ function renderScoreChan(el,song){
   const vd=song.videoUrl?`<video controls preload="metadata" src="${_esc(song.videoUrl)}" style="width:100%;border-radius:12px;margin-top:14px;background:#000"></video>`:'';
   const parts=Object.entries(song.parts||{}).map(([k,v])=>`<div style="font-size:13px;margin-top:4px"><b>${_esc(k)}</b>　${v.map(_esc).join('・')}</div>`).join('');
   el.innerHTML=`<div style="position:absolute;inset:0;overflow-y:auto;padding:16px"><h2 class="scr-title" style="margin-bottom:12px">${_esc(song.name)}</h2>${sc}${vd}${parts?`<div style="margin-top:18px"><div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:4px">パート担当</div>${parts}</div>`:''}</div>`;
+}
+
+
+// ══ ロール／ライブ設定 ══
+function rolesOf(g){return (g&&g.roles)||{};}
+function isStaffCode(g,code){const r=rolesOf(g);if(!Object.keys(r).length)return true;return r[code]==='staff';}
+function isStaff(g){return !g||isStaffCode(g,st.me.code);}
+function songParticipants(sg){return [...new Set(Object.values(sg.parts||{}).flat())];}
+function songVisible(g,sg){return isStaff(g)||songParticipants(sg).includes(st.me.name||'自分');}
+function liveMembersAll(g){return [{name:st.me.name||'自分',code:st.me.code,isMe:true},...((g.members||[]).map(m=>({name:m.name,code:m.code})))];}
+let _ls=null;
+function openLiveSettings(){
+  const g=myGroups.find(x=>x.id===drawerCtx);if(!g)return;
+  _ls={id:g.id,name:g.name,start:g.startDate||'',end:g.endDate||'',roles:Object.assign({},rolesOf(g))};
+  renderLiveSettings();openSh('ls');
+}
+function renderLiveSettings(){
+  const g=myGroups.find(x=>x.id===_ls.id);if(!g)return;const L=_ls;const staff=isStaff(g);
+  const inp='width:100%;padding:12px;font-size:15px;border:1.5px solid var(--border);border-radius:10px;background:#fff;color:#0D0D10;outline:none;';
+  const lab='font-size:11px;font-weight:700;color:var(--text3);margin:16px 0 6px;display:block';
+  const all=liveMembersAll(g);
+  const legacy=!Object.keys(L.roles).length;
+  const roleOf=c=>legacy?'staff':(L.roles[c]==='staff'?'staff':'member');
+  const mem=all.map(m=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="flex:1;font-size:14px">${_esc(m.name)}${m.isMe?' <span style="font-size:11px;color:var(--text3)">（自分）</span>':''}</div>${staff?`<select onchange="lsRole('${m.code}',this.value)" style="padding:7px;border-radius:8px;border:1px solid var(--border);font-size:13px"><option value="staff"${roleOf(m.code)==='staff'?' selected':''}>ライブ係</option><option value="member"${roleOf(m.code)!=='staff'?' selected':''}>参加者</option></select>`:`<span style="font-size:12px;color:${roleOf(m.code)==='staff'?'#B7791F':'var(--text3)'};font-weight:600">${roleOf(m.code)==='staff'?'ライブ係':'参加者'}</span>`}</div>`).join('');
+  document.getElementById('ls-body').innerHTML=`<div style="padding:4px 16px 24px">
+    ${staff?'':'<div style="font-size:12px;color:var(--text3);background:var(--surf2);border-radius:10px;padding:10px;margin-top:6px">設定を変更できるのはライブ係だけです</div>'}
+    <label style="${lab}">ライブ名</label><input style="${inp}" value="${_esc(L.name)}" ${staff?'':'disabled'} oninput="_ls.name=this.value">
+    <label style="${lab}">期間</label><div style="display:flex;gap:8px;align-items:center"><input type="date" style="${inp}" value="${L.start}" ${staff?'':'disabled'} onchange="_ls.start=this.value"><span>〜</span><input type="date" style="${inp}" value="${L.end}" ${staff?'':'disabled'} onchange="_ls.end=this.value"></div>
+    <label style="${lab}">参加コード</label>
+    <div style="display:flex;align-items:center;gap:8px;background:var(--surf2);border-radius:10px;padding:10px 12px"><span style="font-family:'Inter',monospace;font-size:20px;font-weight:700;letter-spacing:.15em;color:var(--accent);flex:1">${g.id}</span><button class="btn btn-p btn-sm" onclick="copyGrpCode('${g.id}')">コピー</button></div>
+    <label style="${lab}">メンバー（${all.length}人）とロール</label>${mem}
+    ${staff?`<button class="btn btn-p btn-block" style="margin-top:18px;padding:14px" onclick="saveLiveSettings()">変更を保存</button>`:''}
+    <button class="btn btn-g btn-block" style="margin-top:10px" onclick="closeSh('ls');openGrpPartSheet('${g.id}')">このライブでの自分のパート</button>
+    <button class="btn btn-block" style="margin-top:8px;background:none;border:1px solid #E8A09A;color:#C0392B" onclick="closeSh('ls');leaveGroup('${g.id}')">このライブから退出</button>
+  </div>`;
+}
+function lsRole(code,val){
+  const g=myGroups.find(x=>x.id===_ls.id);
+  if(!Object.keys(_ls.roles).length){liveMembersAll(g).forEach(m=>{_ls.roles[m.code]='staff';});}
+  if(val==='staff')_ls.roles[code]='staff';else delete _ls.roles[code];
+  if(!Object.values(_ls.roles).includes('staff')){showToast('ライブ係が1人以上必要です');_ls.roles[code]='staff';}
+  renderLiveSettings();
+}
+async function saveLiveSettings(){
+  const L=_ls;const g=myGroups.find(x=>x.id===L.id);if(!g)return;
+  if(!L.name.trim()){showToast('ライブ名を入力してください');return;}
+  if(L.start&&L.end&&L.end<L.start){showToast('終了日が開始日より前です');return;}
+  try{
+    if(currentUser){const {error}=await sbClient.from('groups').update({name:L.name.trim(),start_date:L.start||null,end_date:L.end||null,roles:L.roles}).eq('id',g.id);if(error)throw new Error(error.message);}
+    g.name=L.name.trim();g.startDate=L.start||null;g.endDate=L.end||null;g.roles=L.roles;saveGroups();
+    showToast('保存しました');closeSh('ls');renderRail();if(curPanel==='find')renderFind();
+  }catch(e){showToast('エラー: '+e.message);}
 }
 
 // 常時表示レールの更新フック
