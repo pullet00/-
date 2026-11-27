@@ -533,7 +533,7 @@ const defSt=()=>({me:{name:'自分',part:'',color:'green',code:gc()},slots:[{id:
 
 // 毎週の予定は区別しない: 値は常に'class'、classカテゴリは常に存在させる
 function normalizeSt(){
-  try{Object.keys(st.blocks||{}).forEach(k=>{if(st.blocks[k]==='practice')delete st.blocks[k];});}catch(e){}
+  try{st.pracRef=st.pracRef||{};Object.keys(st.blocks||{}).forEach(k=>{if(st.blocks[k]==='practice'&&!st.pracRef[k])delete st.blocks[k];});}catch(e){}
   if(!st.tpl)st.tpl={};
   Object.keys(st.tpl).forEach(k=>{if(st.tpl[k])st.tpl[k]='class';else delete st.tpl[k];});
   if(!st.cats.find(c=>c.id==='class'))st.cats.unshift({id:'class',name:'授業',bg:'#EEF1FA',fg:'#2C4BA0'});
@@ -852,7 +852,9 @@ function renderFind(){
       const dtStr=`${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
       psHTML+=`<div style="background:#EDE9FE;border-radius:12px;padding:11px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px">
         <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#5B21B6">${(()=>{const d=new Date(p.date);return (d.getMonth()+1)+'/'+d.getDate()+'（'+DAYS[d.getDay()===0?6:d.getDay()-1]+'）';})()}${slot?.name||''}　${slot?.start||''}–${slot?.end||''}</div><div style="font-size:11px;color:#8B5CF6;margin-top:2px">${p.decided_by}が${dtStr}に決定</div></div>
-        <button onclick="openChangePracticeSheet('${activeGrpId}','${p.id}','${p.date}',${p.slot_id})" style="padding:6px 12px;border-radius:8px;border:none;background:rgba(91,33,182,.1);color:#5B21B6;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">変更</button>
+        <div style="display:flex;flex-direction:column;gap:5px;align-items:stretch">
+        <button onclick="togglePracCal('${p.id}')" style="padding:6px 10px;border-radius:8px;border:none;background:${(st.pracRef||{})[BK(p.date,p.slot_id)]===p.id?'#5B21B6':'rgba(91,33,182,.1)'};color:${(st.pracRef||{})[BK(p.date,p.slot_id)]===p.id?'#fff':'#5B21B6'};font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap">${(st.pracRef||{})[BK(p.date,p.slot_id)]===p.id?'カレンダー追加済み':'カレンダーに追加'}</button>
+        <button onclick="openChangePracticeSheet('${activeGrpId}','${p.id}','${p.date}',${p.slot_id})" style="padding:6px 12px;border-radius:8px;border:none;background:rgba(91,33,182,.1);color:#5B21B6;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">変更</button></div>
       </div>`;
     });
     psHTML+=`</div>`;
@@ -1289,7 +1291,7 @@ async function onLoginSuccess(user){
     const {data:rows,error}=await sbClient.from('user_data').select('data').eq('user_id',currentUser.id).single();
     if(!error&&rows&&rows.data){
       const saved=rows.data;const savedSt=saved.st||saved;const fresh=defSt();
-      st={me:savedSt.me||fresh.me,slots:savedSt.slots||fresh.slots,days:savedSt.days||fresh.days,cats:savedSt.cats||fresh.cats,blocks:savedSt.blocks||{},tpl:savedSt.tpl||{},members:savedSt.members||[],nid:savedSt.nid||1,ncid:savedSt.ncid||10,minM:savedSt.minM||5,boarded:savedSt.boarded||false};
+      st={me:savedSt.me||fresh.me,slots:savedSt.slots||fresh.slots,days:savedSt.days||fresh.days,cats:savedSt.cats||fresh.cats,blocks:savedSt.blocks||{},tpl:savedSt.tpl||{},members:savedSt.members||[],nid:savedSt.nid||1,ncid:savedSt.ncid||10,minM:savedSt.minM||5,boarded:savedSt.boarded||false,pracRef:savedSt.pracRef||{}};
       normalizeSt();
       if(saved.myGroups&&saved.myGroups.length>0){myGroups=saved.myGroups;activeGrpId=saved.activeGrpId||myGroups[0]?.id||null;localStorage.setItem('hrm_groups',JSON.stringify(myGroups));localStorage.setItem('hrm_active_grp',activeGrpId||'');}
       try{localStorage.setItem('hrm7',JSON.stringify(st));}catch(e){}
@@ -1454,6 +1456,7 @@ async function execDecidePractice(){
 async function execCancelPractice(){
   if(!_practiceCtx)return;const {grpId,existingId}=_practiceCtx;closeSh('practice');
   const g=getGroup(grpId);if(!g)return;
+  Object.keys(st.pracRef||{}).forEach(k=>{if(st.pracRef[k]===existingId){delete st.pracRef[k];if(st.blocks[k]==='practice')delete st.blocks[k];}});save();
   try{
     if(currentUser){const {error}=await sbClient.from('practice_slots').delete().eq('id',existingId);if(error)throw new Error(error.message);await pullGroupDataFor(grpId);}
     else{g.practiceSlots=(g.practiceSlots||[]).filter(p=>p.id!==existingId);saveGroups();}
@@ -2115,6 +2118,19 @@ async function saveLiveSettings(){
     g.name=L.name.trim();g.startDate=L.start||null;g.endDate=L.end||null;g.roles=L.roles;saveGroups();
     showToast('保存しました');closeSh('ls');renderRail();if(curPanel==='find')renderFind();
   }catch(e){showToast('エラー: '+e.message);}
+}
+
+
+function togglePracCal(id){
+  const g=myGroups.find(x=>x.id===activeGrpId);if(!g)return;
+  const p=(g.practiceSlots||[]).find(x=>x.id===id);if(!p)return;
+  const key=BK(p.date,p.slot_id);st.pracRef=st.pracRef||{};
+  if(st.pracRef[key]===id){delete st.pracRef[key];if(st.blocks[key]==='practice')delete st.blocks[key];save();showToast('カレンダーから外しました');renderFind();return;}
+  if(st.pracRef[key]){showToast('ほかの練習と時間が重なっています');return;}
+  if(st.blocks[key]&&!confirm('この時間には既に予定が入っています。練習で上書きしますか？'))return;
+  if(!st.cats.find(c=>c.id==='practice'))st.cats.push({id:'practice',name:'練習',bg:'#EDE9FE',fg:'#6D28D9'});
+  st.blocks[key]='practice';st.pracRef[key]=id;save();
+  showToast('カレンダーに追加しました（この時間はほかの曲の候補から外れます）');renderFind();
 }
 
 // 常時表示レールの更新フック
