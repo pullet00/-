@@ -618,7 +618,11 @@ function addSong(){
   (g.songs=g.songs||[]).push({id:'s'+Date.now(),name:n.trim()});saveGroups();renderDrawer();
 }
 let curChan='announce';const _exp={};
-function toggleSong(id){const g=curLive();const cur=_exp[id]!==undefined?_exp[id]:(g&&g.curSong===id);_exp[id]=!cur;renderDrawer();}
+function toggleSong(id){
+  const g=curLive();if(!g)return;
+  if(g.curSong!==id){_exp[id]=true;openChan(curChan==='announce'||curChan==='members'?'find':curChan,id);return;}
+  const cur=_exp[id]!==undefined?_exp[id]:true;_exp[id]=!cur;renderDrawer();
+}
 function openChan(kind,sid){
   const g=myGroups.find(x=>x.id===drawerCtx);if(!g)return;
   activeGrpId=g.id;g.curSong=(kind==='announce'||kind==='members')?null:(sid||null);
@@ -634,7 +638,7 @@ function openChannel(panel){
 function renderDrawer(){
   const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const cur=effCtx();
-  let rail=`<button class="rail-btn${drawerCtx==='me'?' on':''}" onclick="setCtx('me')" title="マイページ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></button><div class="rail-sep"></div>`;
+  let rail=`<button class="rail-btn${drawerCtx==='me'?' on':''}" onclick="setCtx('me');showPanel('cal')" title="マイページ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></button><div class="rail-sep"></div>`;
   myGroups.forEach(g=>{
     rail+=`<button class="rail-btn${drawerCtx===g.id?' on':''}" onclick="setCtx('${g.id}')" title="${esc(g.name)}">${esc((g.name||'?').slice(0,1))}</button>`;
   });
@@ -1942,7 +1946,7 @@ function renderSongSheet(){
   const lab='font-size:11px;font-weight:700;color:var(--text3);margin:14px 0 6px;display:block';
   document.getElementById('song-body').innerHTML=`<div style="padding:4px 16px 20px">
     <label style="${lab}">曲名</label><input style="${inp}" value="${_esc(N.name)}" oninput="_ns.name=this.value" placeholder="曲名">
-    <label style="${lab}">楽譜（.mscz・必須）</label><input type="file" accept=".mscz" onchange="_ns.file=this.files[0]||null" style="font-size:12px;width:100%">
+    <label style="${lab}">楽譜（.mscz・任意）</label><input type="file" accept=".mscz" onchange="_ns.file=this.files[0]||null" style="font-size:12px;width:100%">
     <label style="${lab}">動画（任意）</label><input type="file" accept="video/*" onchange="_ns.video=this.files[0]||null" style="font-size:12px;width:100%">
     <label style="${lab}">パートごとの担当</label>${partsHTML(N,0,nsCands(),'nsTogPart')}
     <button class="btn btn-p btn-block" style="margin-top:18px;padding:15px;font-size:15px" onclick="saveNewSong()">${N.busy?'保存中...':'曲を追加する'}</button>
@@ -1951,15 +1955,14 @@ function renderSongSheet(){
 async function saveNewSong(){
   const N=_ns;if(!N||N.busy)return;const g=myGroups.find(x=>x.id===N.grpId);if(!g)return;
   if(!N.name.trim()){showToast('曲名を入力してください');return;}
-  if(!N.file){showToast('楽譜(.mscz)を選んでください');return;}
   N.busy=true;renderSongSheet();
   try{
     const sid='s'+Date.now();const o={id:sid,name:N.name.trim(),scoreUrl:'',videoUrl:'',parts:cleanParts(N.parts,nsCands())};
-    if(currentUser){
+    if(currentUser&&(N.file||N.video)){
       const up=async(f,kind)=>{const ext=(f.name.split('.').pop()||'bin').toLowerCase();const path=`${g.id}/${sid}/${kind}.${ext}`;
         const {error}=await sbClient.storage.from('scores').upload(path,f,{upsert:true});if(error)throw new Error('アップロード失敗: '+error.message);
         return sbClient.storage.from('scores').getPublicUrl(path).data.publicUrl;};
-      o.scoreUrl=await up(N.file,'score');if(N.video)o.videoUrl=await up(N.video,'video');
+      if(N.file)o.scoreUrl=await up(N.file,'score');if(N.video)o.videoUrl=await up(N.video,'video');
     }
     const songs=[...(g.songs||[]),o];
     if(currentUser){const {error}=await sbClient.from('groups').update({songs}).eq('id',g.id);if(error)throw new Error(error.message);}
