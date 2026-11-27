@@ -28,7 +28,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;}
-body{font-family:'Inter','Noto Sans JP',sans-serif;background:#F4F4F6;color:#0D0D10;height:100%;display:flex;flex-direction:column;font-size:14px;cursor:pointer;}
+body{padding-left:66px;font-family:'Inter','Noto Sans JP',sans-serif;background:#F4F4F6;color:#0D0D10;height:100%;display:flex;flex-direction:column;font-size:14px;cursor:pointer;}
 .topbar{height:calc(var(--top-h) + var(--safe-t));padding-top:var(--safe-t);background:#FFFFFF;border-bottom:1px solid var(--border);display:flex;align-items:center;padding-inline:14px;gap:8px;flex-shrink:0;z-index:100;}
 .logo{flex-shrink:0;display:flex;align-items:center;line-height:1;}
 .topbar-nav{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;}
@@ -193,11 +193,11 @@ input:focus{border-color:var(--accent);}
 .menu-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:var(--surf);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:var(--text2);}
 .menu-btn:active{background:var(--surf2);}
 .tb-title{flex:1;font-size:15px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:none;padding-left:4px;}
-.dr-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:900;}
+.dr-ov{display:none;position:fixed;top:0;bottom:0;right:0;left:66px;background:rgba(0,0,0,.45);z-index:900;}
 .dr-ov.open{display:block;}
-.drawer{position:fixed;top:0;bottom:0;left:0;width:min(88vw,310px);display:flex;z-index:901;transform:translateX(-102%);transition:transform .22s cubic-bezier(.32,0,.26,1);box-shadow:4px 0 28px rgba(0,0,0,.25);}
+.drawer{position:fixed;top:0;bottom:0;left:66px;width:min(72vw,250px);display:flex;z-index:901;transform:translateX(-102%);transition:transform .22s cubic-bezier(.32,0,.26,1);box-shadow:4px 0 28px rgba(0,0,0,.25);}
 .drawer.open{transform:translateX(0);}
-.rail{width:66px;background:#17182B;display:flex;flex-direction:column;align-items:center;gap:8px;padding:calc(var(--safe-t) + 12px) 0 calc(var(--safe-b) + 12px);overflow-y:auto;flex-shrink:0;}
+.rail{position:fixed;left:0;top:0;bottom:0;z-index:950;width:66px;background:#17182B;display:flex;flex-direction:column;align-items:center;gap:8px;padding:calc(var(--safe-t) + 12px) 0 calc(var(--safe-b) + 12px);overflow-y:auto;flex-shrink:0;}
 .rail-btn{width:46px;height:46px;border-radius:50%;border:none;background:#2A2B45;color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-radius .15s,background .15s;position:relative;font-family:'Inter','Noto Sans JP',sans-serif;flex-shrink:0;}
 .rail-btn.on{border-radius:15px;background:var(--accent);}
 .rail-btn.on::before{content:'';position:absolute;left:-10px;top:11px;width:4px;height:24px;border-radius:0 4px 4px 0;background:#fff;}
@@ -422,8 +422,8 @@ input:focus{border-color:var(--accent);}
 
 <!-- Discord風ドロワー -->
 <div class="dr-ov" id="dr-ov" onclick="closeDrawer()"></div>
+<div class="rail" id="rail"></div>
 <div class="drawer" id="drawer">
-  <div class="rail" id="rail"></div>
   <div class="chlist" id="chlist"></div>
 </div>
 
@@ -578,7 +578,17 @@ function closeDrawer(){
   document.getElementById('dr-ov').classList.remove('open');
   document.getElementById('drawer').classList.remove('open');
 }
-function setCtx(c){drawerCtx=c;renderDrawer();}
+function setCtx(c){drawerCtx=c;renderDrawer();document.getElementById('dr-ov').classList.add('open');document.getElementById('drawer').classList.add('open');}
+function renderRail(){renderDrawer();}
+function addSong(){
+  const g=myGroups.find(x=>x.id===drawerCtx);if(!g)return;
+  const n=prompt('曲名');if(!n||!n.trim())return;
+  (g.songs=g.songs||[]).push({id:'s'+Date.now(),name:n.trim()});saveGroups();renderDrawer();
+}
+function openSong(id){
+  const g=myGroups.find(x=>x.id===drawerCtx);if(g){g.curSong=id;}
+  openChannel('find');
+}
 function openChannel(panel){
   if(drawerCtx!=='me'&&drawerCtx!=='add'&&myGroups.find(g=>g.id===drawerCtx)){activeGrpId=drawerCtx;saveGroups();}
   closeDrawer();showPanel(panel);
@@ -603,10 +613,12 @@ function renderDrawer(){
     ch=`<div class="ch-head">追加</div>`+item('band','作成・参加・管理',curPanel==='band');
   } else {
     const g=myGroups.find(x=>x.id===drawerCtx);
-    ch=`<div class="ch-head">${esc(g?g.name:'')}</div><div class="ch-sec">チャンネル</div>`
-      +item('find','練習候補',curPanel==='find'&&activeGrpId===drawerCtx)
-      +item('band','メンバー・管理',false)
-      +`<div class="ch-note">※ライブ（サーバー）と曲（チャンネル）への切り替えは次の段階で実装します。今は既存のグループが並んでいます。</div>`;
+    ch=`<div class="ch-head">${esc(g?g.name:'')}</div><div class="ch-sec">曲</div>`
+      +(g&&g.songs&&g.songs.length?g.songs.map(sg=>`<button class="ch-item${curPanel==='find'&&activeGrpId===drawerCtx&&g.curSong===sg.id?' on':''}" onclick="openSong('${sg.id}')"><span class="hash">#</span>${esc(sg.name)}</button>`).join(''):`<div class="ch-note">曲がまだありません</div>`)
+      +`<button class="ch-item" onclick="addSong()"><span class="hash">＋</span>曲を追加</button>`
+      +`<div class="ch-sec">ライブ</div>`
+      +item('find','練習候補',curPanel==='find'&&activeGrpId===drawerCtx&&!(g&&g.curSong))
+      +item('band','メンバー・管理',false);
   }
   document.getElementById('chlist').innerHTML=ch;
 }
@@ -1794,6 +1806,12 @@ async function debugSync(){
 window.toggleFindSel=function(){};
 window.clearFindSel=function(){};
 window.openBulkDecideSheet=function(){};
+
+// 常時表示レールの更新フック
+(function(){
+  const _sp=showPanel;showPanel=function(n){_sp(n);drawerCtx=effCtx();renderRail();};
+  const _sg=saveGroups;saveGroups=function(){_sg();renderRail();};
+})();
 
 // ══ INIT ══
 window.addEventListener('load',function(){
