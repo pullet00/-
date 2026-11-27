@@ -1048,7 +1048,7 @@ function renderBand(){
       </div>`;
     });
   }
-  html+=`${inviteHTML()}<button class="btn btn-p btn-block" onclick="openLiveSheet()" style="margin-bottom:6px;padding:15px;font-size:15px">＋ ライブを作成</button>
+  html+=`${inviteHTML()}<button class="btn btn-p btn-block" onclick="openLiveSheet()" style="margin-bottom:6px;padding:15px;font-size:15px">＋ ライブを作成（コード発行）</button>
   <div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:11px;color:var(--text3)">または</span><div style="flex:1;height:1px;background:var(--border)"></div></div>
   <div style="background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px">
     <div style="font-size:14px;font-weight:600;margin-bottom:10px">🔑 コードで参加</div>
@@ -1275,7 +1275,7 @@ async function onLoginSuccess(user){
   }catch(e){console.warn('data load error',e);}
   const lm=document.getElementById('load-msg');if(lm)lm.remove();
   document.getElementById('login-screen').style.display='none';
-  initApp();loadInvites();
+  initApp();
   // ログイン直後に全グループの最新メンバーをSupabaseから取得
   if(myGroups.length>0){
     Promise.all(myGroups.map(g=>pullGroupDataFor(g.id))).then(()=>{
@@ -1824,41 +1824,6 @@ window.openBulkDecideSheet=function(){};
 // ══ ライブ作成 ══
 let _lv=null;
 const _esc=t=>String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-function openLiveSheet(){
-  _lv={name:'',start:'',end:'',songs:[{id:'s'+Date.now(),name:'',file:null,video:null}],members:[],q:'',results:[],busy:false};
-  renderLiveSheet();openSh('live');
-}
-function renderLiveSheet(){
-  const L=_lv;if(!L)return;
-  const inp='width:100%;padding:12px;font-size:15px;border:1.5px solid var(--border);border-radius:10px;background:#fff;color:#0D0D10;outline:none;';
-  const lab='font-size:11px;font-weight:700;color:var(--text3);margin:14px 0 6px;display:block';
-  const songs=L.songs.map((sg,i)=>`<div style="border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:8px">
-    <div style="display:flex;gap:6px;margin-bottom:8px"><input style="${inp}flex:1" placeholder="曲名" value="${_esc(sg.name)}" oninput="_lv.songs[${i}].name=this.value">${L.songs.length>1?`<button class="btn btn-g" onclick="lvRemSong(${i})">削除</button>`:''}</div>
-    <label style="font-size:11px;color:var(--text3)">楽譜（.mscz・必須）</label>
-    <input type="file" accept=".mscz" onchange="_lv.songs[${i}].file=this.files[0]||null" style="display:block;width:100%;font-size:12px;margin:4px 0 8px">
-    <label style="font-size:11px;color:var(--text3)">動画（任意）</label>
-    <input type="file" accept="video/*" onchange="_lv.songs[${i}].video=this.files[0]||null" style="display:block;width:100%;font-size:12px;margin-top:4px">
-    <label style="font-size:11px;color:var(--text3);display:block;margin-top:10px">パートごとの担当（ライブのメンバーから選択）</label>
-    ${partsHTML(sg,i,lvCands(),'lvTogPart')}
-  </div>`).join('');
-  const mem=L.members.map((m,i)=>`<span style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-l);color:var(--accent);border-radius:16px;padding:5px 10px;font-size:13px;font-weight:600;margin:0 6px 6px 0">${_esc(m.name)}<span onclick="lvRemMem(${i})" style="cursor:pointer">×</span></span>`).join('');
-  const res=L.results.map((r,i)=>`<div onclick="lvAddMem(${i})" style="padding:10px 12px;border-bottom:1px solid var(--border);font-size:14px;cursor:pointer">${_esc(r.name)} <span style="color:var(--accent);font-size:12px">＋招待</span></div>`).join('');
-  document.getElementById('live-body').innerHTML=`<div style="padding:4px 16px 20px">
-    <label style="${lab}">ライブ名</label>
-    <input style="${inp}" placeholder="例：秋の定演" value="${_esc(L.name)}" oninput="_lv.name=this.value">
-    <label style="${lab}">期間</label>
-    <div style="display:flex;gap:8px;align-items:center"><input type="date" style="${inp}" value="${L.start}" onchange="_lv.start=this.value"><span>〜</span><input type="date" style="${inp}" value="${L.end}" onchange="_lv.end=this.value"></div>
-    <label style="${lab}">曲</label>${songs}
-    <button class="btn btn-g btn-block" onclick="lvAddSong()">＋ 曲を追加</button>
-    <label style="${lab}">メンバーを招待（ユーザー名で検索）</label>
-    <div style="margin-bottom:8px">${mem||'<span style="font-size:12px;color:var(--text3)">まだ招待していません</span>'}</div>
-    <div style="display:flex;gap:6px"><input id="lv-q" style="${inp}flex:1" placeholder="名前で検索" value="${_esc(L.q)}" oninput="_lv.q=this.value" onkeydown="if(event.key==='Enter')lvSearch()"><button class="btn btn-g" onclick="lvSearch()">検索</button></div>
-    <div style="border:1px solid var(--border);border-radius:10px;margin-top:6px;${L.results.length?'':'display:none'}">${res}</div>
-    <div style="font-size:11px;color:var(--text3);margin-top:6px">※ 招待はライブ作成後に送られます</div>
-    <button class="btn btn-p btn-block" id="lv-create" style="margin-top:18px;padding:15px;font-size:15px" onclick="createLive()">${L.busy?'作成中...':'ライブを作成して招待を送る'}</button>
-    <button class="btn btn-g btn-block" style="margin-top:8px" onclick="closeSh('live')">キャンセル</button>
-  </div>`;
-}
 function lvCands(){return [st.me.name||'自分',...((_lv&&_lv.members)||[]).map(m=>m.name)];}
 function lvTogPart(i,part,idx){togPart(_lv.songs[i],part,lvCands()[idx]);renderLiveSheet();}
 function togPart(sg,part,name){sg.parts=sg.parts||{};const a=sg.parts[part]=sg.parts[part]||[];const k=a.indexOf(name);if(k>=0)a.splice(k,1);else a.push(name);}
@@ -1866,53 +1831,48 @@ function cleanParts(parts,cands){const o={};PART_OPTIONS.forEach(pt=>{const a=((
 function partsHTML(sg,i,cands,fn){
   return PART_OPTIONS.map(pt=>`<div style="margin-top:6px"><div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:3px">${pt}</div>${cands.map((n,idx)=>`<span class="pchip${((sg.parts||{})[pt]||[]).includes(n)?' on':''}" onclick="${fn}(${i},'${pt}',${idx})">${_esc(n)}</span>`).join('')}</div>`).join('');
 }
-function lvAddSong(){_lv.songs.push({id:'s'+Date.now()+Math.floor(Math.random()*99),name:'',file:null,video:null});renderLiveSheet();}
-function lvRemSong(i){_lv.songs.splice(i,1);renderLiveSheet();}
-function lvRemMem(i){_lv.members.splice(i,1);renderLiveSheet();}
-function lvAddMem(i){const r=_lv.results[i];if(r&&!_lv.members.find(m=>m.user_id===r.user_id))_lv.members.push(r);_lv.results=[];_lv.q='';renderLiveSheet();}
-async function lvSearch(){
-  const q=(_lv.q||'').trim();if(!q)return;
-  if(!currentUser){_lv.results=[{user_id:'dev-'+q,name:q+'（テスト）'}];renderLiveSheet();return;}
-  try{
-    const {data,error}=await sbClient.from('profiles').select('user_id,name').ilike('name','%'+q+'%').neq('user_id',currentUser.id).limit(10);
-    if(error){showToast('検索エラー: '+error.message);return;}
-    _lv.results=data||[];if(!_lv.results.length)showToast('見つかりませんでした');
-    renderLiveSheet();
-  }catch(e){showToast('検索エラー: '+e.message);}
+
+function openLiveSheet(){_lv={name:'',start:'',end:'',busy:false,code:''};renderLiveSheet();openSh('live');}
+function renderLiveSheet(){
+  const L=_lv;if(!L)return;
+  const inp='width:100%;padding:12px;font-size:15px;border:1.5px solid var(--border);border-radius:10px;background:#fff;color:#0D0D10;outline:none;';
+  const lab='font-size:11px;font-weight:700;color:var(--text3);margin:14px 0 6px;display:block';
+  if(L.code){
+    document.getElementById('live-body').innerHTML=`<div style="padding:8px 16px 24px;text-align:center">
+      <div style="font-size:14px;color:var(--text2);margin:10px 0 6px">「${_esc(L.name)}」を作成しました</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:6px">参加コード（メンバーに共有）</div>
+      <div style="font-family:'Inter',monospace;font-size:34px;font-weight:800;letter-spacing:.2em;color:var(--accent);margin-bottom:14px">${L.code}</div>
+      <button class="btn btn-p btn-block" style="padding:14px" onclick="copyGrpCode('${L.code}')">コードをコピー</button>
+      <div style="font-size:12px;color:var(--text3);margin:12px 0;line-height:1.6">メンバーは、左の＋「ライブの作成・参加」からこのコードで参加できます。曲は、ライブの中の「＋ 曲を追加」で作れます。</div>
+      <button class="btn btn-g btn-block" onclick="closeSh('live')">閉じる</button></div>`;
+    return;
+  }
+  document.getElementById('live-body').innerHTML=`<div style="padding:4px 16px 20px">
+    <label style="${lab}">ライブ名</label>
+    <input style="${inp}" placeholder="例：秋の定演" value="${_esc(L.name)}" oninput="_lv.name=this.value">
+    <label style="${lab}">期間</label>
+    <div style="display:flex;gap:8px;align-items:center"><input type="date" style="${inp}" value="${L.start}" onchange="_lv.start=this.value"><span>〜</span><input type="date" style="${inp}" value="${L.end}" onchange="_lv.end=this.value"></div>
+    <div style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.6">作成すると参加コードが発行されます。メンバーはそのコードで参加します。</div>
+    <button class="btn btn-p btn-block" style="margin-top:18px;padding:15px;font-size:15px" onclick="createLive()">${L.busy?'作成中...':'ライブを作成してコードを発行'}</button>
+    <button class="btn btn-g btn-block" style="margin-top:8px" onclick="closeSh('live')">キャンセル</button>
+  </div>`;
 }
 async function createLive(){
   const L=_lv;if(!L||L.busy)return;
   if(!L.name.trim()){showToast('ライブ名を入力してください');return;}
   if(!L.start||!L.end){showToast('期間を設定してください');return;}
   if(L.end<L.start){showToast('終了日が開始日より前です');return;}
-  if(L.songs.some(s=>!s.name.trim())){showToast('曲名を入力してください');return;}
-  if(L.songs.some(s=>!s.file)){showToast('すべての曲に楽譜(.mscz)が必要です');return;}
-  if(!L.members.length){showToast('メンバーを1人以上招待してください');return;}
   L.busy=true;renderLiveSheet();
   const id=genGrpCode();const name=L.name.trim();
   try{
-    const songs=[];
-    for(const sg of L.songs){
-      const o={id:sg.id,name:sg.name.trim(),scoreUrl:'',videoUrl:'',parts:cleanParts(sg.parts,lvCands())};
-      if(currentUser){
-        const up=async(f,kind)=>{const ext=(f.name.split('.').pop()||'bin').toLowerCase();const path=`${id}/${sg.id}/${kind}.${ext}`;
-          const {error}=await sbClient.storage.from('scores').upload(path,f,{upsert:true});if(error)throw new Error('アップロード失敗: '+error.message);
-          return sbClient.storage.from('scores').getPublicUrl(path).data.publicUrl;};
-        o.scoreUrl=await up(sg.file,'score');if(sg.video)o.videoUrl=await up(sg.video,'video');
-      }
-      songs.push(o);
-    }
     if(currentUser){
-      const {error}=await sbClient.from('groups').insert({id,name,start_date:L.start,end_date:L.end,songs,owner:currentUser.id});
+      const {error}=await sbClient.from('groups').insert({id,name,start_date:L.start,end_date:L.end,songs:[],owner:currentUser.id});
       if(error)throw new Error(error.message);
-      const inv=L.members.map(m=>({group_id:id,group_name:name,to_user:m.user_id,from_name:st.me.name||'',status:'pending'}));
-      const {error:e2}=await sbClient.from('invites').insert(inv);if(e2)throw new Error('招待送信失敗: '+e2.message);
     }
-    const g={id,name,members:[],practiceSlots:[],startDate:L.start,endDate:L.end,songs,myPart:st.me.part||''};
-    myGroups.push(g);activeGrpId=id;saveGroups();
+    const g={id,name,members:[],practiceSlots:[],startDate:L.start,endDate:L.end,songs:[],myPart:st.me.part||''};
+    myGroups.push(g);activeGrpId=id;drawerCtx=id;saveGroups();
     if(currentUser){await pushMyDataTo(id,g.myPart);startSyncFor(id);}
-    closeSh('live');_lv=null;showToast('「'+name+'」を作成しました');
-    renderBand();renderRail();
+    L.busy=false;L.code=id;renderLiveSheet();renderBand();renderRail();
   }catch(e){L.busy=false;renderLiveSheet();showToast('エラー: '+e.message);}
 }
 
