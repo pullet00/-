@@ -851,18 +851,18 @@ function renderFind(){
   const ps=(activeGrp?activeGrp.practiceSlots||[]:[]).filter(p=>(p.song_id||'')===((activeGrp&&activeGrp.curSong)||'')).sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):a.slot_id-b.slot_id);
   let psHTML=`<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.06em;margin-bottom:8px">練習予定</div>${ps.length?'':'<div style="font-size:13px;color:var(--text3);padding:6px 2px">まだ練習予定はありません。下の表の空きコマをタップして追加できます。</div>'}</div>`;
   if(ps.length>0){
-    psHTML=`<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.06em;margin-bottom:8px">練習予定</div>`;
+    psHTML=`<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.06em;margin-bottom:8px">練習予定</div><div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch">`;
     ps.forEach(p=>{
       const slot=st.slots.find(s=>s.id==p.slot_id);const dt=new Date(p.decided_at);
       const dtStr=`${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
-      psHTML+=`<div style="background:#EDE9FE;border-radius:12px;padding:11px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px">
+      psHTML+=`<div style="background:#EDE9FE;border-radius:12px;padding:10px 12px;flex:0 0 auto;min-width:200px;display:flex;flex-direction:column;gap:8px">
         <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#5B21B6">${(()=>{const d=new Date(p.date);return (d.getMonth()+1)+'/'+d.getDate()+'（'+DAYS[d.getDay()===0?6:d.getDay()-1]+'）';})()}${slot?.name||''}　${slot?.start||''}–${slot?.end||''}</div><div style="font-size:11px;color:#8B5CF6;margin-top:2px">${p.decided_by}が${dtStr}に決定</div></div>
-        <div style="display:flex;flex-direction:column;gap:5px;align-items:stretch">
+        <div style="display:flex;gap:6px;align-items:stretch">
         <button onclick="togglePracCal('${p.id}')" style="padding:6px 10px;border-radius:8px;border:none;background:${(st.pracRef||{})[BK(p.date,p.slot_id)]===p.id?'#5B21B6':'rgba(91,33,182,.1)'};color:${(st.pracRef||{})[BK(p.date,p.slot_id)]===p.id?'#fff':'#5B21B6'};font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap">${(st.pracRef||{})[BK(p.date,p.slot_id)]===p.id?'カレンダー追加済み':'カレンダーに追加'}</button>
         <button onclick="deletePrac('${p.id}')" style="padding:6px 12px;border-radius:8px;border:none;background:#FDECEA;color:#C0392B;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">削除</button></div>
       </div>`;
     });
-    psHTML+=`</div>`;
+    psHTML+=`</div></div>`;
   }
 
   // ── 次の練習カード ──
@@ -1299,6 +1299,7 @@ async function onLoginSuccess(user){
   currentUser=user;if(!currentUser)return;
   const loadMsg=document.createElement('div');loadMsg.id='load-msg';loadMsg.style.cssText='position:absolute;bottom:40px;left:0;right:0;text-align:center;font-size:13px;color:#9898AA';loadMsg.textContent='データを読み込み中...';
   document.getElementById('login-screen').appendChild(loadMsg);
+  try{if(localStorage.getItem('hrm_isdev')){localStorage.setItem('dev_bak',JSON.stringify({a:localStorage.getItem('hrm7'),b:localStorage.getItem('hrm_groups'),c:localStorage.getItem('hrm_active_grp'),d:localStorage.getItem('hrm_msgs')}));}}catch(e){}
   try{localStorage.removeItem('hrm7');localStorage.removeItem('hrm_groups');localStorage.removeItem('hrm_active_grp');}catch(e){}
   st=defSt();myGroups=[];activeGrpId=null;
   try{
@@ -2183,6 +2184,7 @@ window.addEventListener('load',function(){
   ['login-email','login-password','login-password2'].forEach(function(id){const el=document.getElementById(id);if(el)el.addEventListener('keydown',function(e){if(e.key==='Enter')submitLogin();});});
   if(/[?&]dev(=|&|$)/.test(location.search)){
     // 開発用: ログインなし・クラウド同期なし(currentUserはnullのまま)
+    try{localStorage.setItem('hrm_isdev','1');if(!localStorage.getItem('hrm_groups')){const bk=JSON.parse(localStorage.getItem('dev_bak')||'null');if(bk){if(bk.a)localStorage.setItem('hrm7',bk.a);if(bk.b)localStorage.setItem('hrm_groups',bk.b);if(bk.c)localStorage.setItem('hrm_active_grp',bk.c);if(bk.d)localStorage.setItem('hrm_msgs',bk.d);location.reload();return;}}}catch(e){}
     if(/[?&]reset(=|&|$)/.test(location.search)){try{['hrm7','hrm_groups','hrm_active_grp','hrm_msgs','hrm_chc'].forEach(k=>localStorage.removeItem(k));}catch(e){}location.replace(location.pathname+'?dev');return;}
     st.boarded=true;st.me.name=st.me.name||'開発';st.me.part=st.me.part||'1st';
     myGroups.forEach(g=>{if(g.id==='dev1'&&g.name==='テスト曲')g.name='テストライブ';});
