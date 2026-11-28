@@ -760,11 +760,11 @@ function clearSel(){selCells.clear();selMode=false;updSelBar();renderWeek();}
 // ══ CATEGORY SHEET ══
 let _catKey=null,_catCtx=null;
 function openCatShForSel(){if(selCells.size===0)return;_catKey='__sel__';_catCtx=null;document.getElementById('cat-sh-title').textContent=`${selCells.size}コマの予定を選択`;buildCatGrid();openSh('cat');}
-function buildCatGrid(){const el=document.getElementById('cat-grid');let h=st.cats.map(c=>`<button class="cat-btn" style="background:${c.bg};color:${c.fg}" onclick="applyCat('${c.id}')"><span class="cat-dot" style="background:${c.fg}"></span>${c.name}</button>`).join('');h+=`<button class="cat-btn cat-free" onclick="applyCat('free')">○ 空き（毎週の予定もこの日だけ休み）</button><button class="cat-btn cat-free" onclick="applyCat('restore')">↺ 毎週の予定に戻す</button>`;el.innerHTML=h;}
+function buildCatGrid(){const el=document.getElementById('cat-grid');let h=st.cats.map(c=>`<button class="cat-btn" style="background:${c.bg};color:${c.fg}" onclick="applyCat('${c.id}')"><span class="cat-dot" style="background:${c.fg}"></span>${c.name}</button>`).join('');h+=`<button class="cat-btn cat-free" onclick="applyCat('free')">○ 空き</button>`;el.innerHTML=h;}
 function weeklyOf(key){const [ds,sid]=key.split('|');const d=new Date(ds);return (st.tpl||{})[DAYS[(d.getDay()+6)%7]+'-'+sid]||null;}
 function setBlock(key,catId){
   if(catId==='restore'){delete st.blocks[key];return;}
-  if(catId==='free'){if(weeklyOf(key))st.blocks[key]='skip';else delete st.blocks[key];return;}
+  if(catId==='free'){if(st.blocks[key]==='skip')delete st.blocks[key];else if(weeklyOf(key))st.blocks[key]='skip';else delete st.blocks[key];return;}
   st.blocks[key]=catId;
 }
 function applyCat(catId){
@@ -2183,6 +2183,7 @@ window.addEventListener('load',function(){
   ['login-email','login-password','login-password2'].forEach(function(id){const el=document.getElementById(id);if(el)el.addEventListener('keydown',function(e){if(e.key==='Enter')submitLogin();});});
   if(/[?&]dev(=|&|$)/.test(location.search)){
     // 開発用: ログインなし・クラウド同期なし(currentUserはnullのまま)
+    if(/[?&]reset(=|&|$)/.test(location.search)){try{['hrm7','hrm_groups','hrm_active_grp','hrm_msgs','hrm_chc'].forEach(k=>localStorage.removeItem(k));}catch(e){}location.replace(location.pathname+'?dev');return;}
     st.boarded=true;st.me.name=st.me.name||'開発';st.me.part=st.me.part||'1st';
     myGroups.forEach(g=>{if(g.id==='dev1'&&g.name==='テスト曲')g.name='テストライブ';});
     if(!myGroups.length){myGroups=[{id:'dev1',name:'テストライブ',members:[],practiceSlots:[]}];activeGrpId='dev1';}
