@@ -600,6 +600,7 @@ function showPanel(name){
 // ══ Discord風ドロワー（左：サーバーレール／右：チャンネル一覧）══
 let drawerCtx='me';
 function effCtx(){
+  if(curPanel==='cal'&&calLive&&activeGrpId)return activeGrpId;
   if(curPanel==='cal'||curPanel==='settings')return 'me';
   if(curPanel==='find'||curPanel==='chat')return activeGrpId||'me';
   return 'add';
@@ -625,20 +626,21 @@ function toggleSong(id){
 }
 function openChan(kind,sid){
   const g=myGroups.find(x=>x.id===drawerCtx);if(!g)return;
-  activeGrpId=g.id;g.curSong=(kind==='announce'||kind==='members')?null:(sid||null);
+  activeGrpId=g.id;g.curSong=(kind==='announce'||kind==='members'||kind==='input')?null:(sid||null);
   if(sid)_exp[sid]=true;
-  curChan=kind;saveGroups();
-  showPanel(kind==='find'?'find':kind==='members'?'band':'chat');
+  curChan=kind;calLive=(kind==='input');saveGroups();
+  showPanel(kind==='find'?'find':kind==='members'?'band':kind==='input'?'cal':'chat');
   if(window.innerWidth<700)document.body.classList.add('chc');
 }
 function openChannel(panel){
+  calLive=false;
   if(drawerCtx!=='me'&&drawerCtx!=='add'&&myGroups.find(g=>g.id===drawerCtx)){activeGrpId=drawerCtx;saveGroups();}
   closeDrawer();showPanel(panel);
 }
 function renderDrawer(){
   const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const cur=effCtx();
-  let rail=`<button class="rail-btn${drawerCtx==='me'?' on':''}" onclick="setCtx('me');showPanel('cal')" title="マイページ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></button><div class="rail-sep"></div>`;
+  let rail=`<button class="rail-btn${drawerCtx==='me'?' on':''}" onclick="calLive=false;setCtx('me');showPanel('cal')" title="マイページ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></button><div class="rail-sep"></div>`;
   myGroups.forEach(g=>{
     rail+=`<button class="rail-btn${drawerCtx===g.id?' on':''}" onclick="setCtx('${g.id}')" title="${esc(g.name)}">${esc((g.name||'?').slice(0,1))}</button>`;
   });
@@ -660,6 +662,7 @@ function renderDrawer(){
     ch=`<div class="ch-head"><button onclick="openLiveSettings()" title="ライブ設定" style="width:30px;height:30px;border-radius:8px;border:none;background:#383A40;color:#DBDEE1;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:8px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g?g.name:'')}</span></div>`
       +`<div class="ch-sec">ライブ全体</div>`
       +`<button class="ch-item${onC('announce')?' on':''}" onclick="openChan('announce','')"><span class="hash">#</span>お知らせ</button>`
+      +`<button class="ch-item${(curPanel==='cal'&&calLive&&activeGrpId===drawerCtx)?' on':''}" onclick="openChan('input','')"><span class="hash">#</span>予定入力</button>`
       +`<div class="ch-sec">曲</div>`;
     ((g&&g.songs)||[]).filter(sg=>songVisible(g,sg)).forEach(sg=>{
       const open=_exp[sg.id]!==undefined?_exp[sg.id]:(g.curSong===sg.id);
@@ -705,7 +708,7 @@ function renderWeek(){
       const hasTpl=!!tplCatId;
       const effId=direct||tplCatId;const c=effId?ct(effId):null;
       const isSel=selCells.has(key)&&selMode;const weekBg=isSat?'sat-bg':isSun?'sun-bg':'';const bg=c?c.fg:'transparent';
-      const practiceGrps=myGroups.filter(g=>(g.practiceSlots||[]).find(p=>p.date===ds&&p.slot_id==slot.id));
+      const practiceGrps=myGroups.filter(g=>(g.practiceSlots||[]).find(p=>p.date===ds&&p.slot_id==slot.id&&(st.pracRef||{})[key]===p.id));
       const isPractice=practiceGrps.length>0;
       let absentNames=[];
       if(isPractice){
@@ -719,7 +722,7 @@ function renderWeek(){
           });
         });
       }
-      const practiceInfo=practiceGrps.map(g=>g.name);
+      const practiceInfo=practiceGrps.map(g=>pracName(key)||g.name);
       const cellBg=isPractice?'#EDE9FE':(c?c.bg:'');const cellBgFb=isPractice?'#EDE9FE':(isSat?'#F0FAFA':isSun?'#FFF0F2':'#fff');
       gh+=`<div class="slot-cell${isSel?' sel':''} ${weekBg}"
         style="background:${cellBg||cellBgFb};${hasTpl&&!isPractice?'opacity:.7':''}"
@@ -732,7 +735,7 @@ function renderWeek(){
                 <div class="cell-cat" style="color:#5B21B6;font-size:8px;font-weight:700">${practiceInfo[0]}</div>
                 ${absentNames.length>0?`<div style="font-size:6px;color:#C0392B;font-weight:600;line-height:1.2;text-align:center">欠:${absentNames.map(n=>n.slice(0,2)).join('・')}</div>`:'<div style="font-size:6px;color:#2B6351;font-weight:600">全員</div>'}
               </div>`
-            :c?`<div class="cell-cat" style="color:${c.fg}">${(!direct&&hasTpl)?'毎週':c.name}</div>`
+            :c?`<div class="cell-cat" style="color:${c.fg}">${(!direct&&hasTpl)?'毎週':((direct==='practice'&&pracName(key))||c.name)}</div>`
             :`<div class="cell-empty">${slot.start}</div>`}
         </div>
         ${hasTpl&&!isPractice?`<div class="cell-tpl">※</div>`:''}
@@ -787,7 +790,7 @@ function renderMonth(){
         const did=st.blocks[BK(dStr,s.id)];
         // ★変更①: tpl参照を tplCatId で
         const tplCatId=(st.tpl||{})[dn+'-'+s.id]||null;
-        const pracGrp=myGroups.find(g=>(g.practiceSlots||[]).find(p=>p.date===dStr&&p.slot_id==s.id));
+        const pracGrp=myGroups.find(g=>(g.practiceSlots||[]).find(p=>p.date===dStr&&p.slot_id==s.id&&(st.pracRef||{})[BK(dStr,s.id)]===p.id));
         if(pracGrp)return`<div class="mpip" style="background:#EDE9FE;color:#5B21B6;font-weight:700">練</div>`;
         const cid=did||tplCatId;const cv=cid?ct(cid):null;if(!cv)return'';
         return`<div class="mpip" style="background:${cv.bg};color:${cv.fg};${!did?'opacity:.6':''}">${s.name.replace(/限$/,'')}</div>`;
@@ -974,7 +977,11 @@ function renderFind(){
 
       visDays.forEach((d,di)=>{
         const ds=DS(d);const dn=visDayNames[di];const key=BK(ds,slot.id);
+        const _pid=(st.pracRef||{})[key];const _pi=_pid?pracInfo(_pid):null;
+        const thisSongPrac=!!(_pi&&_pi.grpId===activeGrpId&&_pi.songId===(activeGrp.curSong||''));
+        const otherPrac=!!(_pi&&!thisSongPrac);
         const availM=allMembers.filter(m=>{
+          if(m.isMe&&thisSongPrac)return true;
           if((m.blocks||{})[key])return false;
           if(m.isMe&&(st.tpl||{})[dn+'-'+slot.id])return false;
           if(!m.isMe&&(m.tpl||{})[dn+'-'+slot.id])return false;
@@ -984,7 +991,8 @@ function renderFind(){
         const ac=availM.length;const allOk=ac===total&&total>0;const someOk=ac>0&&ac<total&&ac>=st.minM;
 
         let bg2='#F4F4F6',bd2='1px solid #E4E4E8',tc2='var(--text3)';
-        if(decided){bg2='#EDE9FE';bd2='2px solid #6D28D9';tc2='#5B21B6';}
+        if(thisSongPrac){bg2='#EDE9FE';bd2='2px solid #6D28D9';tc2='#5B21B6';}
+        else if(decided){bg2='#EDE9FE';bd2='2px solid #6D28D9';tc2='#5B21B6';}
         else if(allOk){bg2='#EEFBF0';bd2='1.5px solid #90C8AD';tc2='#2B6351';}
         else if(someOk){bg2='#FFFBE6';bd2='1px solid #E8C86A';tc2='#7A5010';}
 
@@ -998,6 +1006,8 @@ function renderFind(){
           ? 'data-cell-action="change" data-cell-grp="'+activeGrpId+'" data-cell-date="'+ds+'" data-cell-slot="'+slot.id+'" data-cell-psid="'+decided.id+'"'
           : (ac>0 ? 'data-cell-action="decide" data-cell-grp="'+activeGrpId+'" data-cell-date="'+ds+'" data-cell-slot="'+slot.id+'"' : '');
         h+=`<a href="javascript:void(0)" ${cellDataAttrs} style="min-height:58px;border-radius:8px;border:${bd2};background:${bg2};display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 2px;text-decoration:none;cursor:${(decided||ac>0)?'pointer':'default'}">`;
+        if(otherPrac)h+=`<div style="font-size:7px;font-weight:700;color:#5B21B6;line-height:1.2;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">練習:${_esc(_pi.songName)}</div>`;
+        if(thisSongPrac)h+=`<div style="font-size:8px;font-weight:700;color:#5B21B6;text-align:center">練習予定</div>`;
         if(decided){h+=`<div style="font-size:7px;font-weight:700;color:#5B21B6;text-align:center">決定済</div>`;}
         else if(ac===0){h+=`<div style="font-size:10px;color:var(--text3)">−</div>`;}
         else{
@@ -1014,6 +1024,7 @@ function renderFind(){
     h+=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;font-size:10px;color:var(--text2)">
       <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:3px;background:#EEFBF0;border:1.5px solid #90C8AD"></div>全員OK</div>
       <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:3px;background:#FFFBE6;border:1px solid #E8C86A"></div>${st.minM}人以上</div>
+      <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:3px;background:#EDE9FE;border:2px solid #6D28D9"></div>自分のカレンダーに追加した練習</div>
     </div>`;
   }
 
@@ -2132,6 +2143,14 @@ function togglePracCal(id){
   st.blocks[key]='practice';st.pracRef[key]=id;save();
   showToast('カレンダーに追加しました（この時間はほかの曲の候補から外れます）');renderFind();
 }
+
+
+function pracInfo(id){
+  for(const g of myGroups){const p=(g.practiceSlots||[]).find(x=>x.id===id);if(p){const sg=(g.songs||[]).find(x=>x.id===p.song_id);return {grpId:g.id,songId:p.song_id||'',songName:sg?sg.name:g.name,liveName:g.name};}}
+  return null;
+}
+function pracName(key){const id=(st.pracRef||{})[key];if(!id)return '';const i=pracInfo(id);return i?i.songName:'';}
+let calLive=false;
 
 // 常時表示レールの更新フック
 (function(){
