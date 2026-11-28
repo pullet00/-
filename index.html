@@ -599,7 +599,17 @@ function openDrawer(){
 }
 function closeDrawer(){}
 try{if(localStorage.getItem('hrm_chc'))document.body.classList.add('chc');}catch(e){}
-function setCtx(c){drawerCtx=c;document.body.classList.remove('chc');renderDrawer();}
+function setCtx(c){
+  drawerCtx=c;document.body.classList.remove('chc');renderDrawer();
+  if(c==='me'||c==='add')return;
+  const g=myGroups.find(x=>x.id===c);if(!g)return;
+  if(activeGrpId!==c||!(curPanel==='find'||curPanel==='chat')){
+    let k=g.lastChan||'announce',sid=g.lastSong||'';
+    if(sid&&!(g.songs||[]).some(x=>x.id===sid)){k='announce';sid='';}
+    if(k==='members'||k==='input')k='announce';
+    openChan(k,sid);
+  }
+}
 function renderRail(){renderDrawer();renderMembers();}
 function addSong(){
   const g=myGroups.find(x=>x.id===drawerCtx);if(!g)return;
@@ -609,14 +619,14 @@ function addSong(){
 let curChan='announce';const _exp={};
 function toggleSong(id){
   const g=curLive();if(!g)return;
-  if(g.curSong!==id){_exp[id]=true;openChan(curChan==='announce'||curChan==='members'?'find':curChan,id);return;}
+  if(g.curSong!==id||!(curPanel==='find'||curPanel==='chat')){_exp[id]=true;openChan(curChan==='announce'||curChan==='members'?'find':curChan,id);return;}
   const cur=_exp[id]!==undefined?_exp[id]:true;_exp[id]=!cur;renderDrawer();
 }
 function openChan(kind,sid){
   const g=myGroups.find(x=>x.id===drawerCtx);if(!g)return;
   activeGrpId=g.id;g.curSong=(kind==='announce'||kind==='members'||kind==='input')?null:(sid||null);
   if(sid)_exp[sid]=true;
-  curChan=kind;calLive=(kind==='input');saveGroups();
+  curChan=kind;calLive=(kind==='input');g.lastChan=kind;g.lastSong=g.curSong||'';saveGroups();
   showPanel(kind==='find'?'find':kind==='members'?'band':kind==='input'?'cal':'chat');
   if(window.innerWidth<700)document.body.classList.add('chc');
 }
