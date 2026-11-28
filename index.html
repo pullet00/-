@@ -2171,7 +2171,7 @@ function renderLiveStrip(){
 
 // 常時表示レールの更新フック
 (function(){
-  const _sp=showPanel;showPanel=function(n){_sp(n);drawerCtx=effCtx();renderRail();if(n==='cal')renderLiveStrip();};
+  const _sp=showPanel;showPanel=function(n){_sp(n);if(n!=='cal'){selCells.clear();selMode=false;const eb=document.getElementById('entry-bar');if(eb)eb.style.display='none';}drawerCtx=effCtx();renderRail();if(n==='cal')renderLiveStrip();};
   const _sg=saveGroups;saveGroups=function(){_sg();renderRail();};
 })();
 
