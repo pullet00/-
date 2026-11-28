@@ -310,18 +310,6 @@ body.chc .drawer{display:none;}
   <div class="sh-head"><div class="sh-title" id="cat-sh-title">この時間の予定</div></div>
   <div class="sh-scroll"><div class="cat-grid" id="cat-grid"></div></div>
 </div>
-<div class="sh-ov" id="copy-ov" onclick="closeSh('copy')"></div>
-<div class="sheet" id="copy-sh">
-  <div class="sh-handle"></div>
-  <div class="sh-head"><div class="sh-title">コピー・削除</div></div>
-  <div class="sh-scroll">
-    <div class="copy-row" onclick="doCopy(1)"><svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><div><div class="cr-title">来週にコピー</div><div class="cr-sub">選択コマを来週の同じコマに複製</div></div></div>
-    <div class="copy-row" onclick="doCopy(2)"><svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><div><div class="cr-title">再来週にコピー</div><div class="cr-sub">2週後に複製</div></div></div>
-    <div class="copy-row" onclick="doMCopy(1)"><svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4M8 14h8M8 18h5"/></svg><div><div class="cr-title">今後1ヶ月にコピー</div><div class="cr-sub">毎週同じコマに4週間複製</div></div></div>
-    <div class="copy-row" onclick="doMCopy(3)"><svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4M8 14h8M8 18h5"/></svg><div><div class="cr-title">今後3ヶ月にコピー</div><div class="cr-sub">毎週同じコマに12週間複製</div></div></div>
-    <div class="copy-row cr-danger" onclick="doClearSel()"><svg style="width:18px;height:18px;flex-shrink:0;color:#F43F5E" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg><div><div class="cr-title">選択コマを空きに戻す</div><div class="cr-sub">選択した予定をすべて削除</div></div></div>
-  </div>
-</div>
 <div class="sh-ov" id="ddp-ov" onclick="closeSh('ddp')"></div>
 <div class="sh-ov" id="practice-ov" onclick="closeSh('practice')"></div>
 <div class="sheet" id="practice-sh">
@@ -433,8 +421,8 @@ body.chc .drawer{display:none;}
   <div id="view-cal" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
     <div class="sel-bar" id="sel-bar">
       <span class="sel-hint" id="sel-hint">コマをタップで選択　長押しでも選択</span>
-      <button class="sel-act sel-act-copy" id="sel-copy" onclick="openSh('copy')" style="display:none">コピー・削除</button>
     </div>
+    <div id="live-strip"></div>
     <div class="cal-head" id="cal-head"></div>
     <div class="cal-scroll" id="cal-scroll"><div class="cal-grid" id="cal-grid"></div></div>
   </div>
@@ -662,7 +650,6 @@ function renderDrawer(){
     ch=`<div class="ch-head"><button onclick="openLiveSettings()" title="ライブ設定" style="width:30px;height:30px;border-radius:8px;border:none;background:#383A40;color:#DBDEE1;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:8px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g?g.name:'')}</span></div>`
       +`<div class="ch-sec">ライブ全体</div>`
       +`<button class="ch-item${onC('announce')?' on':''}" onclick="openChan('announce','')"><span class="hash">#</span>お知らせ</button>`
-      +`<button class="ch-item${(curPanel==='cal'&&calLive&&activeGrpId===drawerCtx)?' on':''}" onclick="openChan('input','')"><span class="hash">#</span>予定入力</button>`
       +`<div class="ch-sec">曲</div>`;
     ((g&&g.songs)||[]).filter(sg=>songVisible(g,sg)).forEach(sg=>{
       const open=_exp[sg.id]!==undefined?_exp[sg.id]:(g.curSong===sg.id);
@@ -702,9 +689,9 @@ function renderWeek(){
     gh+=`<div class="time-col"><div class="tc-name">${slot.name}</div><div class="tc-range">${slot.start}<br>${slot.end}</div></div>`;
     dates.forEach((d,i)=>{
       const ds=DS(d);const key=BK(ds,slot.id);const isSat=i===5,isSun=i===6;
-      const direct=st.blocks[key];const tplKey=DAYS[i]+'-'+slot.id;
+      const _b=st.blocks[key];const skip=_b==='skip';const direct=skip?null:_b;const tplKey=DAYS[i]+'-'+slot.id;
       // ★変更①: tplCatId（文字列catId）として参照
-      const tplCatId=!direct?((st.tpl||{})[tplKey]||null):null;
+      const tplCatId=(!direct&&!skip)?((st.tpl||{})[tplKey]||null):null;
       const hasTpl=!!tplCatId;
       const effId=direct||tplCatId;const c=effId?ct(effId):null;
       const isSel=selCells.has(key)&&selMode;const weekBg=isSat?'sat-bg':isSun?'sun-bg':'';const bg=c?c.fg:'transparent';
@@ -716,8 +703,8 @@ function renderWeek(){
           const allM=[{name:st.me.name,part:st.me.part||'',blocks:st.blocks,tpl:st.tpl,isMe:true},...(pg.members||[])];
           const dn2=DAYS[i];
           allM.forEach(m=>{
-            const busy=(m.blocks||{})[key]&&(m.blocks||{})[key]!=='practice';
-            const tplBusy=m.isMe?(st.tpl||{})[dn2+'-'+slot.id]:(m.tpl||{})[dn2+'-'+slot.id];
+            const _mb=(m.blocks||{})[key];const busy=_mb&&_mb!=='practice'&&_mb!=='skip';
+            const tplBusy=_mb==='skip'?false:(m.isMe?(st.tpl||{})[dn2+'-'+slot.id]:(m.tpl||{})[dn2+'-'+slot.id]);
             if((busy||tplBusy)&&!absentNames.includes(m.name))absentNames.push(m.name);
           });
         });
@@ -738,7 +725,7 @@ function renderWeek(){
             :c?`<div class="cell-cat" style="color:${c.fg}">${(!direct&&hasTpl)?'毎週':((direct==='practice'&&pracName(key))||c.name)}</div>`
             :`<div class="cell-empty">${slot.start}</div>`}
         </div>
-        ${hasTpl&&!isPractice?`<div class="cell-tpl">※</div>`:''}
+        ${hasTpl&&!isPractice?`<div class="cell-tpl">※</div>`:''}${skip?`<div class="cell-tpl">休</div>`:''}
         ${isSel?`<div class="cell-check">✓</div>`:''}
       </div>`;
     });
@@ -753,7 +740,8 @@ function tm(e){_tm=true;clearTimeout(_lt);}
 function te(e){clearTimeout(_lt);}
 function sc(key,name){selMode=true;if(selCells.has(key))selCells.delete(key);else selCells.add(key);if(selCells.size===0)selMode=false;updSelBar();renderWeek();}
 function updSelBar(){
-  const n=selCells.size;const h=document.getElementById('sel-hint');const cc=document.getElementById('sel-copy');const eb=document.getElementById('entry-bar');const ebl=document.getElementById('entry-bar-label');
+  try{renderLiveStrip();}catch(e){}
+  const n=selCells.size;const h=document.getElementById('sel-hint');const cc={style:{}};const eb=document.getElementById('entry-bar');const ebl=document.getElementById('entry-bar-label');
   if(!selMode||n===0){h.textContent='コマをタップで選択　複数まとめて入力できます';cc.style.display='none';eb.style.display='none';}
   else{h.innerHTML=`<span class="sel-badge">${n}</span>&nbsp;コマ選択中`;cc.style.display='';ebl.textContent=`${n}コマ選択中`;eb.style.display='flex';}
 }
@@ -762,11 +750,17 @@ function clearSel(){selCells.clear();selMode=false;updSelBar();renderWeek();}
 // ══ CATEGORY SHEET ══
 let _catKey=null,_catCtx=null;
 function openCatShForSel(){if(selCells.size===0)return;_catKey='__sel__';_catCtx=null;document.getElementById('cat-sh-title').textContent=`${selCells.size}コマの予定を選択`;buildCatGrid();openSh('cat');}
-function buildCatGrid(){const el=document.getElementById('cat-grid');let h=st.cats.map(c=>`<button class="cat-btn" style="background:${c.bg};color:${c.fg}" onclick="applyCat('${c.id}')"><span class="cat-dot" style="background:${c.fg}"></span>${c.name}</button>`).join('');h+=`<button class="cat-btn cat-free" onclick="applyCat('free')">○ 空きに戻す</button>`;el.innerHTML=h;}
+function buildCatGrid(){const el=document.getElementById('cat-grid');let h=st.cats.map(c=>`<button class="cat-btn" style="background:${c.bg};color:${c.fg}" onclick="applyCat('${c.id}')"><span class="cat-dot" style="background:${c.fg}"></span>${c.name}</button>`).join('');h+=`<button class="cat-btn cat-free" onclick="applyCat('free')">○ 空き（毎週の予定もこの日だけ休み）</button><button class="cat-btn cat-free" onclick="applyCat('restore')">↺ 毎週の予定に戻す</button>`;el.innerHTML=h;}
+function weeklyOf(key){const [ds,sid]=key.split('|');const d=new Date(ds);return (st.tpl||{})[DAYS[(d.getDay()+6)%7]+'-'+sid]||null;}
+function setBlock(key,catId){
+  if(catId==='restore'){delete st.blocks[key];return;}
+  if(catId==='free'){if(weeklyOf(key))st.blocks[key]='skip';else delete st.blocks[key];return;}
+  st.blocks[key]=catId;
+}
 function applyCat(catId){
   closeSh('cat');if(!_catKey)return;
-  if(_catKey==='__sel__'){selCells.forEach(key=>{if(catId==='free')delete st.blocks[key];else st.blocks[key]=catId;});save();clearSel();}
-  else{if(catId==='free')delete st.blocks[_catKey];else st.blocks[_catKey]=catId;save();if(vm==='week')renderWeek();else{renderMonth();if(_catCtx)setTimeout(()=>monthTap(_catCtx.ds,_catCtx.dn),60);}}
+  if(_catKey==='__sel__'){selCells.forEach(key=>{setBlock(key,catId);});save();clearSel();}
+  else{setBlock(_catKey,catId);save();if(vm==='week')renderWeek();else{renderMonth();if(_catCtx)setTimeout(()=>monthTap(_catCtx.ds,_catCtx.dn),60);}}
   _catKey=null;_catCtx=null;
 }
 function openSh(name){document.getElementById(name+'-ov').classList.add('open');document.getElementById(name+'-sh').classList.add('open');}
@@ -787,9 +781,8 @@ function renderMonth(){
     for(let d=0;d<7;d++){
       const cur=new Date(start);cur.setDate(start.getDate()+w*7+d);const dStr=DS(cur);const isM=cur.getMonth()===mo;const isT=dStr===todayStr;const dn=DAYS[d];
       const pips=st.slots.map(s=>{
-        const did=st.blocks[BK(dStr,s.id)];
-        // ★変更①: tpl参照を tplCatId で
-        const tplCatId=(st.tpl||{})[dn+'-'+s.id]||null;
+        const _d=st.blocks[BK(dStr,s.id)];const did=_d==='skip'?null:_d;
+        const tplCatId=_d==='skip'?null:((st.tpl||{})[dn+'-'+s.id]||null);
         const pracGrp=myGroups.find(g=>(g.practiceSlots||[]).find(p=>p.date===dStr&&p.slot_id==s.id&&(st.pracRef||{})[BK(dStr,s.id)]===p.id));
         if(pracGrp)return`<div class="mpip" style="background:#EDE9FE;color:#5B21B6;font-weight:700">練</div>`;
         const cid=did||tplCatId;const cv=cid?ct(cid):null;if(!cv)return'';
@@ -804,9 +797,8 @@ function renderMonth(){
 function monthTap(dStr,dn){
   const d=new Date(dStr);document.getElementById('ddp-title').textContent=`${d.getMonth()+1}/${d.getDate()}（${dn}）`;
   document.getElementById('ddp-body').innerHTML=st.slots.map(slot=>{
-    const key=BK(dStr,slot.id);const did=st.blocks[key];
-    // ★変更①: tplCatId参照
-    const tplCatId=(st.tpl||{})[dn+'-'+slot.id]||null;
+    const key=BK(dStr,slot.id);const _d=st.blocks[key];const did=_d==='skip'?null:_d;
+    const tplCatId=_d==='skip'?null:((st.tpl||{})[dn+'-'+slot.id]||null);
     const cid=did||tplCatId;const c=cid?ct(cid):null;
     const bg=c?c.bg:'var(--surf2)';const fg=c?c.fg:'var(--text2)';
     return`<div class="ddp-row" style="background:${bg};${!did&&tplCatId?'opacity:.75':''}" onclick="ddpTap('${dStr}','${dn}',${slot.id},'${slot.name}')">
@@ -982,7 +974,9 @@ function renderFind(){
         const otherPrac=!!(_pi&&!thisSongPrac);
         const availM=allMembers.filter(m=>{
           if(m.isMe&&thisSongPrac)return true;
-          if((m.blocks||{})[key])return false;
+          const _mb=(m.blocks||{})[key];
+          if(_mb&&_mb!=='skip')return false;
+          if(_mb==='skip')return true;
           if(m.isMe&&(st.tpl||{})[dn+'-'+slot.id])return false;
           if(!m.isMe&&(m.tpl||{})[dn+'-'+slot.id])return false;
           return true;
@@ -2157,9 +2151,17 @@ function pracInfo(id){
 function pracName(key){const id=(st.pracRef||{})[key];if(!id)return '';const i=pracInfo(id);return i?i.songName:'';}
 let calLive=false;
 
+
+function renderLiveStrip(){
+  const el=document.getElementById('live-strip');if(!el)return;
+  if(!myGroups.length){el.innerHTML='';return;}
+  const f=d=>{if(!d)return '';const x=new Date(d);return (x.getMonth()+1)+'/'+x.getDate();};
+  el.innerHTML=`<div style="display:flex;gap:8px;overflow-x:auto;padding:8px 14px;background:var(--surf);border-bottom:1px solid var(--border);-webkit-overflow-scrolling:touch">`+myGroups.map(g=>`<div style="flex-shrink:0;background:var(--accent-l);color:var(--accent);border-radius:10px;padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap">${_esc(g.name)}<span style="font-weight:500;color:var(--text2);margin-left:6px">${g.startDate&&g.endDate?f(g.startDate)+' 〜 '+f(g.endDate):'期間未設定'}</span></div>`).join('')+`</div>`;
+}
+
 // 常時表示レールの更新フック
 (function(){
-  const _sp=showPanel;showPanel=function(n){_sp(n);drawerCtx=effCtx();renderRail();};
+  const _sp=showPanel;showPanel=function(n){_sp(n);drawerCtx=effCtx();renderRail();if(n==='cal')renderLiveStrip();};
   const _sg=saveGroups;saveGroups=function(){_sg();renderRail();};
 })();
 
