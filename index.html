@@ -857,7 +857,7 @@ function renderFind(){
         <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#5B21B6">${(()=>{const d=new Date(p.date);return (d.getMonth()+1)+'/'+d.getDate()+'（'+DAYS[d.getDay()===0?6:d.getDay()-1]+'）';})()}${slot?.name||''}　${slot?.start||''}–${slot?.end||''}</div><div style="font-size:11px;color:#8B5CF6;margin-top:2px">${p.decided_by}が${dtStr}に決定</div></div>
         <div style="display:flex;flex-direction:column;gap:5px;align-items:stretch">
         <button onclick="togglePracCal('${p.id}')" style="padding:6px 10px;border-radius:8px;border:none;background:${(st.pracRef||{})[BK(p.date,p.slot_id)]===p.id?'#5B21B6':'rgba(91,33,182,.1)'};color:${(st.pracRef||{})[BK(p.date,p.slot_id)]===p.id?'#fff':'#5B21B6'};font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap">${(st.pracRef||{})[BK(p.date,p.slot_id)]===p.id?'カレンダー追加済み':'カレンダーに追加'}</button>
-        <button onclick="openChangePracticeSheet('${activeGrpId}','${p.id}','${p.date}',${p.slot_id})" style="padding:6px 12px;border-radius:8px;border:none;background:rgba(91,33,182,.1);color:#5B21B6;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">変更</button></div>
+        <button onclick="deletePrac('${p.id}')" style="padding:6px 12px;border-radius:8px;border:none;background:#FDECEA;color:#C0392B;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">削除</button></div>
       </div>`;
     });
     psHTML+=`</div>`;
@@ -1428,6 +1428,7 @@ function copyGrpCode(grpId){navigator.clipboard.writeText(grpId).then(()=>showTo
 let _practiceCtx=null;
 
 window.openDecidePracticeSheet=function openDecidePracticeSheet(grpId,date,slotId){
+  _practiceCtx={grpId,date,slotId:Number(slotId),existingId:null};execDecidePractice();return;
   const slot=st.slots.find(s=>s.id==slotId);const g=myGroups.find(x=>x.id===grpId);
   _practiceCtx={grpId,date,slotId:Number(slotId),existingId:null};
   const d=new Date(date);const dn=DAYS[d.getDay()===0?6:d.getDay()-1];
@@ -2132,6 +2133,10 @@ async function saveLiveSettings(){
 }
 
 
+function deletePrac(id){
+  if(!confirm('この練習予定を削除しますか？'))return;
+  _practiceCtx={grpId:activeGrpId,existingId:id};execCancelPractice();
+}
 function togglePracCal(id){
   const g=myGroups.find(x=>x.id===activeGrpId);if(!g)return;
   const p=(g.practiceSlots||[]).find(x=>x.id===id);if(!p)return;
